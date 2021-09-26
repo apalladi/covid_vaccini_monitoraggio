@@ -14,3 +14,48 @@ Nel Notebook `confronto_2020_2021.ipynb` vengono confrontati gli andamenti delle
 
 
 Nel Notebook [`\dati\dati_selezione.ipynb`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.ipynb) vengono selezionati i dati per l'analisi a partire dal report e dal numero di pagina contenente la tabella (n.3). Requisiti: Python 3.6+, Java 8+ e tabula-py. 
+
+
+### Risultati
+<details>
+  <summary>Andamento epidemia: incidenze settimanali (rapporto n° evento/popolazione riferimento)</summary>
+    <p align="center">
+      <img width="750" src="/risultati/andamento_epidemia.png">
+    </p>
+  </summary>
+</details>
+<details>
+  <summary>Andamento epidemia: rapporto fra le incidenze</summary>
+    <p align="center">
+      <img width="750" src="/risultati/rapporto_tra_tassi.png">
+    </p>
+  </summary>
+</details>
+<details>
+  <summary>Andamento epidemia: numeri assoluti giornalieri</summary>
+    <p align="center">
+      <img width="750" src="/risultati/andamento_epidemia_num_assoluti.png">
+    </p>
+  </summary>
+</details>
+<details>
+  <summary>Incidenze settimanali ed efficacia vaccini per fascia di età</summary>
+    <p align="center">
+      <img width="750" src="/risultati/tassi_efficacia.png">
+    </p>
+  </summary>
+</details>
+<details>
+  <summary>Efficacia vaccini: focus over 60</summary>
+    <p align="center">
+      <img width="750" src="/risultati/focus_over60.png">
+    </p>
+  </summary>
+</details>
+<details>
+  <summary>Confronto curve epidemiche 2020 e 2021</summary>
+    <p align="center">
+      <img width="750" src="/risultati/confrontro_2020_2021.png">
+    </p>
+  </summary>
+</details>
