@@ -1,5 +1,7 @@
 Questo repository è stato creato con lo scopo di monitorare l'andamento dell'epidemia provocata dal Covid19 in Italia e l'efficacia dei vaccini.
 
+### Installazione
+
 Per utilizzare il repository, aprire la shell e digitare:
 
 `git clone git@github.com:apalladi/covid_vaccini_monitoraggio.git` 
@@ -15,6 +17,9 @@ Per utilizzare il repository, aprire la shell e digitare:
 Nell'environment virtuale è possibile installare automaticamente i pacchetti richiesti (`numpy`, `matplotlib` e `pandas`) utilizzando il seguendo comando:
 
 `pip install -r requirements.txt` 
+
+
+### Utilizzo
 
 Nel repository vengono utilizzati i dati rilasciati nei [report settimanali](https://www.epicentro.iss.it/coronavirus/aggiornamenti) dell'Istituto Superiore di Sanità, come ad esempio: https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_8-settembre-2021.pdf.
 
