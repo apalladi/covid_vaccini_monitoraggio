@@ -8,7 +8,7 @@ Per utilizzare il repository, aprire la shell e digitare:
 
 È consigliata la creazione di un environment virtuale, tramite i seguenti comandi:
 
-`python venv .env`
+`python -m venv .env`
 
 `source .env/bin/activate`
 
