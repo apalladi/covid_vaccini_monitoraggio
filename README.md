@@ -6,13 +6,13 @@ Per utilizzare il repository, aprire la shell e digitare:
 
 `cd covid_vaccini_monitoraggio`
 
-È consigliata la creazione di un `virtual environment`:
+È consigliata la creazione di un environment virtuale, tramite i seguenti comandi:
 
 `python venv .env`
 
 `source .env/bin/activate`
 
-in cui installare automaticamente i pacchetti richiesti (`numpy`, `matplotlib` e `pandas`) utilizzando il seguendo comando:
+Nell'environment virtuale è possibile installare automaticamente i pacchetti richiesti (`numpy`, `matplotlib` e `pandas`) utilizzando il seguendo comando:
 
 `pip install -r requirements.txt` 
 
