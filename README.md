@@ -7,6 +7,7 @@ Per utilizzare il repository, aprire la shell e digitare:
 `cd covid_vaccini_monitoraggio`
 
 È consigliata la creazione di un `virtual environment`:
+
 `python venv .env`
 
 `source .env/bin/activate`
