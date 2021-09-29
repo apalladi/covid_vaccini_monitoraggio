@@ -13,10 +13,10 @@ Nel Notebook `Notebooks/andamento_epidemia.ipynb` vengono calcolate le curve epi
 Nel Notebook `Notebooks/efficacia_vaccini.ipynb` vengono calcolati i tassi di contagi relativi all'ultimo report dell'ISS, dividendo i dati in 4 fasce d'età  e in 2 categorie (vaccinati e non vaccinati). Ciò permette di calcolare le incidenze per ogni fascia d'età  e di calcolare correttamente l'efficacia dei vaccini nel prevenire il contagio, l'ospedalizzazione, il ricovero in terapia intensiva e il decesso. 
 
 
-Nel Notebook `Notebooks/confronto_2020_2021.ipynb` vengono confrontati gli andamenti delle curve epidemiche 2020 e 2021.
+Nel Notebook `Notebooks/confronto_2020_2021.ipynb` vengono confrontati gli andamenti delle curve epidemiche 2020 e 2021. Per il 2021 vengono mostrate separatamente le curve dei vaccinati e dei non vaccinati. 
 
 
-Nel Notebook [`\dati\dati_selezione.ipynb`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.ipynb) vengono selezionati i dati per l'analisi a partire dal report e dal numero di pagina contenente la tabella (n.3). Requisiti: Python 3.6+, Java 8+ e tabula-py. 
+Nello script [`\dati\dati_selezione.py`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) vengono selezionati i dati per l'analisi a partire dal report e dal numero di pagina contenente la tabella (n.3). Requisiti: Python 3.6+, Java 8+ e tabula-py. 
 
 
 ### Risultati
