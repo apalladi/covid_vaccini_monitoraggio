@@ -24,41 +24,6 @@ from requests import get
 # from subprocess import CalledProcessError
 from tabula import read_pdf
 
-
-""" def get_pdf_url(weeks_ago):
-    '''get_pdf_url(int) -> string, datetime
-
-    weeks_ago: number of weeks to look at since current date
-    return: url and date of the found report'''
-
-    # Define variables
-    rep_url = "https://www.epicentro.iss.it/coronavirus/bollettino/"
-    rep_url += "Bollettino-sorveglianza-integrata-COVID-19_"
-    month_num_to_string = {"1": "Gennaio",
-                           "2": "Febbraio",
-                           "3": "Marzo",
-                           "4": "Aprile",
-                           "5": "Maggio",
-                           "6": "Giugno",
-                           "7": "Luglio",
-                           "8": "Agosto",
-                           "9": "Settembre",
-                           "10": "Ottobre",
-                           "11": "Novembre",
-                           "12": "Dicembre"
-                           }
-    # Get url
-    today = date.today()
-    offset = (today.weekday() - 2) % 7 + 7*weeks_ago
-    last_wednesday = today - timedelta(days=offset)
-    link_day = last_wednesday.day
-    link_month = month_num_to_string[str(last_wednesday.month)]
-    link_year = last_wednesday.year
-    rep_url += f"{link_day}-{link_month}-{link_year}.pdf"
-    rep_date = pd.to_datetime(f"{link_day}/{last_wednesday.month}/{link_year}")
-    return rep_url, rep_date """
-
-
 def get_surveillance_reports():
     '''get_surveillance_reports() -> list
 
@@ -75,7 +40,6 @@ def get_surveillance_reports():
     return [urljoin(epicentro_url, link["href"]) for link in links
             if 'Bollettino-sorveglianza-integrata-COVID-19' in link["href"]]
 
-
 def date_from_url(repo_url):
     '''date_from_url(url) -> datetime
 
@@ -86,7 +50,6 @@ def date_from_url(repo_url):
     # Set locale to "it" to be able to parse month correctly
     locale.setlocale(locale.LC_ALL, "it_IT")
     return datetime.strptime(date_, "%d-%B-%Y")
-
 
 def date_parser(x):
     '''date_parser(object) -> datetime
@@ -111,26 +74,6 @@ auto = True
 
 # Replace with index of table of interest
 table_index = 2
-
-""" if auto:
-    # Compose URL of last pdf
-    url_, rep_date = get_pdf_url(0)
-    try:
-        # Read table from the returned url
-        raw_tb = read_pdf(url_, pages="all", stream=True, silent=True)
-    except CalledProcessError:
-        # PDF of last wednesday has not been published yet
-        # Get PDf of 1 weeks ago
-        url_, rep_date = get_pdf_url(1)
-        raw_tb = read_pdf(url_, pages="all", stream=True, silent=True)
-else:
-    # Replace with pdf url
-    url_ = "https://www.epicentro.iss.it/coronavirus/bollettino/"
-    url_ += "Bollettino-sorveglianza-integrata-COVID-19_22-settembre-2021.pdf"
-    # Replace with report data
-    rep_date = pd.to_datetime("22/09/2021")
-    # Read all tables
-    raw_tb = read_pdf(url_, pages="all", stream=True, silent=True) """
 
 if auto:
     # Get most recent report and date
@@ -161,17 +104,6 @@ df.columns = ["Non vaccinati", "Immunizzati"]
 step_ = 4  # groups (=5) are 4 rows (=20) distant (see foo.pdf)
 results = [df[col][i:i+step_].sum()
            for i in np.arange(0, len(df)-step_+1, step_) for col in df.columns]
-
-""" # Create results_df to merge results (#DEBUGONLY)
-no_vax = pd.Series(results[::2])
-yes_vax = pd.Series(results[1::2])
-results_df = pd.concat([no_vax, yes_vax], axis=1)
-results_df.columns = ["Non vaccinati", "Immunizzati"]
-results_df.index = ["Popolazione",
-                    "Diagnosi Sars-CoV-2",
-                    "Ospedalizzazioni",
-                    "Ricoveri in Terapia Intensiva",
-                    "Decessi"] """
 
 # Read the original general data csv from apalladi"s repo
 # https://github.com/apalladi/covid_vaccini_monitoraggio/tree/main/dati
