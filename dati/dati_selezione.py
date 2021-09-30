@@ -14,15 +14,13 @@ import locale
 import os
 from datetime import datetime
 from re import findall
-# from datetime import date
-# from datetime import timedelta
 from urllib.parse import urljoin
 import numpy as np
 import pandas as pd
 from bs4 import BeautifulSoup
 from requests import get
-# from subprocess import CalledProcessError
 from tabula import read_pdf
+
 
 def get_surveillance_reports():
     '''get_surveillance_reports() -> list
@@ -40,6 +38,7 @@ def get_surveillance_reports():
     return [urljoin(epicentro_url, link["href"]) for link in links
             if 'Bollettino-sorveglianza-integrata-COVID-19' in link["href"]]
 
+
 def date_from_url(repo_url):
     '''date_from_url(url) -> datetime
 
@@ -50,6 +49,7 @@ def date_from_url(repo_url):
     # Set locale to "it" to be able to parse month correctly
     locale.setlocale(locale.LC_ALL, "it_IT")
     return datetime.strptime(date_, "%d-%B-%Y")
+
 
 def date_parser(x):
     '''date_parser(object) -> datetime
