@@ -77,16 +77,16 @@ auto = True
 table_index = 2
 
 if auto:
-    # Get most recent report and date
+    # Get most recent report url
     url_ = get_surveillance_reports()[0]
-    rep_date = date_from_url(url_)
-    print(f"\nLatest report ({rep_date.date()}) is:\n{url_}")
 else:
-    # Replace with pdf url
+    # Replace with most recent report url
     url_ = "https://www.epicentro.iss.it/coronavirus/bollettino/"
-    url_ += "Bollettino-sorveglianza-integrata-COVID-19_22-settembre-2021.pdf"
-    # Replace with report data
-    rep_date = pd.to_datetime("22/09/2021")
+    url_ += "Bollettino-sorveglianza-integrata-COVID-19_29-settembre-2021.pdf"
+
+# Get report date
+rep_date = date_from_url(url_)
+print(f"\nLatest report ({rep_date.date()}) is:\n{url_}")
 
 # Read all tables
 raw_tb = read_pdf(url_, pages="all", stream=True, silent=True)
