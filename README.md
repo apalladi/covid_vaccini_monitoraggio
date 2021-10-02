@@ -36,6 +36,9 @@ Nel Notebook [`Notebooks/confronto_2020_2021.ipynb`](https://github.com/apalladi
 Nello script [`dati\dati_selezione.py`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) vengono selezionati i dati per l'analisi a partire dal report e dal numero di pagina contenente la tabella interessata (n.3).
 
 
+Nello script [`Notebooks\run_notebooks.py`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/Notebooks/run_notebooks.py) vengono eseguiti i notebook per aggiornare i risultati.
+
+
 ### Risultati
 <details>
   <summary>Andamento epidemia: incidenze settimanali (rapporto eventi/popolazione riferimento)</summary>
