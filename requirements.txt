@@ -4,3 +4,4 @@ pandas ~= 1.2.4
 beautifulsoup4
 jupyterlab
 tabula-py
+requests
