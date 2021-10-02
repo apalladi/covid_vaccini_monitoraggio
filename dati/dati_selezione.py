@@ -13,16 +13,13 @@ Java 8+, Python 3.6+, numpy, pandas, tabula-py, requests, Beautiful Soup 4 """
 
 import locale
 from datetime import datetime
-from glob import glob
 from os import chdir, path
 from re import findall
 from urllib.parse import urljoin
 
-import nbformat
 import numpy as np
 import pandas as pd
 from bs4 import BeautifulSoup
-from nbconvert.preprocessors import ExecutePreprocessor
 from requests import get
 from tabula import read_pdf
 
@@ -54,27 +51,6 @@ def date_from_url(repo_url):
     # Set locale to "it" to parse the month correctly
     locale.setlocale(locale.LC_ALL, "it_IT")
     return datetime.strptime(date_, "%d-%B-%Y")
-
-
-def run_notebook(nb_path):
-    '''run_notebook(str)
-
-    nb_path: notebook path
-    return: None'''
-
-    print(f'\nRunning {nb_path} ...')
-
-    # open the notebook
-    with open(nb_path, encoding='utf-8-sig') as f:
-        nb = nbformat.read(f, as_version=nbformat.NO_CONVERT)
-
-    # execute the notebook
-    ep = ExecutePreprocessor(timeout=600, kernel_name='python3')
-    ep.preprocess(nb)
-
-    # update the notebook
-    with open(nb_path, 'w', encoding='utf-8-sig') as f:
-        nbformat.write(nb, f)
 
 
 def date_parser(x):
@@ -160,7 +136,3 @@ df_1.index.rename("età", inplace=True)
 # Save to csv
 df_1.to_csv(f"data_iss_età_{rep_date.date()}.csv", sep=";")
 
-# Finally, update notebooks/results
-notebooks = glob('../Notebooks/*.ipynb')
-for nb in notebooks:
-    run_notebook(nb)
