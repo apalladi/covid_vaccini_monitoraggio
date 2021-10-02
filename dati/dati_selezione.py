@@ -135,4 +135,3 @@ df_1.index.rename("età", inplace=True)
 
 # Save to csv
 df_1.to_csv(f"data_iss_età_{rep_date.date()}.csv", sep=";")
-

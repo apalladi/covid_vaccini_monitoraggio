@@ -1,6 +1,9 @@
 from glob import glob
+from os import chdir, path
+
 import nbformat
 from nbconvert.preprocessors import ExecutePreprocessor
+
 
 def run_notebook(nb_path):
     '''run_notebook(str)
@@ -23,7 +26,12 @@ def run_notebook(nb_path):
         nbformat.write(nb, f)
 
 
+# Set work directory for the script
+scriptpath = path.dirname(path.realpath(__file__))
+chdir(scriptpath)
+
+
 # Finally, update notebooks/results
-notebooks = glob('../Notebooks/*.ipynb')
+notebooks = glob('*.ipynb')
 for nb in notebooks:
     run_notebook(nb)
