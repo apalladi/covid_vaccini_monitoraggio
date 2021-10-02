@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """ dati_selezione.ipynb
 
-Extraction of table 3from ISS weekly covid-19 reports
+Extraction of table 3 from ISS weekly covid-19 reports
 https://www.epicentro.iss.it/coronavirus/sars-cov-2-sorveglianza-dati
 
 See example pdf:
@@ -11,18 +11,17 @@ Requirements: Java 8+, Python 3.6+, tabula-py, requests, Beautiful Soup 4 """
 
 
 import locale
-import os
 from datetime import datetime
+from os import chdir, path
 from re import findall
-# from datetime import date
-# from datetime import timedelta
 from urllib.parse import urljoin
+
 import numpy as np
 import pandas as pd
 from bs4 import BeautifulSoup
 from requests import get
-# from subprocess import CalledProcessError
 from tabula import read_pdf
+
 
 def get_surveillance_reports():
     '''get_surveillance_reports() -> list
@@ -38,18 +37,20 @@ def get_surveillance_reports():
     # Find all hyperlinks present on webpage
     links = soup.find_all("a")
     return [urljoin(epicentro_url, link["href"]) for link in links
-            if 'Bollettino-sorveglianza-integrata-COVID-19' in link["href"]]
+            if "Bollettino-sorveglianza-integrata-COVID-19" in link["href"]]
+
 
 def date_from_url(repo_url):
-    '''date_from_url(url) -> datetime
+    '''date_from_url(str) -> datetime
 
     repo_url: url of the report
     return: datetime extracted from report url'''
 
     date_ = findall(r"\d+[a-z-A-Z]+\d+", repo_url)[0]
-    # Set locale to "it" to be able to parse month correctly
+    # Set locale to "it" to parse the month correctly
     locale.setlocale(locale.LC_ALL, "it_IT")
     return datetime.strptime(date_, "%d-%B-%Y")
+
 
 def date_parser(x):
     '''date_parser(object) -> datetime
@@ -61,13 +62,13 @@ def date_parser(x):
 
 
 # Set work directory for the script
-scriptpath = os.path.dirname(os.path.realpath(__file__))
-os.chdir(scriptpath)
+scriptpath = path.dirname(path.realpath(__file__))
+chdir(scriptpath)
 
-'''Select mode:
+""" Select mode:
 - Automatic (auto = True): table 3 of last available PDF is automatically read
-- Manual: you have to specify PDF link and report date
-'''
+- Manual: you have to specify PDF link and report date """
+
 
 # Define mode
 auto = True
