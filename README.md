@@ -82,3 +82,8 @@ Nello script [`Notebooks\run_notebooks.py`](https://github.com/apalladi/covid_va
     </p>
   </summary>
 </details>
+
+
+### Licenza
+
+[CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/deed.it) - [Visualizza licenza](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/LICENSE)
