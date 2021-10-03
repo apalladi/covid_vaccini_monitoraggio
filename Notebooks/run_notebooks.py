@@ -14,16 +14,17 @@ def run_notebook(nb_path):
     print(f"\nRunning {nb_path} ...")
 
     # open the notebook
-    with open(nb_path, encoding="utf-8-sig") as f:
-        nb = nbformat.read(f, as_version=nbformat.NO_CONVERT)
+    with open(nb_path, encoding="utf-8") as fp:
+        nb = nbformat.read(fp, as_version=4)
 
     # execute the notebook
+    abs_path = path.dirname(path.realpath(nb_path))
     ep = ExecutePreprocessor(timeout=600, kernel_name="python3")
-    ep.preprocess(nb)
+    ep.preprocess(nb, {"metadata": {"path": abs_path}})
 
     # update the notebook
-    with open(nb_path, "w", encoding="utf-8-sig") as f:
-        nbformat.write(nb, f)
+    with open(nb_path, "w", encoding="utf-8") as fp:
+        nbformat.write(nb, fp)
 
 
 # Set work directory for the script
