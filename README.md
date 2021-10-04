@@ -1,5 +1,8 @@
 Questo repository è stato creato con lo scopo di monitorare l'andamento dell'epidemia provocata dal Covid19 in Italia e l'efficacia dei vaccini.
 
+[![Licenza: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](#dettagli-licenza)
+
+
 ### Installazione
 
 Per utilizzare il repository, aprire la shell e digitare:
@@ -84,6 +87,13 @@ Nello script [`Notebooks\run_notebooks.py`](https://github.com/apalladi/covid_va
 </details>
 
 
-### Licenza
+### Dettagli licenza
 
-[CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/deed.it) - [Visualizza licenza](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/LICENSE)
+Questo repository è licenziato in base ai termini della licenza Creative Commons Attribuzione - Condividi allo stesso modo 4.0  (CC-BY-SA 4.0).
+
+[:it:](https://creativecommons.org/licenses/by/4.0/deed.it) - [:gb:](https://creativecommons.org/licenses/by/4.0/)
+<pre>
+<b>Permessi</b>                 <b>Condizioni</b>
+- Condividere            - Attribuzione (menzione di paternità adeguata)
+- Modificare             - Divieto restrizioni aggiuntive    
+</pre>
