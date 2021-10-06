@@ -1,0 +1,32 @@
+name: Aggiornamento dati
+
+on:
+  push:
+  schedule:
+     - cron:  '0 10-18 * * *'
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build docker
+      id: build
+      run: |
+        docker build --tag covid_vaccini .
+        
+    - name: Run docker to update data
+      id: run1
+      run: |
+        docker run --rm --name my-running-script -v "$PWD":/usr/src/myapp -w /usr/src/myapp covid_vaccini python dati/dati_selezione.py
+        ls
+   # - name: Run docker to run notebooks
+   #   id: run2
+   #   run: |
+   #     docker run --rm --name my-running-script -v "$PWD":/usr/src/myapp -w /usr/src/myapp covid_vaccini python Notebooks/run_notebooks.py
+   #     ls
+
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Aggiornamento dati

@@ -49,7 +49,7 @@ def date_from_url(repo_url):
 
     date_ = findall(r"\d+[a-z-A-Z]+\d+", repo_url)[0]
     # Set locale to "it" to parse the month correctly
-    locale.setlocale(locale.LC_ALL, "it_IT")
+    locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
     return datetime.strptime(date_, "%d-%B-%Y")
 
 
