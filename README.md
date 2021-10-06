@@ -77,7 +77,7 @@ Nello script [`Notebooks\run_notebooks.py`](https://github.com/apalladi/covid_va
 <details>
   <summary>Confronti internazionali</summary>
     <details>
-      <summary>Confronto incidenza contagi tra Bulgaria e Portogallo</summary>
+      <summary>Confronto incidenza contagi tra Bulgaria, Romania e Portogallo</summary>
       <p align="center"><img width="750" src="/risultati/confronto_nazioni_epidemia-vaccino.png"></p>
     </details>
 </details>
