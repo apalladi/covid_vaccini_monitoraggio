@@ -8,6 +8,11 @@
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
 
+
+# Ignore pycache folders
+*/__pycache__/*
+*/*/__pycache__/*
+
 # IPython
 profile_default/
 ipython_config.py
