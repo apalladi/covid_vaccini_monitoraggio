@@ -35,7 +35,7 @@ def watermark_specs(figure, watermark):
 
 
 def add_watermark(figure, axis_font_size):
-    watermark = "github.com/apalladi/covid_monitoraggio_vaccini"
+    watermark = "github.com/apalladi/covid_vaccini_monitoraggio"
     # Get the scaled watermark fontsize and angle
     fontsize, angle = watermark_specs(figure, watermark)
     figure.text(0.5,
