@@ -1,21 +1,3 @@
-def update_labels2(sel_df):
-    # aggiungi nuovo mese/anno se necessario
-    # aggiorna lista x_date
-    date_to_add = sel_df.index[-1].replace(day=1)
-    x_date.append(date_to_add.strftime('%Y-%m-%d'))
-    # aggiorna lista x_label
-    month_abbr = date_to_add.strftime("%b").capitalize()
-    year_abbr = date_to_add.strftime("%y").capitalize()
-    # specifica nuovo anno se necessario
-    if (sel_df.index[-1].year > pd.to_datetime(x_date[-2]).year):
-        x_label.append(f'{month_abbr}\n{year_abbr}')
-        print(f'Aggiunto nuovo mese {month_abbr} e anno {year_abbr}')
-    # altrimenti aggiungi il mese
-    else:
-        x_label.append(month_abbr)
-        print(f'Aggiunto nuovo mese {month_abbr}')
-        
-        
 def update_labels(df_tassi):
     # aggiungi nuovo mese/anno se necessario
     if (df_tassi.index[0].month > df_tassi.index[1].month):
@@ -33,3 +15,31 @@ def update_labels(df_tassi):
         else:
             x_label.append(month_abbr)
             print(f'Aggiunto nuovo mese {month_abbr}')
+
+def update_labels2(sel_df):
+    # aggiungi nuovo mese/anno se necessario
+    # aggiorna lista x_date
+    date_to_add = sel_df.index[-1].replace(day=1)
+    x_date.append(date_to_add.strftime('%Y-%m-%d'))
+    # aggiorna lista x_label
+    month_abbr = date_to_add.strftime("%b").capitalize()
+    year_abbr = date_to_add.strftime("%y").capitalize()
+    # specifica nuovo anno se necessario
+    if (sel_df.index[-1].year > pd.to_datetime(x_date[-2]).year):
+        x_label.append(f'{month_abbr}\n{year_abbr}')
+        print(f'Aggiunto nuovo mese {month_abbr} e anno {year_abbr}')
+    # altrimenti aggiungi il mese
+    else:
+        x_label.append(month_abbr)
+        print(f'Aggiunto nuovo mese {month_abbr}')
+
+            
+def aggiorna_ascissa(new_date, last_updated):    
+    # aggiorna limite ascissa...
+    if (new_date.month > last_updated.month):
+        update_labels2(df_epid)
+        last_updated = last_updated
+    # ... e data più recente se necessario
+    elif (new_date > last_updated):
+        last_updated = new_date
+    return last_updated            
