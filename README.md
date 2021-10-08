@@ -35,6 +35,7 @@ Nel Notebook [`Notebooks/efficacia_vaccini.ipynb`](https://github.com/apalladi/c
 
 Nel Notebook [`Notebooks/confronto_2020_2021.ipynb`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/Notebooks/confronto_2020_2021.ipynb) vengono confrontati gli andamenti delle curve epidemiche 2020 e 2021. Per il 2021 vengono mostrate separatamente le curve dei vaccinati e dei non vaccinati. 
 
+Nel Notebook [`Notebooks/confronti_internazionali.ipynb`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/Notebooks/confronti_internazionali.ipynb) vengono confrontati gli andamenti delle curve epidemiologiche e delle vaccinazioni di vari Paesi esteri. 
 
 Nello script [`dati\dati_selezione.py`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) vengono selezionati i dati per l'analisi a partire dal report e dal numero di pagina contenente la tabella interessata (n.3).
 
