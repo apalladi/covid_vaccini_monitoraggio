@@ -37,7 +37,7 @@ Nel Notebook [`Notebooks/confronto_2020_2021.ipynb`](https://github.com/apalladi
 
 Nel Notebook [`Notebooks/confronti_internazionali.ipynb`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/Notebooks/confronti_internazionali.ipynb) vengono confrontati gli andamenti delle curve epidemiologiche e delle vaccinazioni di vari Paesi esteri. 
 
-Nello script [`dati\dati_selezione.py`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) vengono selezionati i dati per l'analisi a partire dal report e dal numero di pagina contenente la tabella interessata (n.3).
+Nello script [`dati\dati_selezione.py`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) vengono estratti i dati per l'analisi (tabella n.3) a partire dal report selezionato.
 
 
 Nello script [`Notebooks\run_notebooks.py`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/Notebooks/run_notebooks.py) vengono eseguiti i notebook per aggiornare i risultati.
