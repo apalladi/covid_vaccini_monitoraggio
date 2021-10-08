@@ -62,15 +62,17 @@ def date_parser(x):
     return pd.to_datetime(x, format="%Y/%m/%d")
 
 
-# Set work directory for the script
-scriptpath = path.dirname(path.realpath(__file__))
-chdir(scriptpath)
 
-""" Select mode:
-- Automatic (auto = True): table 3 of last available PDF is automatically read
-- Manual: you have to specify PDF link and report date """
 
-def get_data_from_report(auto=True, table_index=2):
+def get_data_from_report(auto, table_index):
+    """ Select mode:
+    - Automatic (auto = True): table_index of last available PDF is automatically read
+    - Manual (auto = False) : you have to specify manually a date. It will be asked as input
+    """
+    
+    # Set work directory for the script
+    scriptpath = path.dirname(path.realpath(__file__))
+    chdir(scriptpath)
 
     if auto:
         # Get most recent report url
@@ -139,4 +141,5 @@ def get_data_from_report(auto=True, table_index=2):
     df_1.to_csv(f"data_iss_età_{rep_date.date()}.csv", sep=";")
 
 
-get_data_from_report()
+if __name__ == '__main__':
+    get_data_from_report(auto=True, table_index=2)
