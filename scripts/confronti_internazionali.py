@@ -73,16 +73,14 @@ def get_epidemic_data(country):
                                              ydata_deaths,
                                              ydata_rec,
                                              daily_cases,
-                                             daily_deaths]
-                                            ))
+                                             daily_deaths]))
     df_epidemic.index = date
     df_epidemic.columns = ["Total cases",
                            "Active infected",
                            "Total deaths",
                            "Total recovered",
                            "Daily cases (avg 7 days)",
-                           "Daily deaths (avg 7 days)"
-                           ]
+                           "Daily deaths (avg 7 days)"]
     return df_epidemic
 
 
@@ -125,8 +123,7 @@ for i in range(len(nomi_nazioni)):
     mask_ = df_vac.index >= "2021-06-01"
     df_vac["% fully vaccinated"][mask_].plot(ax=axes[1],
                                              label=label_nazioni[i],
-                                             linewidth=2
-                                             )
+                                             linewidth=2)
     last_updated = aggiorna_ascissa(new_date, last_updated)
 
 axes[1].set_xlim("2021-06-01", last_updated)
@@ -149,4 +146,4 @@ plt.tight_layout()
 plt.savefig("../risultati/confronto_nazioni_epidemia-vaccino.png",
             dpi=300,
             bbox_inches="tight")
-plt.show()
+# plt.show()

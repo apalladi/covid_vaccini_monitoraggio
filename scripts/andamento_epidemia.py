@@ -11,7 +11,6 @@ from custom.watermarks import add_watermark
 
 
 # funzioni per il plot
-
 def which_axe(x):
     axes[x].set_xlabel("")
     axes[x].set_xticks(x_date)
@@ -99,7 +98,7 @@ plt.tight_layout()
 plt.savefig("../risultati/andamento_epidemia.png",
             dpi=300,
             bbox_inches="tight")
-plt.show()
+# plt.show()
 
 """ Rapporto fra tassi """
 
@@ -128,7 +127,7 @@ plt.tight_layout()
 plt.savefig("../risultati/rapporto_tra_tassi.png",
             dpi=300,
             bbox_inches="tight")
-plt.show()
+# plt.show()
 
 """ Andamento dei numeri assoluti """
 
@@ -161,4 +160,4 @@ plt.tight_layout()
 plt.savefig("../risultati/andamento_epidemia_num_assoluti.png",
             dpi=300,
             bbox_inches="tight")
-plt.show()
+# plt.show()

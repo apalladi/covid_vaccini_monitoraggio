@@ -46,13 +46,17 @@ file_path = "../dati/data_iss_età_*.csv"
 files = np.sort(glob(file_path))
 print("Ultimo file:", files[-1])
 
+# aggiorna ticks e label dinamicamente
 ticks = np.arange(0, len(files), 2)
-slice_end = round(len(files)/len(ticks))
-if (len(files[0::slice_end]) > len(ticks)):
+# calcola step in base ai ticks
+# arrotonda il risultato
+n_ticks = len(ticks)
+slice_end = round(len(files)/n_ticks)
+if (len(files[0::slice_end]) > n_ticks):
+    # arrotonda per eccesso
     slice_end += 1
-labels = [date_from_url(csv).strftime("%d %b") for csv in files][0::slice_end]
 
-print(labels)
+labels = [date_from_url(csv).strftime("%d %b") for csv in files][0::slice_end]
 
 
 # funzioni per plot
@@ -74,15 +78,14 @@ def compute_incidence_ratio(category):
         rapporto_fra_tassi = pd.DataFrame(np.transpose([r_casi,
                                                         r_osp,
                                                         r_ti,
-                                                        r_dec]
-                                                       ))
+                                                        r_dec]))
         rapporto_fra_tassi.columns = ["Casi",
                                       "Ospedalizzati",
                                       "TI",
-                                      "Deceduti"
-                                      ]
+                                      "Deceduti"]
         rapporto_fra_tassi.index = df_tassi.index
         result_list.append(np.array(rapporto_fra_tassi[category]))
+
     result_list = np.array(result_list)
     return result_list
 
@@ -123,4 +126,4 @@ add_watermark(fig, ax.xaxis.label.get_fontsize())
 
 plt.tight_layout()
 plt.savefig("../risultati/andamento_rapporti_incidenze.png", dpi=300)
-plt.show()
+# plt.show()

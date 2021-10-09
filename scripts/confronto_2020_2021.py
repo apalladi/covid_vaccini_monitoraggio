@@ -20,8 +20,7 @@ plt.style.use("seaborn-dark")
 """ Importa dati della Protezione civile """
 
 # dati nazionali sui contagi
-url = "https://github.com/pcm-dpc/COVID-19/raw/master/"
-url += "dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv"
+url = "https://github.com/pcm-dpc/COVID-19/raw/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv"  # noqa: E501
 df_IT = pd.read_csv(url,
                     parse_dates=["data"],
                     date_parser=date_parser,
@@ -84,8 +83,7 @@ plt.plot(xgrid_2021, dec_2021_vacc, label="2021 (vaccinati)", color="green")
 plt.plot(xgrid_2021,
          dec_2021_novacc,
          label="2021 (non vaccinati)",
-         color="red"
-         )
+         color="red")
 plt.xticks(x_label1, x_label2)
 plt.title("Decessi settimanali (media mobile 30 gg)")
 plt.ylabel("Ogni 100.000 persone per ciascun gruppo")
@@ -100,6 +98,5 @@ add_watermark(fig, ax.xaxis.label.get_fontsize())
 plt.tight_layout()
 plt.savefig("../risultati/confrontro_2020_2021.png",
             dpi=300,
-            bbox_inches="tight"
-            )
-plt.show()
+            bbox_inches="tight")
+# plt.show()

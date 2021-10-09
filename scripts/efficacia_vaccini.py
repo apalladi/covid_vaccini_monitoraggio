@@ -128,7 +128,7 @@ add_watermark(fig, ax.xaxis.label.get_fontsize())
 
 plt.tight_layout()
 plt.savefig("../risultati/tassi_per_età.png", dpi=300, bbox_inches="tight")
-plt.show()
+# plt.show()
 
 """ Efficacia dei vaccini """
 
@@ -165,7 +165,7 @@ add_watermark(fig, ax.xaxis.label.get_fontsize())
 
 plt.tight_layout()
 plt.savefig("../risultati/efficacia_vaccini.png", dpi=300, bbox_inches="tight")
-plt.show()
+# plt.show()
 
 """ Grafico riassuntivo """
 
@@ -212,7 +212,7 @@ add_watermark(fig, ax.xaxis.label.get_fontsize())
 
 plt.tight_layout()
 plt.savefig("../risultati/tassi_efficacia.png", dpi=300, bbox_inches="tight")
-plt.show()
+# plt.show()
 
 """ Focus sugli over 60 """
 
@@ -222,8 +222,7 @@ df_over60 = df_età.loc[[2, 3],
                         "terapia intensiva non vaccinati",
                         "terapia intensiva vaccinati",
                         "decessi non vaccinati",
-                        "decessi vaccinati"]
-                       ].sum()
+                        "decessi vaccinati"]].sum()
 
 over60_array = np.array(df_over60)
 
@@ -260,7 +259,7 @@ add_watermark(fig, ax.xaxis.label.get_fontsize())
 
 plt.tight_layout()
 plt.savefig("../risultati/focus_over60.png", dpi=300, bbox_inches="tight")
-plt.show()
+# plt.show()
 
 ratio_vacc_novacc = round(over60_array[1]/over60_array[0], 1)
 ratio_terint = round(over60_array[2]/over60_array[3], 1)

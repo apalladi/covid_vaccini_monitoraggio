@@ -132,8 +132,7 @@ def get_data_from_report(auto, table_index):
                        sep=";",
                        parse_dates=["data"],
                        date_parser=date_parser,
-                       index_col="data"
-                       )
+                       index_col="data")
 
     # Add the new row at the top of the df
     df_0.loc[rep_date] = results
