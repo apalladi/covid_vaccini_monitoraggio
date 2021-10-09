@@ -125,5 +125,7 @@ ax = plt.gca()
 add_watermark(fig, ax.xaxis.label.get_fontsize())
 
 plt.tight_layout()
-plt.savefig("../risultati/andamento_rapporti_incidenze.png", dpi=300)
+plt.savefig("../risultati/andamento_rapporti_incidenze.png",
+            dpi=300,
+            bbox_inches="tight")
 # plt.show()
