@@ -214,8 +214,8 @@ df_over60 = df_età.loc[[2, 3],
 
 over60_array = np.array(df_over60)
 
-c = csv_date.strftime("%b").capitalize()
-label_date = f"{csv_date_d} {c}"
+label_month = csv_date.strftime("%b").capitalize()
+label_date = f"{csv_date_d} {label_month}"
 
 fig = plt.figure(figsize=(9, 3))
 plt.subplot(1, 3, 1)
