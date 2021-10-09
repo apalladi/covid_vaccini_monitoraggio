@@ -30,7 +30,7 @@ Nel repository vengono utilizzati i dati rilasciati nei [report settimanali](htt
 Lo script [`dati\dati_selezione.py`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) estrae i dati per l'analisi (tabella n.3) a partire dal report selezionato.
 
 
-Lo script [`scripts\run_all_scripts.sh`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/run_all_scripts.sh) aggiorna i risultati eseguendo gli scripts:
+Lo script [`scripts\run_all_script.sh`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/run_all_script.sh) aggiorna i risultati eseguendo gli scripts:
 
 
 - [**`scripts/andamento_epidemia.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/andamento_epidemia.py) calcola le curve epidemiche relative a nuovi casi, ospedalizzati, ricoverati in terapia intensiva e deceduti, divise per vaccinati e non vaccinati. Le curve epidemiche sono rapportate al numero di vaccinati e non vaccinati, in ogni intervallo temporale. In questo modo è possibile calcolare le incidenze (o tassi). Data la sproporzione tra il numero di vaccinati e non vaccinati, i numeri assoluti risultano infatti poco utili per monitare l'andamento dell'epidemia. 
