@@ -60,7 +60,7 @@ palette = ["tab:red", "tab:green"]
 """ Tassi di infezione, ricovero, decesso """
 
 x_date = ["2021-07-01", "2021-08-01", "2021-09-01"]
-x_label = ["Lug\n21", "\nAgo", "\nSet"]
+x_label = ["\nLug\n21", "\nAgo", "\nSet"]
 
 x_date, x_label = update_labels(df_tassi, x_date, x_label)
 

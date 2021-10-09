@@ -15,7 +15,7 @@ def update_labels(df_tassi, x_date, x_label):
         year_abbr = date_to_add.strftime("%y").capitalize()
         # specifica nuovo anno se necessario
         if (df_tassi.index[0].year > df_tassi.index[1].year):
-            x_label.append(f"{month_abbr}\n{year_abbr}")  # noqa: F821
+            x_label.append(f"\n{month_abbr}\n{year_abbr}")  # noqa: F821
             print(f"Aggiunto nuovo mese {month_abbr} e anno {year_abbr}")
         # altrimenti aggiungi solo il mese
         else:
@@ -25,8 +25,7 @@ def update_labels(df_tassi, x_date, x_label):
         if (len(x_date) > 3):
             x_date.pop(0)
             x_label.pop(0)
-            month = x_label[0].replace("\n", "")
-            x_label[0] = f"{month}\n{year_abbr}"
+            x_label[0] = f"{x_label[0]}\n{year_abbr}"
     return x_date, x_label
 
 
