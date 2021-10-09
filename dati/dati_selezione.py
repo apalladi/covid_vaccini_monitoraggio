@@ -156,4 +156,4 @@ def get_data_from_report(auto, table_index):
 
 
 if __name__ == "__main__":
-    get_data_from_report(auto=True, table_index=2)
+    get_data_from_report(auto=True, table_index=3)
