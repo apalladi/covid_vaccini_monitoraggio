@@ -90,8 +90,8 @@ nomi_nazioni = ["Bulgaria", "Romania", "Portugal"]
 label_nazioni = ["Bulgaria", "Romania", "Portogallo"]
 abitanti_nazioni = [6.883, 19.29, 10.159]
 
-x_date = ["2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01"]
-x_label = ["Giu\n21", "Lug", "Ago", "Set", "Ott"]
+x_date = ["2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01"]
+x_label = ["Lug\n21", "Ago", "Set", "Ott"]
 fig, axes2 = plt.subplots(nrows=1, ncols=2, figsize=(8, 4))
 
 # unpack all the axes subplots

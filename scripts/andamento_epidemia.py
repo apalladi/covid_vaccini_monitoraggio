@@ -12,12 +12,11 @@ from custom.watermarks import add_watermark
 
 # funzioni per il plot
 def which_axe(x):
-    axes[x].set_xlabel("")
     axes[x].set_xticks(x_date)
+    axes[x].set_xlabel("")
     axes[x].set_xticklabels(x_label)
     axes[x].legend(["Non vaccinati", "Vaccinati"])
     axes[x].grid()
-    axes[x].minorticks_off()
 
 
 # Set work directory for the script
@@ -61,9 +60,9 @@ palette = ["tab:red", "tab:green"]
 """ Tassi di infezione, ricovero, decesso """
 
 x_date = ["2021-07-01", "2021-08-01", "2021-09-01"]
-x_label = ["Lug\n21", "Ago", "Set"]
+x_label = ["Lug\n21", "\nAgo", "\nSet"]
 
-update_labels(df_tassi)
+x_date, x_label = update_labels(df_tassi, x_date, x_label)
 
 fig, axes2 = plt.subplots(nrows=2, ncols=2, figsize=(7.5, 7.5))
 
@@ -112,18 +111,17 @@ fig = plt.figure(figsize=(6, 5))
 (df_tassi.iloc[:, 6]/df_tassi.iloc[:, 7]).plot(label="Decesso",
                                                color="gray")
 plt.title("Rapporto fra le incidenze")
-plt.legend()
-plt.xticks(x_date, x_label)
-plt.minorticks_off()
-plt.xlabel("")
 plt.ylabel("Non vaccinati/vaccinati")
+plt.xlabel("")
+plt.xticks(x_date, x_label)
+plt.legend()
 plt.grid()
+plt.tight_layout()
 
 # add watermarks
 ax = plt.gca()
 add_watermark(fig, ax.xaxis.label.get_fontsize())
 
-plt.tight_layout()
 plt.savefig("../risultati/rapporto_tra_tassi.png",
             dpi=300,
             bbox_inches="tight")

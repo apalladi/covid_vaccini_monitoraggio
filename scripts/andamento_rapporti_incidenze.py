@@ -41,7 +41,8 @@ if (len(files[0::slice_end]) > n_ticks):
     # arrotonda per eccesso
     slice_end += 1
 
-labels = [date_from_url(csv).strftime("%d %b") for csv in files][0::slice_end]
+labels = [date_from_url(csv).strftime("%d\n%b").title()
+          for csv in files][0::slice_end]
 
 
 # funzioni per plot
