@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import locale
 from datetime import datetime
-from glob import glob
 from os import chdir, path
 from re import findall
 
@@ -11,6 +10,7 @@ import pandas as pd
 
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_watermark
+from custom.plots import list_età_csv
 
 
 def date_from_url(csv_path):
@@ -28,23 +28,8 @@ plt.style.use("seaborn-dark")
 # Set locale to "it" to parse the month correctly
 locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
 
-""" # Importa i dati
-# Leggi tutti i file con estensione `.csv`
-# che sono presenti nella cartella `dati`.
-path = "../dati"
-extension = "csv"
-os.chdir(path)
-file_names = glob.glob("*.{}".format(extension))
-
-# ometti il primo file, relativo ai dati riassuntivi
-file_names = np.sort(file_names[1:])
-
-print(file_names) """
-
 # lista i csv
-file_path = "../dati/data_iss_età_*.csv"
-files = np.sort(glob(file_path))
-print("Ultimo file:", files[-1])
+files = list_età_csv()
 
 # aggiorna ticks e label dinamicamente
 ticks = np.arange(0, len(files), 2)

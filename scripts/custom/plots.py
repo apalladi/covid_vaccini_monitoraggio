@@ -1,5 +1,8 @@
 # type: ignore
 
+from glob import glob
+from numpy import sort
+
 
 def update_labels(df_tassi):
     # aggiungi nuovo mese/anno se necessario
@@ -47,3 +50,9 @@ def aggiorna_ascissa(new_date, last_updated):
     elif (new_date > last_updated):
         last_updated = new_date
     return last_updated
+
+
+def list_età_csv():
+    # lista i csv
+    files = sort(glob("../dati/data_iss_età_*.csv"))
+    return files

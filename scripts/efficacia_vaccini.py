@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import locale
 from datetime import datetime
-from glob import glob
 from os import chdir, path
 from re import findall
 
@@ -11,6 +10,7 @@ import pandas as pd
 
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_watermark
+from custom.plots import list_età_csv
 
 
 def date_from_url(csv_path):
@@ -28,21 +28,9 @@ plt.style.use("seaborn-dark")
 # Set locale to "it" to parse the month correctly
 locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
 
-""" path = "../dati"
-extension = "csv"
-os.chdir(path)
-file_names = glob("*.{}".format(extension))
-
-# ometti il primo file, relativo ai dati riassuntivi
-files = np.sort(file_names[1:])
-files = files[::-1]
-
-print("Ultimo file", files[0]) """
-
 # lista i csv
-files = np.sort(glob("../dati/data_iss_età_*.csv"))
+files = list_età_csv()
 last_file = files[-1]
-print("Ultimo file:", last_file)
 
 # recupera data csv
 csv_date = date_from_url(last_file)
