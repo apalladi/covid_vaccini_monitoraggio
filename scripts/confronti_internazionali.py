@@ -13,28 +13,21 @@ from custom.watermarks import add_watermark
 
 # Importa dati vaccini e dati epidemiologici
 def to_csv(file_event):
+    """ Legge csv """
     return pd.read_csv(file_event)
 
 
 def import_vaccines_data():
+    """ Recupera dati sui vaccini da Our World in Data"""
     url = "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.csv"  # noqa: E501
     df_vacc = to_csv(url)
     df_vacc = df_vacc.fillna(method="backfill")
     return df_vacc
 
 
-def import_epidem_data():
-    base = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/"  # noqa: E501
-    file_confirmed = base + "time_series_covid19_confirmed_global.csv"
-    file_deaths = base + "time_series_covid19_deaths_global.csv"
-    file_recovered = base + "time_series_covid19_recovered_global.csv"
-    return to_csv(file_confirmed), to_csv(file_deaths), to_csv(file_recovered)
-
-
-# Funzioni per recuperare i dati per paese
 def get_vaccine_data(country, df_vacc):
 
-    # source ourworldindata
+    """ Recupera dati vaccini per paese """
 
     df_vacc_country = df_vacc[df_vacc["location"] == country].iloc[2:, :]
 
@@ -49,16 +42,26 @@ def get_vaccine_data(country, df_vacc):
     return df_vacc_new
 
 
-def get_y_data(sel_df, country):
+def import_epidem_data():
+    """ Recupera dati epidemiologici dal JHU CSSE
+        (Johns Hopkins Unversity)"""
+    base = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/"  # noqa: E501
+    file_confirmed = base + "time_series_covid19_confirmed_global.csv"
+    file_deaths = base + "time_series_covid19_deaths_global.csv"
+    file_recovered = base + "time_series_covid19_recovered_global.csv"
+    return to_csv(file_confirmed), to_csv(file_deaths), to_csv(file_recovered)
+
+
+def get_y_epidemic_data(sel_df, country):
+    """ Recupera coordinata y dati epidemiologici per paese"""
     return (sel_df[sel_df["Country/Region"] == country].iloc[:, 4:]).sum()
 
 
 def get_epidemic_data(country, df_confirmed, df_deaths, df_recovered):
-
-    # source Johns Hopkins Unversity
-    ydata_cases = get_y_data(df_confirmed, country)
-    ydata_deaths = get_y_data(df_deaths, country)
-    ydata_rec = get_y_data(df_recovered, country)
+    """ Recupera dati epidemiologia per paese """
+    ydata_cases = get_y_epidemic_data(df_confirmed, country)
+    ydata_deaths = get_y_epidemic_data(df_deaths, country)
+    ydata_rec = get_y_epidemic_data(df_recovered, country)
     ydata_inf = ydata_cases-ydata_deaths-ydata_rec
     daily_cases = ydata_cases.diff().rolling(window=7).mean()
     daily_deaths = ydata_deaths.diff().rolling(window=7).mean()
@@ -80,20 +83,21 @@ def get_epidemic_data(country, df_confirmed, df_deaths, df_recovered):
 
 # Rappresentazione grafica risultati
 def plot_data(show=False):
+    """ Plot dati epidemiologia e vaccini dei paesi selezionati """
 
-    nomi_nazioni = ["Bulgaria", "Romania", "Portugal"]
+    nomi_nazioni = ["Bulgaria", "Romania", "Portugal"]  # nota: nomi in Inglese
     label_nazioni = ["Bulgaria", "Romania", "Portogallo"]
     abitanti_nazioni = [6.883, 19.29, 10.159]
 
     x_date = ["2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01"]
     x_label = ["Lug\n21", "Ago", "Set", "Ott"]
 
-    # plt.style.use("default")
+    # Imposta stile plots
     plt.style.use("seaborn-dark")
 
     fig, axes2 = plt.subplots(nrows=1, ncols=2, figsize=(8, 4))
 
-    # unpack all the axes subplots
+    # Unpack all the axes subplots
     axes = axes2.ravel()
 
     last_updated = pd.to_datetime(x_date[-1])
@@ -148,7 +152,7 @@ def plot_data(show=False):
     axes[1].grid()
     axes[1].minorticks_off()
 
-    # add watermarks
+    # Add watermarks
     ax = plt.gca()
     add_watermark(fig, ax.xaxis.label.get_fontsize())
 
@@ -167,6 +171,9 @@ if __name__ == "__main__":
 
     # Set locale to "it" to parse the month correctly
     locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
+
+    # Imposta stile grafici
+    plt.style.use("seaborn-dark")
 
     df_confirmed, df_deaths, df_recovered = import_epidem_data()
     df_vacc = import_vaccines_data()

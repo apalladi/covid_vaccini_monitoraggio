@@ -13,10 +13,12 @@ from custom.watermarks import add_watermark
 
 # Recupero dati dai csv estratti dai report
 def load_data():
-    # recupera csv più recente
+    """ Recupera i dati estratti precedentemente """
+
+    # Recupera csv più recente
     last_file = list_età_csv(True)
 
-    # recupera data csv
+    # Data ultimo csv
     csv_date = date_from_csv_path(last_file)
 
     csv_date_d = csv_date.strftime("%d")
@@ -34,6 +36,7 @@ def load_data():
 
 
 def compute_efficacia():
+    """ Calcola efficacia vaccini """
     eff_contagio = (1 - df_tassi.iloc[:, 1]/df_tassi.iloc[:, 0])*100
     eff_osp = (1 - df_tassi.iloc[:, 3]/df_tassi.iloc[:, 2])*100
     eff_terint = (1 - df_tassi.iloc[:, 5]/df_tassi.iloc[:, 4])*100
@@ -43,14 +46,16 @@ def compute_efficacia():
 
 # Funzioni per il plot
 def get_label_month():
+    """ Ricava label data dei grafici """
     label_month = csv_date.strftime("%b").capitalize()
     label_date = f"{csv_date_d} {label_month}"
     return label_month, label_date
 
 
 def which_axe(axis):
+    """ Imposta proprietà grafici """
     axis.set_ylabel("Ogni 100.000 persone per ciascun gruppo")
-    axis.set_xlabel("Fascia d\"età")
+    axis.set_xlabel("Fascia d'età")
     axis.legend(["Non vaccinati", "Vaccinati"])
     axis.grid()
     for tick in axis.get_xticklabels():
@@ -58,19 +63,21 @@ def which_axe(axis):
 
 
 def which_axe_bar(axis):
+    """ Imposta proprietà grafici """
     axis.set_ylim(80, 100)
     axis.set_yticks(np.arange(70, 101, 5))
     axis.set_yticklabels(["70%", "75%", "80%", "85%", "90%", "95%", "100%"])
-    axis.set_xlabel("Fascia d\"età")
+    axis.set_xlabel("Fascia d'età")
     axis.grid()
     for tick in axis.get_xticklabels():
         tick.set_rotation(0)
 
 
 def add_to_plot():
+    """ Imposta proprietà grafici """
     plt.ylim(70, 100)
     plt.grid()
-    plt.xlabel("Fascia d\"età")
+    plt.xlabel("Fascia d'età")
     plt.yticks(np.arange(70, 101, 5),
                ["70%", "75%", "80%", "85%", "90%", "95%", "100%"])
 
@@ -79,11 +86,9 @@ def add_to_plot():
 def plot_tassi(show=False):
     """ Tassi di contagio """
 
-    plt.style.use("seaborn-dark")
-
     fig, axes2 = plt.subplots(nrows=2, ncols=2, figsize=(7, 7))
 
-    # unpack all the axes subplots
+    # Unpack all the axes subplots
     axes = axes2.ravel()
 
     df_tassi.iloc[:, [0, 1]].plot(ax=axes[0], kind="bar")
@@ -102,7 +107,7 @@ def plot_tassi(show=False):
     axes[3].set_title("Incidenza settimanale dei deceduti")
     which_axe(axes[3])
 
-    # add watermarks
+    # Add watermarks
     ax = plt.gca()
     add_watermark(fig, ax.xaxis.label.get_fontsize())
 
@@ -127,7 +132,7 @@ def plot_efficacia(show=False):
 
     plt.subplot(2, 2, 2)
     plt.bar(eff_osp.index, eff_osp, color="green", width=0.5)
-    plt.title("Efficacia contro l\"ospedalizzazione")
+    plt.title("Efficacia contro l'ospedalizzazione")
     add_to_plot()
 
     plt.subplot(2, 2, 3)
@@ -143,7 +148,7 @@ def plot_efficacia(show=False):
     plt.title("Efficacia contro il decesso")
     add_to_plot()
 
-    # add watermarks
+    # Add watermarks
     ax = plt.gca()
     add_watermark(fig, ax.xaxis.label.get_fontsize())
 
@@ -160,7 +165,7 @@ def plot_riassunto(show=False):
 
     fig, axes2 = plt.subplots(nrows=2, ncols=4, figsize=(13, 7))
 
-    # unpack all the axes subplots
+    # Unpack all the axes subplots
     axes = axes2.ravel()
 
     df_tassi.iloc[:, [0, 1]].plot(ax=axes[0], kind="bar")
@@ -184,7 +189,7 @@ def plot_riassunto(show=False):
     which_axe_bar(axes[4])
 
     eff_osp.plot(kind="bar", ax=axes[5], color="green")
-    axes[5].set_title("Efficacia contro l\"ospedalizzazione")
+    axes[5].set_title("Efficacia contro l'ospedalizzazione")
     which_axe_bar(axes[5])
 
     eff_terint.plot(kind="bar", ax=axes[6], color="red")
@@ -244,7 +249,7 @@ def plot_focus_60(show=False):
     plt.grid()
     plt.title(f"Deceduti \n30 Ago - {label_date}")
 
-    # add watermarks
+    # Add watermarks
     ax = plt.gca()
     add_watermark(fig, ax.xaxis.label.get_fontsize())
 
@@ -277,15 +282,18 @@ if __name__ == "__main__":
     # Set locale to "it" to parse the month correctly
     locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
 
+    # Imposta stile grafici
+    plt.style.use("seaborn-dark")
+
     report_date, df_età, csv_date, csv_date_d = load_data()
 
     label_month, label_date = get_label_month()
 
-    # ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
+    # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
     df_tassi = compute_incidence(df_età)
     df_tassi.index = df_età["età"]
 
-    # ricava efficacia
+    # Ricava efficacia
     eff_contagio, eff_osp, eff_terint, eff_decessi = compute_efficacia()
 
     plot_tassi()

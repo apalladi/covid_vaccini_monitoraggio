@@ -9,19 +9,21 @@ from custom.preprocessing_dataframe import compute_incidence, date_parser
 from custom.watermarks import add_watermark
 
 
-# Importa dati protezione civile
-def import_iss_data():
-    # dati nazionali sui contagi
+# Importa dati
+def import_data():
+    """ Imposta dati ISS e Protezione Civile """
+
+    # Dati nazionali sui contagi
     url = "https://github.com/pcm-dpc/COVID-19/raw/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv"  # noqa: E501
     df_IT = pd.read_csv(url,
                         parse_dates=["data"],
                         date_parser=date_parser,
                         index_col="data")
 
-    # dati ISS
+    # Dati ISS
     df_assoluti = pd.read_csv("../dati/dati_ISS_complessivi.csv", sep=";")
 
-    # ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
+    # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
     df_tassi = compute_incidence(df_assoluti)
 
     df_tassi.index = pd.to_datetime(df_assoluti["data"], format="%Y/%m/%d")
@@ -30,6 +32,7 @@ def import_iss_data():
 
 
 def get_epidemic_data_2020():
+    """ Importa dati epidemiologici 2020 """
 
     # Casi e decessi 2020
     abitanti_over12 = 540*10**5
@@ -47,6 +50,8 @@ def get_epidemic_data_2020():
 
 
 def get_epidemic_data_2021():
+    """ Importa dati epidemiologici 2021 """
+
     casi_2021_vacc = np.array(df_tassi["Casi, vaccinati"])
     casi_2021_novacc = np.array(df_tassi["Casi, non vaccinati"])
     dec_2021_vacc = np.array(df_tassi["Deceduti, vaccinati"])
@@ -57,8 +62,6 @@ def get_epidemic_data_2021():
 # Rappresentazione grafica risultati
 def plot_confronto_2020_2021(show=False):
     """ Andamento curve epidemiche """
-
-    plt.style.use("seaborn-dark")
 
     x_label1 = np.arange(15, 170, 30)
     x_label2 = ["Ago", "Set", "Ott", "Nov", "Dic", "Gen"]
@@ -99,7 +102,7 @@ def plot_confronto_2020_2021(show=False):
     plt.xlim(0, 165)
     plt.grid()
 
-    # add watermarks
+    # Add watermarks
     ax = plt.gca()
     add_watermark(fig, ax.xaxis.label.get_fontsize())
 
@@ -116,11 +119,9 @@ if __name__ == "__main__":
     scriptpath = path.dirname(path.realpath(__file__))
     chdir(scriptpath)
 
-    df_IT, df_assoluti, df_tassi = import_iss_data()
-
-    # get epidemic data
+    df_IT, df_assoluti, df_tassi = import_data()
     casi_2020, dec_2020 = get_epidemic_data_2020()
     casi_2021_vacc, casi_2021_novacc, dec_2021_vacc, dec_2021_novacc = get_epidemic_data_2021()  # noqa: E501
 
-    # plot data
+    # Plot data
     plot_confronto_2020_2021()

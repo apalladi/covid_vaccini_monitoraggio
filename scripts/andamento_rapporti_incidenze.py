@@ -11,8 +11,9 @@ from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_watermark
 
 
-# Calcolo rapporti incidenze per età
+# Funzioni per il plot
 def compute_incidence_ratio(category):
+    """ Calcolo rapporti incidenze per età """
 
     result_list = []
 
@@ -38,13 +39,29 @@ def compute_incidence_ratio(category):
         rapporto_fra_tassi.index = df_tassi.index
         result_list.append(np.array(rapporto_fra_tassi[category]))
 
-    result_list = np.array(result_list)
-    return result_list
+    return np.array(result_list)
 
 
-# Funzioni per il plot
+def get_ticks_labels():
+    # Aggiorna ticks e label dinamicamente
+    ticks = np.arange(0, len(files), 2)
+
+    # Calcola step in base ai ticks
+    # arrotonda il risultato
+    n_ticks = len(ticks)
+    slice_end = round(len(files)/n_ticks)
+    if (len(files[0::slice_end]) > n_ticks):
+        # Arrotonda per eccesso
+        slice_end += 1
+
+    labels = [date_from_csv_path(csv).strftime("%d\n%b").title()
+              for csv in files][0::slice_end]
+    return ticks, labels
+
+
 def add_to_plot(ticks, labels):
-    plt.xticks(ticks, labels)
+    """ Imposta proprietà grafico """
+    plt.xticks(ticks, labels, rotation="45")
     plt.ylabel("Contributo dei non vaccinati alle incidenze")
     plt.legend(["12-39", "40-59", "60-79", "80+"], loc=4)
     plt.yticks(np.arange(50, 101, 10),
@@ -55,7 +72,7 @@ def add_to_plot(ticks, labels):
 
 # Rappresentazione grafica risultati
 def plot_rapporti_incidenze(ticks, labels, show=False):
-    plt.style.use("seaborn-dark")
+    """ Rapporto fra incidenze """
 
     fig = plt.figure(figsize=(9, 8))
 
@@ -79,7 +96,7 @@ def plot_rapporti_incidenze(ticks, labels, show=False):
     plt.title("Decessi")
     add_to_plot(ticks, labels)
 
-    # add watermarks
+    # Add watermarks
     ax = plt.gca()
     add_watermark(fig, ax.xaxis.label.get_fontsize())
 
@@ -99,21 +116,12 @@ if __name__ == "__main__":
     # Set locale to "it" to parse the month correctly
     locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
 
-    # lista i csv
+    # Imposta stile grafici
+    plt.style.use("seaborn-dark")
+
+    # Lista i csv
     files = list_età_csv()
 
-    # aggiorna ticks e label dinamicamente
-    ticks = np.arange(0, len(files), 2)
-
-    # calcola step in base ai ticks
-    # arrotonda il risultato
-    n_ticks = len(ticks)
-    slice_end = round(len(files)/n_ticks)
-    if (len(files[0::slice_end]) > n_ticks):
-        # arrotonda per eccesso
-        slice_end += 1
-
-    labels = [date_from_csv_path(csv).strftime("%d\n%b").title()
-              for csv in files][0::slice_end]
+    ticks, labels = get_ticks_labels()
 
     plot_rapporti_incidenze(ticks, labels)
