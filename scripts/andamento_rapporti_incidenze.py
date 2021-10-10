@@ -10,9 +10,8 @@ from custom.plots import date_from_csv_path, list_età_csv
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_watermark
 
-""" Recupero dati """
 
-
+# Calcolo rapporti incidenze per età
 def compute_incidence_ratio(category):
 
     result_list = []
@@ -43,9 +42,7 @@ def compute_incidence_ratio(category):
     return result_list
 
 
-""" Funzioni per plot """
-
-
+# Funzioni per il plot
 def add_to_plot(ticks, labels):
     plt.xticks(ticks, labels)
     plt.ylabel("Contributo dei non vaccinati alle incidenze")
@@ -56,9 +53,7 @@ def add_to_plot(ticks, labels):
     plt.grid()
 
 
-""" Rappresentazione grafica risultati """
-
-
+# Rappresentazione grafica risultati
 def plot_rapporti_incidenze(ticks, labels, show=False):
     plt.style.use("seaborn-dark")
 

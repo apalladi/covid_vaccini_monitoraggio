@@ -9,9 +9,7 @@ from custom.preprocessing_dataframe import compute_incidence, date_parser
 from custom.watermarks import add_watermark
 
 
-""" Importa dati della Protezione civile """
-
-
+# Importa dati protezione civile
 def import_iss_data():
     # dati nazionali sui contagi
     url = "https://github.com/pcm-dpc/COVID-19/raw/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv"  # noqa: E501
@@ -56,11 +54,8 @@ def get_epidemic_data_2021():
     return casi_2021_vacc, casi_2021_novacc, dec_2021_vacc, dec_2021_novacc
 
 
-""" Rappresentazione grafica risultati """
-
-
+# Rappresentazione grafica risultati
 def plot_confronto_2020_2021(show=False):
-
     """ Andamento curve epidemiche """
 
     plt.style.use("seaborn-dark")

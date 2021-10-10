@@ -11,9 +11,7 @@ from custom.plots import aggiorna_ascissa
 from custom.watermarks import add_watermark
 
 
-""" Importa dati vaccini e dati epidemiologici"""
-
-
+# Importa dati vaccini e dati epidemiologici
 def to_csv(file_event):
     return pd.read_csv(file_event)
 
@@ -80,9 +78,7 @@ def get_epidemic_data(country, df_confirmed, df_deaths, df_recovered):
     return df_epidemic
 
 
-""" Rappresentazione grafica risultati """
-
-
+# Rappresentazione grafica risultati
 def plot_data(show=False):
 
     nomi_nazioni = ["Bulgaria", "Romania", "Portugal"]

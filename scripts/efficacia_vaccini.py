@@ -11,9 +11,7 @@ from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_watermark
 
 
-""" Recupero dati """
-
-
+# Recupero dati dai csv estratti dai report
 def load_data():
     # recupera csv più recente
     last_file = list_età_csv(True)
@@ -43,9 +41,7 @@ def compute_efficacia():
     return eff_contagio, eff_osp, eff_terint, eff_decessi  # noqa: E501
 
 
-""" Funzioni per plot """
-
-
+# Funzioni per il plot
 def get_label_month():
     label_month = csv_date.strftime("%b").capitalize()
     label_date = f"{csv_date_d} {label_month}"
@@ -79,9 +75,7 @@ def add_to_plot():
                ["70%", "75%", "80%", "85%", "90%", "95%", "100%"])
 
 
-""" Rappresentazione grafica risultati """
-
-
+# Rappresentazione grafica dei risultati
 def plot_tassi(show=False):
     """ Tassi di contagio """
 

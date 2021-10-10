@@ -10,7 +10,7 @@ from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_watermark
 
 
-# funzioni per il plot
+# Funzioni per il plot
 def which_axe(x, axes, x_date, x_label):
     axes[x].set_xticks(x_date)
     axes[x].set_xlabel("")
@@ -19,6 +19,7 @@ def which_axe(x, axes, x_date, x_label):
     axes[x].grid()
 
 
+# Importa dati
 def load_data():
     """ Importa dati dell"Istituto Superiore di Sanità
 Questi dati sono ricavati dai bollettini settimanali dell"ISS. Vedi ad esempio:
@@ -46,9 +47,7 @@ epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-
     return df_tassi, df_assoluti2
 
 
-""" Rappresentazione grafica dei risultati """
-
-
+# Rappresentazione grafica dei risultati
 def plot_incidenza(show=False):
     plt.style.use("seaborn-dark")
     """ Tassi di infezione, ricovero, decesso """
