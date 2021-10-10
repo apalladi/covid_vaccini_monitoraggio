@@ -105,7 +105,7 @@ def get_data_from_report(auto, table_index):
     try:
         # check for errors first, change table_index accordingly
         raw_tables[table_index].columns[[-3, -1]]
-    except:  # noqa: E722
+    except IndexError:
         # common indexes are 2 and 3, try with 3
         idx_err_msg = "\nIndice tabella incorretto."
         idx_err_msg += " Provo con l'indice 3"
@@ -159,6 +159,8 @@ def get_data_from_report(auto, table_index):
 
     # Save to csv
     df_1.to_csv(f"data_iss_età_{rep_date.date()}.csv", sep=";")
+
+    print("\nFinito!")
 
 
 if __name__ == "__main__":

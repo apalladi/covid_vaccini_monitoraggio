@@ -47,8 +47,7 @@ def add_watermark(figure, axis_font_size):
                 ha="center",
                 va="center",
                 rotation=angle,
-                zorder=0
-                )
+                zorder=0)
 
     # explicit link and last update date at the bottom
     last_update = datetime.today().strftime("%d-%m-%Y %H:%M")
@@ -61,5 +60,4 @@ def add_watermark(figure, axis_font_size):
                 fontsize=axis_font_size,
                 color="darkslategray",
                 ha="center",
-                va="bottom"
-                )
+                va="bottom")

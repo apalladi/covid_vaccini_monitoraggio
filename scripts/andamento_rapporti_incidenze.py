@@ -1,51 +1,18 @@
 # -*- coding: utf-8 -*-
 import locale
-from datetime import datetime
 from os import chdir, path
-from re import findall
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+from custom.plots import date_from_csv_path, list_età_csv
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_watermark
-from custom.plots import list_età_csv
+
+""" Recupero dati """
 
 
-def date_from_url(csv_path):
-    date_ = findall(r"\d+-\d+-\d+", csv_path)[0]
-    return datetime.strptime(date_, "%Y-%m-%d")
-
-
-# Set work directory for the script
-scriptpath = path.dirname(path.realpath(__file__))
-chdir(scriptpath)
-
-# plt.style.use("default")
-plt.style.use("seaborn-dark")
-
-# Set locale to "it" to parse the month correctly
-locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
-
-# lista i csv
-files = list_età_csv()
-
-# aggiorna ticks e label dinamicamente
-ticks = np.arange(0, len(files), 2)
-# calcola step in base ai ticks
-# arrotonda il risultato
-n_ticks = len(ticks)
-slice_end = round(len(files)/n_ticks)
-if (len(files[0::slice_end]) > n_ticks):
-    # arrotonda per eccesso
-    slice_end += 1
-
-labels = [date_from_url(csv).strftime("%d\n%b").title()
-          for csv in files][0::slice_end]
-
-
-# funzioni per plot
 def compute_incidence_ratio(category):
 
     result_list = []
@@ -76,7 +43,10 @@ def compute_incidence_ratio(category):
     return result_list
 
 
-def add_to_plot():
+""" Funzioni per plot """
+
+
+def add_to_plot(ticks, labels):
     plt.xticks(ticks, labels)
     plt.ylabel("Contributo dei non vaccinati alle incidenze")
     plt.legend(["12-39", "40-59", "60-79", "80+"], loc=4)
@@ -86,32 +56,69 @@ def add_to_plot():
     plt.grid()
 
 
-""" Mostra risultati """
+""" Rappresentazione grafica risultati """
 
-fig = plt.figure(figsize=(9, 8))
-plt.subplot(2, 2, 1)
-plt.plot(compute_incidence_ratio("Casi"))
-plt.title("Casi")
-add_to_plot()
-plt.subplot(2, 2, 2)
-plt.plot(compute_incidence_ratio("Ospedalizzati"))
-plt.title("Ospedalizzati")
-add_to_plot()
-plt.subplot(2, 2, 3)
-plt.plot(compute_incidence_ratio("TI"))
-plt.title("In terapia intensiva")
-add_to_plot()
-plt.subplot(2, 2, 4)
-plt.plot(compute_incidence_ratio("Deceduti"))
-plt.title("Decessi")
-add_to_plot()
 
-# add watermarks
-ax = plt.gca()
-add_watermark(fig, ax.xaxis.label.get_fontsize())
+def plot_rapporti_incidenze(ticks, labels, show=False):
+    plt.style.use("seaborn-dark")
 
-plt.tight_layout()
-plt.savefig("../risultati/andamento_rapporti_incidenze.png",
-            dpi=300,
-            bbox_inches="tight")
-# plt.show()
+    fig = plt.figure(figsize=(9, 8))
+
+    plt.subplot(2, 2, 1)
+    plt.plot(compute_incidence_ratio("Casi"))
+    plt.title("Casi")
+    add_to_plot(ticks, labels)
+
+    plt.subplot(2, 2, 2)
+    plt.plot(compute_incidence_ratio("Ospedalizzati"))
+    plt.title("Ospedalizzati")
+    add_to_plot(ticks, labels)
+
+    plt.subplot(2, 2, 3)
+    plt.plot(compute_incidence_ratio("TI"))
+    plt.title("In terapia intensiva")
+    add_to_plot(ticks, labels)
+
+    plt.subplot(2, 2, 4)
+    plt.plot(compute_incidence_ratio("Deceduti"))
+    plt.title("Decessi")
+    add_to_plot(ticks, labels)
+
+    # add watermarks
+    ax = plt.gca()
+    add_watermark(fig, ax.xaxis.label.get_fontsize())
+
+    plt.tight_layout()
+    plt.savefig("../risultati/andamento_rapporti_incidenze.png",
+                dpi=300,
+                bbox_inches="tight")
+    if show:
+        plt.show()
+
+
+if __name__ == "__main__":
+    # Set work directory for the script
+    scriptpath = path.dirname(path.realpath(__file__))
+    chdir(scriptpath)
+
+    # Set locale to "it" to parse the month correctly
+    locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
+
+    # lista i csv
+    files = list_età_csv()
+
+    # aggiorna ticks e label dinamicamente
+    ticks = np.arange(0, len(files), 2)
+
+    # calcola step in base ai ticks
+    # arrotonda il risultato
+    n_ticks = len(ticks)
+    slice_end = round(len(files)/n_ticks)
+    if (len(files[0::slice_end]) > n_ticks):
+        # arrotonda per eccesso
+        slice_end += 1
+
+    labels = [date_from_csv_path(csv).strftime("%d\n%b").title()
+              for csv in files][0::slice_end]
+
+    plot_rapporti_incidenze(ticks, labels)

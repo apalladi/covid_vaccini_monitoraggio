@@ -49,7 +49,7 @@ epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-
 """ Rappresentazione grafica dei risultati """
 
 
-def plot_incidenza(x_date, x_label, show=False):
+def plot_incidenza(show=False):
     plt.style.use("seaborn-dark")
     """ Tassi di infezione, ricovero, decesso """
     fig, axes2 = plt.subplots(nrows=2, ncols=2, figsize=(7.5, 7.5))
@@ -89,11 +89,11 @@ def plot_incidenza(x_date, x_label, show=False):
                 dpi=300,
                 bbox_inches="tight")
 
-    if show is True:
+    if show:
         plt.show()
 
 
-def plot_rapporto_tassi(x_date, x_label, show=False):
+def plot_rapporto_tassi(show=False):
     plt.style.use("seaborn-dark")
     """ Rapporto fra tassi """
     fig = plt.figure(figsize=(6, 5))
@@ -121,11 +121,11 @@ def plot_rapporto_tassi(x_date, x_label, show=False):
                 dpi=300,
                 bbox_inches="tight")
 
-    if show is True:
+    if show:
         plt.show()
 
 
-def plot_num_assoluti(x_date, x_label, show=False):
+def plot_num_assoluti(show=False):
     plt.style.use("seaborn-dark")
     """ Andamento dei numeri assoluti """
     fig, axes2 = plt.subplots(nrows=2, ncols=2, figsize=(7.5, 7.5))
@@ -136,19 +136,19 @@ def plot_num_assoluti(x_date, x_label, show=False):
     # colori per plot vaccinati/non vaccinati
     palette = ["tab:red", "tab:green"]
 
-    df_assoluti2.iloc[:, [2, 3]].plot(ax=axes[0], marker="o", color=palette)
+    df_assoluti.iloc[:, [2, 3]].plot(ax=axes[0], marker="o", color=palette)
     axes[0].set_title("Nuovi casi giornalieri \n(media mobile 30 gg)")
     which_axe(0, axes, x_date, x_label)
 
-    df_assoluti2.iloc[:, [4, 5]].plot(ax=axes[1], marker="o", color=palette)
+    df_assoluti.iloc[:, [4, 5]].plot(ax=axes[1], marker="o", color=palette)
     axes[1].set_title("Nuovi ospedalizzati giornalieri \n(media mobile 30 gg)")
     which_axe(1, axes, x_date, x_label)
 
-    df_assoluti2.iloc[:, [6, 7]].plot(ax=axes[2], marker="o", color=palette)
+    df_assoluti.iloc[:, [6, 7]].plot(ax=axes[2], marker="o", color=palette)
     axes[2].set_title("Nuovi ricoverati in TI giornalieri \n(media mobile 30 gg)")  # noqa: E501
     which_axe(2, axes, x_date, x_label)
 
-    df_assoluti2.iloc[:, [8, 9]].plot(ax=axes[3], marker="o", color=palette)
+    df_assoluti.iloc[:, [8, 9]].plot(ax=axes[3], marker="o", color=palette)
     axes[3].set_title("Decessi giornalieri \n(media mobile 30 gg)")
     which_axe(3, axes, x_date, x_label)
 
@@ -161,12 +161,11 @@ def plot_num_assoluti(x_date, x_label, show=False):
                 dpi=300,
                 bbox_inches="tight")
 
-    if show is True:
+    if show:
         plt.show()
 
 
 if __name__ == "__main__":
-
     # Set work directory for the script
     scriptpath = path.dirname(path.realpath(__file__))
     chdir(scriptpath)
@@ -177,9 +176,9 @@ if __name__ == "__main__":
     x_date = ["2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01"]
     x_label = ["\nLug\n21", "\nAgo", "\nSet", "\nOtt"]
 
-    df_tassi, df_assoluti2 = load_data()
+    df_tassi, df_assoluti = load_data()
     x_date, x_label = update_labels(df_tassi, x_date, x_label)
 
-    plot_incidenza(x_date, x_label)
-    plot_rapporto_tassi(x_date, x_label)
-    plot_num_assoluti(x_date, x_label)
+    plot_incidenza()
+    plot_rapporto_tassi()
+    plot_num_assoluti()

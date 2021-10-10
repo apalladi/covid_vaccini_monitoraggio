@@ -1,8 +1,6 @@
 import pandas as pd
 import numpy as np
 
-# type: ignore
-
 
 def compute_incidence(df_età):
     # ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
@@ -13,8 +11,7 @@ def compute_incidence(df_età):
              df_età['terapia intensiva non vaccinati']/df_età['non vaccinati'],
              df_età['terapia intensiva vaccinati']/df_età['vaccinati completo'],  # noqa: E501
              df_età['decessi non vaccinati']/df_età['non vaccinati'],
-             df_età['decessi vaccinati']/df_età['vaccinati completo']
-             ])
+             df_età['decessi vaccinati']/df_età['vaccinati completo']])
 
     df_tassi = pd.DataFrame(tassi)
     df_tassi.columns = ['Casi, non vaccinati',
