@@ -9,6 +9,7 @@ from custom.plots import update_labels
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_watermark
 
+
 # funzioni per il plot
 def which_axe(x, axes, x_date, x_label):
     axes[x].set_xticks(x_date)
@@ -36,14 +37,17 @@ epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-
 
     # Calcola i numeri assoluti (medi, giornalieri) dell"epidemia
     df_assoluti2 = df_assoluti.copy(deep=True)
-    df_assoluti2.index = pd.to_datetime(df_assoluti2["data"], format="%Y/%m/%d")
+    df_assoluti2.index = pd.to_datetime(df_assoluti2["data"],
+                                        format="%Y/%m/%d")
     df_assoluti2.drop("data", axis=1, inplace=True)
     # trasforma in numeri settimanali
     df_assoluti2 = (1/30)*df_assoluti2
-    
+
     return df_tassi, df_assoluti2
 
+
 """ Rappresentazione grafica dei risultati """
+
 
 def plot_incidenza(x_date, x_label, show=False):
     plt.style.use("seaborn-dark")
@@ -52,7 +56,7 @@ def plot_incidenza(x_date, x_label, show=False):
 
     # unpack all the axes subplots
     axes = axes2.ravel()
-    
+
     # colori per plot vaccinati/non vaccinati
     palette = ["tab:red", "tab:green"]
 
@@ -84,8 +88,8 @@ def plot_incidenza(x_date, x_label, show=False):
     plt.savefig("../risultati/andamento_epidemia.png",
                 dpi=300,
                 bbox_inches="tight")
-    
-    if show==True:
+
+    if show is True:
         plt.show()
 
 
@@ -116,9 +120,10 @@ def plot_rapporto_tassi(x_date, x_label, show=False):
     plt.savefig("../risultati/rapporto_tra_tassi.png",
                 dpi=300,
                 bbox_inches="tight")
-    
-    if show==True:
+
+    if show is True:
         plt.show()
+
 
 def plot_num_assoluti(x_date, x_label, show=False):
     plt.style.use("seaborn-dark")
@@ -127,7 +132,7 @@ def plot_num_assoluti(x_date, x_label, show=False):
 
     # unpack all the axes subplots
     axes = axes2.ravel()
-    
+
     # colori per plot vaccinati/non vaccinati
     palette = ["tab:red", "tab:green"]
 
@@ -140,7 +145,7 @@ def plot_num_assoluti(x_date, x_label, show=False):
     which_axe(1, axes, x_date, x_label)
 
     df_assoluti2.iloc[:, [6, 7]].plot(ax=axes[2], marker="o", color=palette)
-    axes[2].set_title("Nuovi ricoverati in TI giornalieri \n(media mobile 30 gg)")
+    axes[2].set_title("Nuovi ricoverati in TI giornalieri \n(media mobile 30 gg)")  # noqa: E501
     which_axe(2, axes, x_date, x_label)
 
     df_assoluti2.iloc[:, [8, 9]].plot(ax=axes[3], marker="o", color=palette)
@@ -155,26 +160,26 @@ def plot_num_assoluti(x_date, x_label, show=False):
     plt.savefig("../risultati/andamento_epidemia_num_assoluti.png",
                 dpi=300,
                 bbox_inches="tight")
-    
-    if show==True:
+
+    if show is True:
         plt.show()
 
-    
+
 if __name__ == "__main__":
-        
+
     # Set work directory for the script
     scriptpath = path.dirname(path.realpath(__file__))
     chdir(scriptpath)
 
     # Set locale to "it" to parse the month correctly
     locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
-      
+
     x_date = ["2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01"]
     x_label = ["\nLug\n21", "\nAgo", "\nSet", "\nOtt"]
-    
+
     df_tassi, df_assoluti2 = load_data()
     x_date, x_label = update_labels(df_tassi, x_date, x_label)
-    
+
     plot_incidenza(x_date, x_label)
     plot_rapporto_tassi(x_date, x_label)
     plot_num_assoluti(x_date, x_label)
