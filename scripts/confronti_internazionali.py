@@ -90,7 +90,7 @@ def plot_data(show=False):
     abitanti_nazioni = [6.883, 19.29, 10.159]
 
     x_date = ["2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01"]
-    x_label = ["Lug\n21", "Ago", "Set", "Ott"]
+    x_label = ["Lug\n2021", "Ago", "Set", "Ott"]
 
     # Imposta stile plots
     plt.style.use("seaborn-dark")
