@@ -19,7 +19,7 @@ jobs:
     - name: Run docker to update data
       id: run1
       run: |
-        docker run --rm --name my-running-script -v "$PWD":/usr/src/myapp -w /usr/src/myapp covid_vaccini python dati/dati_selezione.py
+        docker run --rm --name my-running-script -v "$PWD":/usr/src/myapp -w /usr/src/myapp covid_vaccini ./update_all.sh
         ls
    # - name: Run docker to run notebooks
    #   id: run2
