@@ -5,7 +5,6 @@ from os import chdir, path
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from custom.plots import update_labels
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_watermark
 
@@ -13,9 +12,7 @@ from custom.watermarks import add_watermark
 # Funzioni per il plot
 def which_axe(axis):
     """ Imposta proprietà grafico """
-    axis.set_xticks(x_date)
     axis.set_xlabel("")
-    axis.set_xticklabels(x_label)
     axis.legend(["Non vaccinati", "Vaccinati"])
     axis.grid()
 
@@ -107,7 +104,6 @@ def plot_rapporto_tassi(show=False):
     plt.title("Rapporto fra le incidenze")
     plt.ylabel("Non vaccinati/vaccinati")
     plt.xlabel("")
-    plt.xticks(x_date, x_label)
     plt.legend()
     plt.grid()
     plt.tight_layout()
@@ -173,11 +169,7 @@ if __name__ == "__main__":
     # Colori per plot vaccinati/non vaccinati
     palette = ["tab:red", "tab:green"]
 
-    x_date = ["2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01"]
-    x_label = ["\nLug\n21", "\nAgo", "\nSet", "\nOtt"]
-
     df_tassi, df_assoluti = load_data()
-    x_date, x_label = update_labels(df_tassi, x_date, x_label)
 
     plot_incidenza()
     plot_rapporto_tassi()
