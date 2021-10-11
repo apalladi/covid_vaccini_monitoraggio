@@ -27,20 +27,22 @@ Nell'environment virtuale è possibile installare automaticamente i pacchetti ric
 Nel repository vengono utilizzati i dati rilasciati nei [report settimanali](https://www.epicentro.iss.it/coronavirus/aggiornamenti) dell'Istituto Superiore di Sanità, come ad esempio: https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_8-settembre-2021.pdf.
 
 
-Nel Notebook [`Notebooks/andamento_epidemia.ipynb`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/Notebooks/andamento_epidemia.ipynb) vengono calcolate le curve epidemiche relative a nuovi casi, ospedalizzati, ricoverati in terapia intensiva e deceduti, divise per vaccinati e non vaccinati. Le curve epidemiche sono rapportate al numero di vaccinati e non vaccinati, in ogni intervallo temporale. In questo modo è possibile calcolare le incidenze (o tassi). Data la sproporzione tra il numero di vaccinati e non vaccinati, i numeri assoluti risultano infatti poco utili per monitare l'andamento dell'epidemia. 
+Lo script [`dati\dati_selezione.py`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) estrae i dati per l'analisi (tabella n.3) a partire dal report selezionato.
 
 
-Nel Notebook [`Notebooks/efficacia_vaccini.ipynb`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/Notebooks/efficacia_vaccini.ipynb) vengono calcolati i tassi di contagio relativi all'ultimo report dell'ISS, dividendo i dati in 4 fasce d'età e in 2 categorie (vaccinati e non vaccinati). Ciò permette di calcolare le incidenze per ogni fascia d'età e di valutare correttamente l'efficacia dei vaccini nel prevenire il contagio, l'ospedalizzazione, il ricovero in terapia intensiva e il decesso. 
+Lo script [`scripts\update_results.py`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/update_results.py) aggiorna i risultati eseguendo gli scripts:
 
 
-Nel Notebook [`Notebooks/confronto_2020_2021.ipynb`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/Notebooks/confronto_2020_2021.ipynb) vengono confrontati gli andamenti delle curve epidemiche 2020 e 2021. Per il 2021 vengono mostrate separatamente le curve dei vaccinati e dei non vaccinati. 
-
-Nel Notebook [`Notebooks/confronti_internazionali.ipynb`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/Notebooks/confronti_internazionali.ipynb) vengono confrontati gli andamenti delle curve epidemiologiche e delle vaccinazioni di vari Paesi esteri. 
-
-Nello script [`dati\dati_selezione.py`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) vengono estratti i dati per l'analisi (tabella n.3) a partire dal report selezionato.
+- [**`scripts/andamento_epidemia.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/andamento_epidemia.py) calcola le curve epidemiche relative a nuovi casi, ospedalizzati, ricoverati in terapia intensiva e deceduti, divise per vaccinati e non vaccinati. Le curve epidemiche sono rapportate al numero di vaccinati e non vaccinati, in ogni intervallo temporale. In questo modo è possibile calcolare le incidenze (o tassi). Data la sproporzione tra il numero di vaccinati e non vaccinati, i numeri assoluti risultano infatti poco utili per monitare l'andamento dell'epidemia. 
 
 
-Nello script [`Notebooks\run_notebooks.py`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/Notebooks/run_notebooks.py) vengono eseguiti i notebook per aggiornare i risultati.
+- [**`scripts/efficacia_vaccini.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/efficacia_vaccini.py) calcola i tassi di contagio relativi all'ultimo report dell'ISS, dividendo i dati in 4 fasce d'età e in 2 categorie (vaccinati e non vaccinati). Ciò permette di calcolare le incidenze per ogni fascia d'età e di valutare correttamente l'efficacia dei vaccini nel prevenire il contagio, l'ospedalizzazione, il ricovero in terapia intensiva e il decesso. 
+
+
+- [**`scripts/confronto_2020_2021.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/confronto_2020_2021.py) restituisce gli andamenti delle curve epidemiche 2020 e 2021. Per il 2021 vengono mostrate separatamente le curve dei vaccinati e dei non vaccinati. 
+
+
+- [**`scripts/confronti_internazionali.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/confronti_internazionali.py) aggiorna gli andamenti delle curve epidemiologiche e delle vaccinazioni di vari Paesi esteri. 
 
 
 ### Risultati

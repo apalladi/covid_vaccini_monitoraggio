@@ -1,7 +1,7 @@
 # type: ignore
 
 
-def update_labels(df_tassi, x_date, x_label):
+def update_labels(df_tassi):
     # aggiungi nuovo mese/anno se necessario
     if (df_tassi.index[0].month > df_tassi.index[1].month):
         # aggiorna lista x_date
@@ -18,7 +18,6 @@ def update_labels(df_tassi, x_date, x_label):
         else:
             x_label.append(month_abbr)   # noqa: F821
             print(f"Aggiunto nuovo mese {month_abbr}")
-    return x_date, x_label
 
 
 def update_labels2(sel_df):
