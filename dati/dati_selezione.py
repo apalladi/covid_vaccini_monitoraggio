@@ -99,20 +99,27 @@ def get_data_from_report(auto, table_index):
     print(f"\nSelected report ({rep_date.date()}) is:\n{rep_url}")
 
     # Read all tables
-    raw_tb = read_pdf(rep_url, pages="all", stream=True, silent=True)
+    raw_tables = read_pdf(rep_url, pages="all", stream=True, silent=True)
 
     # keep the last and the third last column
     try:
-        columns_to_keep = raw_tb[table_index].columns[[-3, -1]]
-    except:  # noqa: E722
-        idx_err_msg = "\n\nIndice tabella incorretto. Prova con un "
-        idx_err_msg += "altro indice. Scelte consigliate: 2 o 3\n"
-        raise ValueError(idx_err_msg)  # interrupt script and notify user
+        # check for errors first, change table_index accordingly
+        raw_tables[table_index].columns[[-3, -1]]
+    except IndexError:
+        # common indexes are 2 and 3, try with 3
+        idx_err_msg = "\nIndice tabella incorretto."
+        idx_err_msg += " Provo con l'indice 3"
+        print(idx_err_msg)
+        table_index = 3
+        # raise ValueError(idx_err_msg)  # interrupt script and notify user
+
+    sel_raw_table = raw_tables[table_index]
+    columns_to_keep = sel_raw_table.columns[[-3, -1]]
 
     to_exclude = r"\((.*)|[^a-z-0-9]|\d+-\d+|\d+\+"
 
-    df = raw_tb[table_index][columns_to_keep]
-    df = df.replace(to_exclude, "", regex=True).replace("", np.nan)
+    df_raw = sel_raw_table[columns_to_keep]
+    df = df_raw.replace(to_exclude, "", regex=True).replace("", np.nan)
     df = df.dropna(subset=columns_to_keep, how="all")
     df = df.fillna(0).astype(np.int64)
     df.columns = ["Non vaccinati", "Immunizzati"]
@@ -132,8 +139,7 @@ def get_data_from_report(auto, table_index):
                        sep=";",
                        parse_dates=["data"],
                        date_parser=date_parser,
-                       index_col="data"
-                       )
+                       index_col="data")
 
     # Add the new row at the top of the df
     df_0.loc[rep_date] = results
@@ -154,6 +160,8 @@ def get_data_from_report(auto, table_index):
     # Save to csv
     df_1.to_csv(f"data_iss_età_{rep_date.date()}.csv", sep=";")
 
+    print("\nFinito!")
+
 
 if __name__ == "__main__":
-    get_data_from_report(auto=True, table_index=3)
+    get_data_from_report(auto=True, table_index=2)
