@@ -52,7 +52,9 @@ I dati possono essere analizzati mediante i seguenti script:
 - [**`scripts/confronti_internazionali.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/confronti_internazionali.py) aggiorna gli andamenti delle curve epidemiologiche e delle vaccinazioni di vari Paesi esteri. 
 
 Per fare un aggiornamento generale, utilizzare il comando
+
 `./update_all.sh`
+
 dalla directory principale
 
 ## Risultati
