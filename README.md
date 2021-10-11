@@ -1,6 +1,5 @@
 # covid_vaccini_monitoraggio
 
-
 Questo repository è stato creato con lo scopo di monitorare l'andamento dell'epidemia provocata dal Covid19 in Italia e l'efficacia dei vaccini.
 
 [![Licenza: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](#dettagli-licenza)
@@ -34,11 +33,10 @@ Nell'environment virtuale è possibile installare automaticamente i pacchetti ri
 
 Nel repository vengono utilizzati i dati rilasciati nei [report settimanali](https://www.epicentro.iss.it/coronavirus/aggiornamenti) dell'Istituto Superiore di Sanità, come ad esempio: https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_8-settembre-2021.pdf.
 
-
 Lo script [`dati\dati_selezione.py`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) estrae i dati per l'analisi (tabella n.3) a partire dal report selezionato.
 
-
 I dati possono essere analizzati mediante i seguenti script:
+
 
 - [**`scripts/andamento_epidemia.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/andamento_epidemia.py) calcola le curve epidemiche relative a nuovi casi, ospedalizzati, ricoverati in terapia intensiva e deceduti, divise per vaccinati e non vaccinati. Le curve epidemiche sono rapportate al numero di vaccinati e non vaccinati, in ogni intervallo temporale. In questo modo è possibile calcolare le incidenze (o tassi). Data la sproporzione tra il numero di vaccinati e non vaccinati, i numeri assoluti risultano infatti poco utili per monitare l'andamento dell'epidemia. 
 
@@ -51,7 +49,8 @@ I dati possono essere analizzati mediante i seguenti script:
 
 - [**`scripts/confronti_internazionali.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/confronti_internazionali.py) aggiorna gli andamenti delle curve epidemiologiche e delle vaccinazioni di vari Paesi esteri. 
 
-Per fare un aggiornamento generale, utilizzare il comando
+
+Per eseguire un aggiornamento generale, utilizzare il comando
 
 `./update_all.sh`
 
