@@ -40,9 +40,10 @@ Nel Notebook [`Notebooks/confronti_internazionali.ipynb`](https://github.com/apa
 Nello script [`dati\dati_selezione.py`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) vengono estratti i dati per l'analisi (tabella n.3) a partire dal report selezionato.
 
 
-Per eseguire un aggiornamento generale, utilizzare il comando:
-`./update_all.sh`
-dalla directory principale. 
+Per eseguire l'aggiornamento di tutti i Notebooks, digitare il comando:
+
+`python Notebooks/run_notebooks.py`
+
 
 
 ### Risultati
