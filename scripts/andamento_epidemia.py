@@ -48,7 +48,7 @@ def load_data():
 def plot_incidenza(show=False):
     """ Tassi di infezione, ricovero, decesso """
 
-    fig, axes2 = plt.subplots(nrows=2, ncols=2, figsize=(7.5, 7.5))
+    fig, axes2 = plt.subplots(nrows=2, ncols=2, figsize=(8.5, 8.5))
 
     # Unpack all the axes subplots
     axes = axes2.ravel()
@@ -122,7 +122,7 @@ def plot_rapporto_tassi(show=False):
 def plot_num_assoluti(show=False):
     """ Andamento dei numeri assoluti """
 
-    fig, axes2 = plt.subplots(nrows=2, ncols=2, figsize=(7.5, 7.5))
+    fig, axes2 = plt.subplots(nrows=2, ncols=2, figsize=(8.5, 8.5))
 
     # Unpack all the axes subplots
     axes = axes2.ravel()

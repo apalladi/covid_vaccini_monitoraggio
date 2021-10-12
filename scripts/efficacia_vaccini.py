@@ -163,7 +163,7 @@ def plot_efficacia(show=False):
 def plot_riassunto(show=False):
     """ Grafico riassuntivo """
 
-    fig, axes2 = plt.subplots(nrows=2, ncols=4, figsize=(13, 7))
+    fig, axes2 = plt.subplots(nrows=2, ncols=4, figsize=(15, 7.5))
 
     # Unpack all the axes subplots
     axes = axes2.ravel()
@@ -224,7 +224,7 @@ def plot_focus_60(show=False):
                             "decessi vaccinati"]].sum()
     over60_array = np.array(df_over60)
 
-    fig = plt.figure(figsize=(9, 3))
+    fig = plt.figure(figsize=(10, 3.5))
 
     plt.subplot(1, 3, 1)
     plt.bar(0, over60_array[0], width=0.5, color="red")

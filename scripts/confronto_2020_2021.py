@@ -69,7 +69,7 @@ def plot_confronto_2020_2021(show=False):
     xgrid_2021 = np.arange(0, 7*len(casi_2021_vacc), 7)
 
     # Casi e decessi 2021
-    fig = plt.figure(figsize=(8, 3.5))
+    fig = plt.figure(figsize=(10, 4))
     plt.subplot(1, 2, 1)
     plt.plot(xgrid_2020, casi_2020, label="2020")
     plt.plot(xgrid_2021, casi_2021_vacc,
