@@ -111,9 +111,8 @@ def plot_data(show=False):
         mask_ = df_epid.index >= "2021-06-01"
         values = 7/(abitanti_nazioni[i]*10)*df_epid["Daily cases (avg 7 days)"]
         values[mask_].plot(ax=axes[0], label=label_nazioni[i], linewidth=2)
-        last_updated, x_date, x_label = aggiorna_ascissa(df_epid,
+        last_updated, x_date, x_label = aggiorna_ascissa(last_updated,
                                                          new_date,
-                                                         last_updated,
                                                          x_date,
                                                          x_label)
 
@@ -134,9 +133,8 @@ def plot_data(show=False):
         df_country["% fully vaccinated"][mask_].plot(ax=axes[1],
                                                      label=label_nazioni[i],
                                                      linewidth=2)
-        last_updated, x_date, x_label = aggiorna_ascissa(df_country,
+        last_updated, x_date, x_label = aggiorna_ascissa(last_updated,
                                                          new_date,
-                                                         last_updated,
                                                          x_date,
                                                          x_label)
 

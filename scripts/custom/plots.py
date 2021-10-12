@@ -8,36 +8,30 @@ from numpy import sort
 from pandas import to_datetime
 
 
-def update_labels(sel_df, x_date, x_label):
-    # aggiungi nuovo mese/anno se necessario
-    # aggiorna lista x_date
-    date_to_add = sel_df.index[-1].replace(day=1)
-    x_date.append(date_to_add.strftime("%Y-%m-%d"))
-    # aggiorna lista x_label
-    month_abbr = date_to_add.strftime("%b").capitalize()
-    year_abbr = date_to_add.strftime("%y").capitalize()
-    # specifica nuovo anno se necessario
-    if (sel_df.index[-1].year > to_datetime(x_date[-2]).year):
-        x_label.append(f"{month_abbr}\n{year_abbr}")
-        print(f"Aggiunto nuovo mese {month_abbr} e anno {year_abbr}")
-    # altrimenti aggiungi il mese
-    else:
-        x_label.append(month_abbr)
-        print(f"Aggiunto nuovo mese {month_abbr}")
-    if (len(x_date) > 4):
-        x_date.pop(0)
-        x_label.pop(0)
-        x_label[0] = f"{x_label[0]}\n{year_abbr}"
-    return x_date, x_label
-
-
-def aggiorna_ascissa(df, new_date, last_updated, x_date, x_label):
+def aggiorna_ascissa(last_updated, new_date, x_date, x_label):
     # aggiorna limite ascissa...
     if (new_date.month > last_updated.month):
-        x_date, x_label = update_labels(df,
-                                        x_date,
-                                        x_label)
-        last_updated = last_updated
+        # aggiungi nuovo mese/anno se necessario
+        # aggiorna lista x_date
+        date_to_add = new_date.replace(day=1)
+        x_date.append(date_to_add.strftime("%Y-%m-%d"))
+        # aggiorna lista x_label
+        new_month = date_to_add.strftime("%b").capitalize()
+        new_year = date_to_add.strftime("%Y")
+        # specifica nuovo anno se necessario
+        if (new_date.year > to_datetime(x_date[-2]).year):
+            x_label.append(f"{new_month}\n{new_year}")
+            print(f"Aggiunto nuovo mese {new_month} e anno {new_year}")
+        # altrimenti aggiungi il mese
+        else:
+            x_label.append(new_month)
+            print(f"Aggiunto nuovo mese {new_month}")
+        # mantieni lunghezza liste a 4
+        if (len(x_date) > 4):
+            x_date.pop(0)
+            x_label.pop(0)
+            x_label[0] = f"{x_label[0]}\n{new_year}"
+            last_updated = last_updated
     # ... e data più recente se necessario
     elif (new_date > last_updated):
         last_updated = new_date
