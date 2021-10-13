@@ -4,13 +4,11 @@ from datetime import datetime
 from glob import glob
 from re import findall
 
-import matplotlib.pyplot as plt
 from numpy import sort
 
 
 # Funzioni per il plot
 def get_cap_labels(axis, add_new_line=False):
-    plt.gcf().canvas.draw()
     x_ticks = axis.get_xticks()
     new_labels = [f"\n{lb.get_text().title()}"
                   if add_new_line else lb.get_text().title()

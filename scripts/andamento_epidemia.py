@@ -14,6 +14,7 @@ from custom.watermarks import add_watermark
 def which_axe(axis):
     """ Imposta proprietà grafico """
     axis.set_xlabel("")
+    plt.gcf().canvas.draw()
     x_ticks, x_label = get_cap_labels(axis)
     axis.set_xticks(x_ticks)
     axis.set_xticklabels(x_label)
@@ -113,6 +114,7 @@ def plot_rapporto_tassi(show=False):
 
     # Set labels and watermarks
     ax = plt.gca()
+    plt.gcf().canvas.draw()
     x_ticks, x_label = get_cap_labels(ax)
     plt.xticks(x_ticks, x_label)
     add_watermark(fig, ax.xaxis.label.get_fontsize())

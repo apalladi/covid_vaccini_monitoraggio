@@ -106,6 +106,7 @@ def plot_data(show=False):
         values = 7/(abitanti_nazioni[i]*10)*df_epid["Daily cases (avg 7 days)"]
         values[mask_].plot(ax=axes[0], label=label_nazioni[i], linewidth=2)
 
+    plt.gcf().canvas.draw()
     x_ticks, x_label = get_cap_labels(axes[0], True)
     axes[0].set_title("Incidenza settimanale nuovi casi")
     axes[0].set_ylabel("Numeri ogni 100.000 abitanti")
@@ -122,6 +123,8 @@ def plot_data(show=False):
         df_country["% fully vaccinated"][mask_].plot(ax=axes[1],
                                                      label=label_nazioni[i],
                                                      linewidth=2)
+
+    plt.gcf().canvas.draw()
     x_ticks, x_label = get_cap_labels(axes[1], True)
     axes[1].set_ylim(0, 100)
     axes[1].set_yticks(np.arange(0, 101, 20))

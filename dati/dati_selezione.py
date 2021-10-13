@@ -24,14 +24,6 @@ from requests import get
 from tabula import read_pdf
 
 
-# Set work directory for the script
-scriptpath = path.dirname(path.realpath(__file__))
-chdir(scriptpath)
-
-# Set locale to "it" to parse the month correctly
-locale.setlocale(locale.LC_TIME, "it_IT.UTF-8")
-
-
 def get_surveillance_reports():
     '''get_surveillance_reports() -> list
 
@@ -164,4 +156,12 @@ def get_data_from_report(auto, table_index):
 
 
 if __name__ == "__main__":
+    # Set work directory for the script
+    scriptpath = path.dirname(path.realpath(__file__))
+    chdir(scriptpath)
+
+    # Set locale to "it" to parse the month correctly
+    locale.setlocale(locale.LC_TIME, "it_IT.UTF-8")
+
+    # get data
     get_data_from_report(auto=True, table_index=2)
