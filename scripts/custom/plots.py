@@ -6,45 +6,16 @@ from re import findall
 
 import matplotlib.pyplot as plt
 from numpy import sort
-from pandas import to_datetime
 
 
 # Funzioni per il plot
-def get_cap_labels(axis):
+def get_cap_labels(axis, add_new_line=False):
     plt.gcf().canvas.draw()
     x_ticks = axis.get_xticks()
-    new_labels = [lb.get_text().title() for lb in axis.get_xmajorticklabels()]
+    new_labels = [f"\n{lb.get_text().title()}"
+                  if add_new_line else lb.get_text().title()
+                  for lb in axis.get_xmajorticklabels()]
     return x_ticks, new_labels
-
-
-def aggiorna_ascissa(last_updated, new_date, x_date, x_label):
-    # aggiorna limite ascissa...
-    if (new_date.month > last_updated.month):
-        # aggiungi nuovo mese/anno se necessario
-        # aggiorna lista x_date
-        date_to_add = new_date.replace(day=1)
-        x_date.append(date_to_add.strftime("%Y-%m-%d"))
-        # aggiorna lista x_label
-        new_month = date_to_add.strftime("%b").capitalize()
-        new_year = date_to_add.strftime("%Y")
-        # specifica nuovo anno se necessario
-        if (new_date.year > to_datetime(x_date[-2]).year):
-            x_label.append(f"{new_month}\n{new_year}")
-            print(f"Aggiunto nuovo mese {new_month} e anno {new_year}")
-        # altrimenti aggiungi il mese
-        else:
-            x_label.append(new_month)
-            print(f"Aggiunto nuovo mese {new_month}")
-        # mantieni lunghezza liste a 4
-        if (len(x_date) > 4):
-            x_date.pop(0)
-            x_label.pop(0)
-            x_label[0] = f"{x_label[0]}\n{new_year}"
-            last_updated = last_updated
-    # ... e data più recente se necessario
-    elif (new_date > last_updated):
-        last_updated = new_date
-    return last_updated, x_date, x_label
 
 
 def list_età_csv(is_most_recent=False):

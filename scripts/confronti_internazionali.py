@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from custom.plots import aggiorna_ascissa
+from custom.plots import get_cap_labels
 from custom.watermarks import add_watermark
 
 
@@ -89,9 +89,6 @@ def plot_data(show=False):
     label_nazioni = ["Bulgaria", "Romania", "Portogallo"]
     abitanti_nazioni = [6.883, 19.29, 10.159]
 
-    x_date = ["2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01"]
-    x_label = ["Lug\n2021", "Ago", "Set", "Ott"]
-
     # Imposta stile plots
     plt.style.use("seaborn-dark")
 
@@ -100,27 +97,20 @@ def plot_data(show=False):
     # Unpack all the axes subplots
     axes = axes2.ravel()
 
-    last_updated = pd.to_datetime(x_date[-1])
-
     for i in range(len(nomi_nazioni)):
         df_epid = get_epidemic_data(nomi_nazioni[i],
                                     df_confirmed,
                                     df_deaths,
                                     df_recovered)
-        new_date = df_epid.index[-1]
         mask_ = df_epid.index >= "2021-06-01"
         values = 7/(abitanti_nazioni[i]*10)*df_epid["Daily cases (avg 7 days)"]
         values[mask_].plot(ax=axes[0], label=label_nazioni[i], linewidth=2)
-        last_updated, x_date, x_label = aggiorna_ascissa(last_updated,
-                                                         new_date,
-                                                         x_date,
-                                                         x_label)
 
-    axes[0].set_xlim("2021-06-01", last_updated)
+    x_ticks, x_label = get_cap_labels(axes[0], True)
     axes[0].set_title("Incidenza settimanale nuovi casi")
     axes[0].set_ylabel("Numeri ogni 100.000 abitanti")
     axes[0].set_xlabel("")
-    axes[0].set_xticks(x_date)
+    axes[0].set_xticks(x_ticks)
     axes[0].set_xticklabels(x_label)
     axes[0].legend()
     axes[0].grid()
@@ -128,23 +118,17 @@ def plot_data(show=False):
 
     for i in range(len(nomi_nazioni)):
         df_country = get_vaccine_data(nomi_nazioni[i], df_vacc)
-        new_date = df_country.index[-1]
         mask_ = df_country.index >= "2021-06-01"
         df_country["% fully vaccinated"][mask_].plot(ax=axes[1],
                                                      label=label_nazioni[i],
                                                      linewidth=2)
-        last_updated, x_date, x_label = aggiorna_ascissa(last_updated,
-                                                         new_date,
-                                                         x_date,
-                                                         x_label)
-
-    axes[1].set_xlim("2021-06-01", last_updated)
+    x_ticks, x_label = get_cap_labels(axes[1], True)
     axes[1].set_ylim(0, 100)
     axes[1].set_yticks(np.arange(0, 101, 20))
     axes[1].set_yticklabels(["0%", "20%", "40%", "60%", "80%", "100%"])
     axes[1].set_title("Vaccinati in modo completo")
     axes[1].set_xlabel("")
-    axes[1].set_xticks(x_date)
+    axes[1].set_xticks(x_ticks)
     axes[1].set_xticklabels(x_label)
     axes[1].legend()
     axes[1].grid()
@@ -168,7 +152,7 @@ if __name__ == "__main__":
     chdir(scriptpath)
 
     # Set locale to "it" to parse the month correctly
-    locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
+    locale.setlocale(locale.LC_TIME, "it_IT")
 
     # Imposta stile grafici
     plt.style.use("seaborn-dark")
