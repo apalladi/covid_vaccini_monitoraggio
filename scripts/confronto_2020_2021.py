@@ -119,6 +119,9 @@ if __name__ == "__main__":
     scriptpath = path.dirname(path.realpath(__file__))
     chdir(scriptpath)
 
+    # Imposta stile grafici
+    plt.style.use("seaborn-dark")
+
     df_IT, df_assoluti, df_tassi = import_data()
     casi_2020, dec_2020 = get_epidemic_data_2020()
     casi_2021_vacc, casi_2021_novacc, dec_2021_vacc, dec_2021_novacc = get_epidemic_data_2021()  # noqa: E501
