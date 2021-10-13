@@ -29,7 +29,7 @@ scriptpath = path.dirname(path.realpath(__file__))
 chdir(scriptpath)
 
 # Set locale to "it" to parse the month correctly
-locale.setlocale(locale.LC_TIME, "it_IT")
+locale.setlocale(locale.LC_TIME, "it_IT.UTF-8")
 
 
 def get_surveillance_reports():

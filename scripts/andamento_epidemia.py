@@ -166,7 +166,7 @@ if __name__ == "__main__":
     chdir(scriptpath)
 
     # Set locale to "it" to parse the month correctly
-    locale.setlocale(locale.LC_TIME, "it_IT")
+    locale.setlocale(locale.LC_TIME, "it_IT.UTF-8")
 
     # Imposta stile grafici
     plt.style.use("seaborn-dark")
