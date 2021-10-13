@@ -4,8 +4,17 @@ from datetime import datetime
 from glob import glob
 from re import findall
 
+import matplotlib.pyplot as plt
 from numpy import sort
 from pandas import to_datetime
+
+
+# Funzioni per il plot
+def get_cap_labels(axis):
+    plt.gcf().canvas.draw()
+    x_ticks = axis.get_xticks()
+    new_labels = [lb.get_text().title() for lb in axis.get_xmajorticklabels()]
+    return x_ticks, new_labels
 
 
 def aggiorna_ascissa(last_updated, new_date, x_date, x_label):

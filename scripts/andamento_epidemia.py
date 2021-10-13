@@ -5,6 +5,7 @@ from os import chdir, path
 import matplotlib.pyplot as plt
 import pandas as pd
 
+from custom.plots import get_cap_labels
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_watermark
 
@@ -13,6 +14,9 @@ from custom.watermarks import add_watermark
 def which_axe(axis):
     """ Imposta proprietà grafico """
     axis.set_xlabel("")
+    x_ticks, x_label = get_cap_labels(axis)
+    axis.set_xticks(x_ticks)
+    axis.set_xticklabels(x_label)
     axis.legend(["Non vaccinati", "Vaccinati"])
     axis.grid()
 
@@ -100,7 +104,6 @@ def plot_rapporto_tassi(show=False):
                                                    color="red")
     (df_tassi.iloc[:, 6]/df_tassi.iloc[:, 7]).plot(label="Decesso",
                                                    color="gray")
-
     plt.title("Rapporto fra le incidenze")
     plt.ylabel("Non vaccinati/vaccinati")
     plt.xlabel("")
@@ -108,8 +111,10 @@ def plot_rapporto_tassi(show=False):
     plt.grid()
     plt.tight_layout()
 
-    # Add watermarks
+    # Set labels and watermarks
     ax = plt.gca()
+    x_ticks, x_label = get_cap_labels(ax)
+    plt.xticks(x_ticks, x_label)
     add_watermark(fig, ax.xaxis.label.get_fontsize())
 
     plt.savefig("../risultati/rapporto_tra_tassi.png",
@@ -161,7 +166,7 @@ if __name__ == "__main__":
     chdir(scriptpath)
 
     # Set locale to "it" to parse the month correctly
-    locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
+    locale.setlocale(locale.LC_TIME, "it_IT")
 
     # Imposta stile grafici
     plt.style.use("seaborn-dark")
