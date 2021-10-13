@@ -61,7 +61,7 @@ def get_ticks_labels():
 
 def add_to_plot(ticks, labels):
     """ Imposta proprietà grafico """
-    plt.xticks(ticks, labels, rotation="45")
+    plt.xticks(ticks, labels)
     plt.ylabel("Contributo dei non vaccinati alle incidenze")
     plt.legend(["12-39", "40-59", "60-79", "80+"], loc=4)
     plt.yticks(np.arange(50, 101, 10),
