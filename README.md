@@ -41,13 +41,16 @@ I dati possono essere analizzati mediante i seguenti script:
 - [**`scripts/andamento_epidemia.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/andamento_epidemia.py) calcola le curve epidemiche relative a nuovi casi, ospedalizzati, ricoverati in terapia intensiva e deceduti, divise per vaccinati e non vaccinati. Le curve epidemiche sono rapportate al numero di vaccinati e non vaccinati, in ogni intervallo temporale. In questo modo è possibile calcolare le incidenze (o tassi). Data la sproporzione tra il numero di vaccinati e non vaccinati, i numeri assoluti risultano infatti poco utili per monitare l'andamento dell'epidemia. 
 
 
-- [**`scripts/efficacia_vaccini.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/efficacia_vaccini.py) calcola i tassi di contagio relativi all'ultimo report dell'ISS, dividendo i dati in 4 fasce d'età e in 2 categorie (vaccinati e non vaccinati). Ciò permette di calcolare le incidenze per ogni fascia d'età e di valutare correttamente l'efficacia dei vaccini nel prevenire il contagio, l'ospedalizzazione, il ricovero in terapia intensiva e il decesso. 
+- [**`scripts/andamento_rapporti_incidenze.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/andamento_rapporti_incidenze.py) calcola il contributo dei non vaccinati rispetto all’incidenza totale nelle varie fasce di età.
+
+
+- [**`scripts/confronti_internazionali.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/confronti_internazionali.py) aggiorna gli andamenti delle curve epidemiologiche e delle vaccinazioni di vari Paesi esteri.
 
 
 - [**`scripts/confronto_2020_2021.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/confronto_2020_2021.py) restituisce gli andamenti delle curve epidemiche 2020 e 2021. Per il 2021 vengono mostrate separatamente le curve dei vaccinati e dei non vaccinati. 
 
 
-- [**`scripts/confronti_internazionali.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/confronti_internazionali.py) aggiorna gli andamenti delle curve epidemiologiche e delle vaccinazioni di vari Paesi esteri. 
+- [**`scripts/efficacia_vaccini.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/efficacia_vaccini.py) calcola i tassi di contagio relativi all'ultimo report dell'ISS, dividendo i dati in 4 fasce d'età e in 2 categorie (vaccinati e non vaccinati). Ciò permette di calcolare le incidenze per ogni fascia d'età e di valutare correttamente l'efficacia dei vaccini nel prevenire il contagio, l'ospedalizzazione, il ricovero in terapia intensiva e il decesso. 
 
 
 Per eseguire un aggiornamento generale, utilizzare il comando
@@ -64,13 +67,18 @@ dalla directory principale
 </details>
 
 <details>
-  <summary>Andamento epidemia: rapporto fra le incidenze</summary>
+  <summary>Andamento epidemia: numeri assoluti giornalieri</summary>
+  <p align="center"><img width="750" src="/risultati/andamento_epidemia_num_assoluti.png"></p>
+</details>
+
+<details>
+  <summary>Andamento epidemia: rapporto fra le incidenze per gli eventi</summary>
   <p align="center"><img width="750" src="/risultati/rapporto_tra_tassi.png"></p>
 </details>
 
 <details>
-  <summary>Andamento epidemia: numeri assoluti giornalieri</summary>
-  <p align="center"><img width="750" src="/risultati/andamento_epidemia_num_assoluti.png"></p>
+  <summary>Andamento epidemia: rapporto fra le incidenze per fascia di età</summary>
+  <p align="center"><img width="750" src="/risultati/andamento_rapporti_incidenze.png"></p>
 </details>
 
 <details>
