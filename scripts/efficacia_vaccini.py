@@ -26,7 +26,7 @@ def load_data():
     report_date = f"{csv_date_d}-{csv_date_m}-{csv_date.year}"
 
     message = f"Report ISS del {csv_date_d} {csv_date_m.capitalize()}: "
-    message += "https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_{report_date}.pdf"  # noqa: E501
+    message += f"https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_{report_date}.pdf"  # noqa: E501
     message += " I dati si riferiscono ai 30 giorni precedenti."
     print(message)
 
