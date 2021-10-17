@@ -24,4 +24,4 @@ RUN curl -s https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     rm get-pip.py
 
 # Install packages
-RUN pip install numpy matplotlib pandas beautifulsoup4 jupyterlab tabula-py requests pyopenssl
+RUN pip install numpy matplotlib pandas beautifulsoup4 tabula-py requests pyopenssl
