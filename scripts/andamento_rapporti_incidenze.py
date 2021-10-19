@@ -107,6 +107,108 @@ def plot_rapporti_incidenze(ticks, labels, show=False):
     if show:
         plt.show()
 
+            
+def ricava_andamenti_età(files, età, colonna, incidenza_settimanale):
+    '''Ricava andamento delle varie incindenze nel tempo,
+    divise per fascia d'età e categoria'''
+    
+    from custom.plots import date_from_csv_path, list_età_csv
+    
+    # create dates
+    dates = []
+    for f in files:
+        dates.append(date_from_csv_path(f))
+        
+    # loop around the .csv files
+    results_date = []
+    for i in range(len(files)):
+        df = pd.read_csv(files[i], sep=';')
+        df = df[df['età']==età]
+
+        non_vacc_labels = ['casi non vaccinati', 'ospedalizzati non vaccinati', 
+                'terapia intensiva non vaccinati', 'decessi non vaccinati']
+
+        vacc_labels = ['casi vaccinati', 'ospedalizzati vaccinati', 
+                       'terapia intensiva vaccinati', 'decessi vaccinati']
+
+        if incidenza_settimanale == True:
+            # calcola incidenza settimanale ogni 100.000 abitanti per ciascun gruppo
+            df[non_vacc_labels] = 7/30*df[non_vacc_labels]/df['non vaccinati'].values[0]*10**5
+            df[vacc_labels] = 7/30*df[vacc_labels]/df['vaccinati completo'].values[0]*10**5
+        else:
+            df[colonna] = df[colonna]/30  # converti in numeri giornalieri, media mobile 30 giorni      
+        
+        result_single_date = [dates[i], np.array(df[colonna])[0]]
+        results_date.append(result_single_date)
+
+    df_results = pd.DataFrame(results_date)
+    
+    if incidenza_settimanale == True:
+        df_results.columns = ['date', 'incidenza '+str(colonna)+', '+str(età)]
+    else:
+        df_results.columns = ['date', str(colonna)+', '+str(età)]
+    
+    df_results.index = pd.to_datetime(df_results['date'])
+    df_results.drop('date', axis=1, inplace=True)
+    
+    return df_results
+
+def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
+    '''Plot delle incidenze in funzione del tempo'''
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
+
+    ricava_andamenti_età(files, '12-39', categorie[0], incidenza_settimanale = False).plot(ax=axes[0], 
+                                                                                color='blue')
+    ricava_andamenti_età(files, '40-59', categorie[0], incidenza_settimanale = False).plot(ax=axes[0],
+                                                                                color='orange')
+    ricava_andamenti_età(files, '60-79', categorie[0], incidenza_settimanale = False).plot(ax=axes[0],
+                                                                                color='green')
+    ricava_andamenti_età(files, '80+', categorie[0], incidenza_settimanale = False).plot(ax=axes[0],
+                                                                                color='red')
+    ricava_andamenti_età(files, '12-39', categorie[1], incidenza_settimanale = False).plot(ax=axes[0],
+                                                                                color='blue', linestyle='--')
+    ricava_andamenti_età(files, '40-59', categorie[1], incidenza_settimanale = False).plot(ax=axes[0],
+                                                                                color='orange', linestyle='--')
+    ricava_andamenti_età(files, '60-79', categorie[1], incidenza_settimanale = False).plot(ax=axes[0],
+                                                                                color='green', linestyle='--')
+    ricava_andamenti_età(files, '80+', categorie[1], incidenza_settimanale = False).plot(ax=axes[0],
+                                                                                color='red', linestyle='--')
+
+    axes[0].set_title(titoli[0])
+    axes[0].legend(['12-39 non vaccinati', '40-59 non vaccinati', '60-79 non vaccinati', '80+ non vaccinati', '12-39 vaccinati', '40-59 vaccinati', '60-79 vaccinati', '80+ vaccinati'])
+    axes[0].grid()
+    axes[0].set_xlabel('')
+
+    ricava_andamenti_età(files, '12-39', categorie[0], incidenza_settimanale = True).plot(ax=axes[1], 
+                                                                                color='blue')
+    ricava_andamenti_età(files, '40-59', categorie[0], incidenza_settimanale = True).plot(ax=axes[1],
+                                                                                color='orange')
+    ricava_andamenti_età(files, '60-79', categorie[0], incidenza_settimanale = True).plot(ax=axes[1],
+                                                                                color='green')
+    ricava_andamenti_età(files, '80+', categorie[0], incidenza_settimanale = True).plot(ax=axes[1],
+                                                                                color='red')
+    ricava_andamenti_età(files, '12-39', categorie[1], incidenza_settimanale = True).plot(ax=axes[1],
+                                                                                color='blue', linestyle='--')
+    ricava_andamenti_età(files, '40-59', categorie[1], incidenza_settimanale = True).plot(ax=axes[1],
+                                                                                color='orange', linestyle='--')
+    ricava_andamenti_età(files, '60-79', categorie[1], incidenza_settimanale = True).plot(ax=axes[1],
+                                                                                color='green', linestyle='--')
+    ricava_andamenti_età(files, '80+', categorie[1], incidenza_settimanale = True).plot(ax=axes[1],
+                                                                                color='red', linestyle='--')
+    axes[1].set_title(titoli[1])
+    axes[1].grid()
+    axes[1].legend(['12-39 non vaccinati', '40-59 non vaccinati', '60-79 non vaccinati', '80+ non vaccinati', '12-39 vaccinati', '40-59 vaccinati', '60-79 vaccinati', '80+ vaccinati'])
+    axes[1].set_xlabel('')
+    
+    ax = plt.gca()
+    add_watermark(fig, ax.xaxis.label.get_fontsize())
+    
+    plt.tight_layout()
+    plt.savefig(filename, dpi=300, bbox_inches="tight")
+    
+    if show==True:
+        plt.show()
+
 
 if __name__ == "__main__":
     # Set work directory for the script
@@ -125,3 +227,23 @@ if __name__ == "__main__":
     ticks, labels = get_ticks_labels()
 
     plot_rapporti_incidenze(ticks, labels)
+    
+    # casi
+    categorie = ['casi non vaccinati', 'casi vaccinati']
+    titoli = ['Casi giornalieri (media 30 giorni)', 'Incidenza settimanale per 100.000 abitanti']
+    plot_assoluti_incidenza_età(categorie, titoli, filename='../risultati/andamento_fasce_età_casi.png')
+    
+    # ospedalizzazioni
+    categorie = ['ospedalizzati non vaccinati', 'ospedalizzati vaccinati']
+    titoli = ['Ospedalizzati giornalieri (media 30 giorni)', 'Incidenza settimanale degli ospedalizzati per 100.000 abitanti']
+    plot_assoluti_incidenza_età(categorie, titoli, filename='../risultati/andamento_fasce_età_ospedalizzati.png')
+    
+    # in terapia intensiva
+    categorie = ['terapia intensiva non vaccinati', 'terapia intensiva vaccinati']
+    titoli = ['Ricoverati in TI giornalieri (media 30 giorni)', 'Incidenza settimanale dei ricoverati in TI per 100.000 abitanti']
+    plot_assoluti_incidenza_età(categorie, titoli, filename='../risultati/andamento_fasce_età_ricoveratiTI.png')
+    
+    # decessi
+    categorie = ['decessi non vaccinati', 'decessi vaccinati']
+    titoli = ['Decessi giornalieri (media 30 giorni)', 'Incidenza settimanale dei decessi per 100.000 abitanti']
+    plot_assoluti_incidenza_età(categorie, titoli, filename='../risultati/andamento_fasce_età_decessi.png')
