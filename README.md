@@ -82,6 +82,26 @@ dalla directory principale
 </details>
 
 <details>
+  <summary>Andamento epidemia per fasce d'età</summary>
+    <details>
+      <summary>Nuovi casi</summary>
+      <p align="center"><img width="750" src="/risultati/andamento_fasce_età_casi.png"></p>
+    </details>
+    <details>
+      <summary>Ospedalizzati</summary>
+      <p align="center"><img width="750" src="/risultati/andamento_fasce_età_ospedalizzati.png"></p>
+    </details>
+    <details>
+      <summary>Ricoverati in terapia intensiva</summary>
+      <p align="center"><img width="750" src="/risultati/andamento_fasce_età_ricoveratiTI.png"></p>
+    </details>
+    <details>
+      <summary>Decessi</summary>
+      <p align="center"><img width="750" src="/risultati/andamento_fasce_età_decessi.png"></p>
+    </details>
+</details>
+
+<details>
   <summary>Incidenze settimanali ed efficacia vaccini per fascia di età</summary>
   <p align="center"><img width="750" src="/risultati/tassi_efficacia.png"></p>
 </details>
@@ -103,6 +123,7 @@ dalla directory principale
       <p align="center"><img width="750" src="/risultati/confronto_nazioni_epidemia-vaccino.png"></p>
     </details>
 </details>
+
 
 ___
 
