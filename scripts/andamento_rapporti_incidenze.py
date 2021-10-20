@@ -173,7 +173,7 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     ricava_andamenti_età(files,
                          "12-39",
                          categorie[0],
-                         incidenza_settimanal=False).plot(ax=axes[0],
+                         incidenza_settimanale=False).plot(ax=axes[0],
                                                           color="blue")
     ricava_andamenti_età(files,
                          "40-59",
@@ -311,16 +311,16 @@ if __name__ == "__main__":
               "Incidenza settimanale degli ospedalizzati per 100.000 abitanti"]
     plot_assoluti_incidenza_età(categorie,
                                 titoli,
-                                filename="../risultati/andamento_fasce_età_ospedalizzati.png")  # noqa: E501
+                                filename="../risultati/andamento_fasce_età_ospedalizzati.png")  
 
     # in terapia intensiva
     categorie = ["terapia intensiva non vaccinati",
                  "terapia intensiva vaccinati"]
     titoli = ["Ricoverati in TI giornalieri (media 30 giorni)",
-              "Incidenza settimanale dei ricoverati in TI per 100.000 abitanti"]  # noqa: E501
+              "Incidenza settimanale dei ricoverati in TI per 100.000 abitanti"]  
     plot_assoluti_incidenza_età(categorie,
                                 titoli,
-                                filename="../risultati/andamento_fasce_età_ricoveratiTI.png")  # noqa: E501
+                                filename="../risultati/andamento_fasce_età_ricoveratiTI.png")  
 
     # decessi
     categorie = ["decessi non vaccinati", "decessi vaccinati"]
@@ -328,4 +328,4 @@ if __name__ == "__main__":
               "Incidenza settimanale dei decessi per 100.000 abitanti"]
     plot_assoluti_incidenza_età(categorie,
                                 titoli,
-                                filename="../risultati/andamento_fasce_età_decessi.png")  # noqa: E501
+                                filename="../risultati/andamento_fasce_età_decessi.png")  
