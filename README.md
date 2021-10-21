@@ -82,24 +82,24 @@ dalla directory principale
 </details>
 
 <details>
-  <summary>Andamento epidemia per fasce d'età</summary>
+  <summary>Andamento epidemia per fasce d'età</summary><blockquote>
     <details>
-      <summary>Nuovi casi</summary>
+      <summary>Nuovi casi</summary><blockquote>
       <p align="center"><img width="750" src="/risultati/andamento_fasce_età_casi.png"></p>
-    </details>
+    </blockquote></details>
     <details>
-      <summary>Ospedalizzati</summary>
+      <summary>Ospedalizzati</summary><blockquote>
       <p align="center"><img width="750" src="/risultati/andamento_fasce_età_ospedalizzati.png"></p>
-    </details>
+    </blockquote></details>
     <details>
-      <summary>Ricoverati in terapia intensiva</summary>
+      <summary>Ricoverati in terapia intensiva</summary><blockquote>
       <p align="center"><img width="750" src="/risultati/andamento_fasce_età_ricoveratiTI.png"></p>
-    </details>
+    </blockquote></details>
     <details>
-      <summary>Decessi</summary>
+      <summary>Decessi</summary><blockquote>
       <p align="center"><img width="750" src="/risultati/andamento_fasce_età_decessi.png"></p>
-    </details>
-</details>
+    </blockquote></details>
+</blockquote></details>
 
 <details>
   <summary>Incidenze settimanali ed efficacia vaccini per fascia di età</summary>
@@ -117,12 +117,12 @@ dalla directory principale
 </details>
 
 <details>
-  <summary>Confronti internazionali</summary>
+  <summary>Confronti internazionali</summary><blockquote>
     <details>
-      <summary>Confronto incidenza contagi tra Bulgaria, Romania e Portogallo</summary>
+      <summary>Confronto incidenza contagi tra Bulgaria, Romania e Portogallo</summary><blockquote>
       <p align="center"><img width="750" src="/risultati/confronto_nazioni_epidemia-vaccino.png"></p>
-    </details>
-</details>
+    </blockquote></details>
+</blockquote></details>
 
 
 ___
