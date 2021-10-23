@@ -12,15 +12,10 @@ from custom.watermarks import add_watermark
 
 
 # Importa dati vaccini e dati epidemiologici
-def to_csv(file_event):
-    """ Legge csv """
-    return pd.read_csv(file_event)
-
-
 def import_vaccines_data():
     """ Recupera dati sui vaccini da Our World in Data"""
     url = "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.csv"  # noqa: E501
-    df_vacc = to_csv(url)
+    df_vacc = pd.read_csv(url)
     df_vacc = df_vacc.fillna(method="backfill")
     return df_vacc
 
@@ -49,19 +44,14 @@ def import_epidem_data():
     file_confirmed = base + "time_series_covid19_confirmed_global.csv"
     file_deaths = base + "time_series_covid19_deaths_global.csv"
     file_recovered = base + "time_series_covid19_recovered_global.csv"
-    return to_csv(file_confirmed), to_csv(file_deaths), to_csv(file_recovered)
-
-
-def get_y_epidemic_data(sel_df, country):
-    """ Recupera coordinata y dati epidemiologici per paese"""
-    return (sel_df[sel_df["Country/Region"] == country].iloc[:, 4:]).sum()
+    return pd.read_csv(file_confirmed), pd.read_csv(file_deaths), pd.read_csv(file_recovered)
 
 
 def get_epidemic_data(country, df_confirmed, df_deaths, df_recovered):
     """ Recupera dati epidemiologia per paese """
-    ydata_cases = get_y_epidemic_data(df_confirmed, country)
-    ydata_deaths = get_y_epidemic_data(df_deaths, country)
-    ydata_rec = get_y_epidemic_data(df_recovered, country)
+    ydata_cases = (df_confirmed[df_confirmed["Country/Region"] == country].iloc[:, 4:]).sum()
+    ydata_deaths = (df_deaths[df_deaths["Country/Region"] == country].iloc[:, 4:]).sum()
+    ydata_rec = (df_recovered[df_recovered["Country/Region"] == country].iloc[:, 4:]).sum()
     ydata_inf = ydata_cases-ydata_deaths-ydata_rec
     daily_cases = ydata_cases.diff().rolling(window=7).mean()
     daily_deaths = ydata_deaths.diff().rolling(window=7).mean()
