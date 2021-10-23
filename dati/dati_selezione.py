@@ -63,7 +63,7 @@ def date_parser(x):
     return pd.to_datetime(x, format="%Y/%m/%d")
 
 
-def get_data_from_report(auto, table_index):
+def get_data_from_report(auto=True, table_index=2):
     ''' get_data_from_report(boolean, int) -> None
 
     The script saves data extracted from report.
@@ -103,9 +103,9 @@ def get_data_from_report(auto, table_index):
         idx_err_msg += " Provo con l'indice 3"
         print(idx_err_msg)
         table_index = 3
-        # raise ValueError(idx_err_msg)  # interrupt script and notify user
 
     sel_raw_table = raw_tables[table_index]
+
     columns_to_keep = sel_raw_table.columns[[-3, -1]]
 
     to_exclude = r"\((.*)|[^a-z-0-9]|\d+-\d+|\d+\+"
@@ -113,7 +113,13 @@ def get_data_from_report(auto, table_index):
     df_raw = sel_raw_table[columns_to_keep]
     df = df_raw.replace(to_exclude, "", regex=True).replace("", np.nan)
     df = df.dropna(subset=columns_to_keep, how="all")
-    df = df.fillna(0).astype(np.int64)
+
+    try:
+        df = df.fillna(0).astype(np.int64)
+    except ValueError:
+        print("\nImpossibile estrarre dati da report! Procedi manualmente!")
+        exit()
+
     df.columns = ["Non vaccinati", "Immunizzati"]
 
     # Get data
@@ -164,4 +170,4 @@ if __name__ == "__main__":
     locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
 
     # get data
-    get_data_from_report(auto=True, table_index=2)
+    get_data_from_report()
