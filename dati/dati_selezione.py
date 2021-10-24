@@ -117,7 +117,7 @@ def get_data_from_report(auto=True, table_index=2):
     try:
         df = df.fillna(0).astype(np.int64)
     except ValueError:
-        print("\nImpossibile estrarre dati da report! Procedi manualmente!")
+        print("\nImpossibile estrarre dati dal report! Procedi manualmente!")
         exit()
 
     df.columns = ["Non vaccinati", "Immunizzati"]
