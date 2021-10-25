@@ -44,7 +44,7 @@ def get_surveillance_reports():
         cut_date = pd.to_datetime('2021-07-14')
     return [urljoin(epicentro_url, link["href"]) for link in links
             if ("Bollettino-sorveglianza-integrata-COVID-19" in link["href"])
-            and (date_from_url(link["href"], False) >= cut_date)]
+            and (date_from_url(link["href"], is_raw=False) >= cut_date)]
 
 
 def page_from_url(sel_url,
@@ -75,11 +75,12 @@ def page_from_url(sel_url,
     return found_page + 1 if found_page is not None else None
 
 
-def date_from_url(sel_url, is_raw):
-    """date_from_url(str) -> datetime
+def date_from_url(sel_url, is_raw=True):
+    """date_from_url(str, boolean) -> datetime
 
     sel_url: url of the report
-    return: raw date or datetime extracted from report url"""
+    is_raw: choose whether to return raw or translated date
+    return: datetime"""
 
     date_ = re.findall(r"\d+[a-z-A-Z]+\d+", sel_url)[0]
     return date_ if is_raw else datetime.strptime(date_, "%d-%B-%Y")
@@ -114,14 +115,14 @@ def get_data_from_report(auto=True):
         rep_url = reports[0]
     else:
         # Build dictionary for manual mode
-        reports_dict = dict(enumerate([date_from_url(report, True)
+        reports_dict = dict(enumerate([date_from_url(report)
                             for report in reports]))
         # Select report index as input
         rep_idx = input(f'\nChoose report index:\n\n{reports_dict}\n\n')
         rep_url = reports[int(rep_idx)]
 
     # Get report date
-    rep_date = date_from_url(rep_url, False)
+    rep_date = date_from_url(rep_url, is_raw=False)
     print(f"\nSelected report ({rep_date.date()}) is:\n{rep_url}")
 
     # Read the csv to update from the repo
