@@ -9,7 +9,7 @@ https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-inte
 
 Requirements:
 Python 3.6+, Ghostscript (ghostscript), Tkinter (python3-tk)
-numpy, pandas, camelot, requests, Beautiful Soup 4 """
+numpy, pandas, camelot, pdfplumber, requests, Beautiful Soup 4 """
 
 
 import locale
@@ -124,6 +124,20 @@ def get_data_from_report(auto=True):
     rep_date = date_from_url(rep_url, False)
     print(f"\nSelected report ({rep_date.date()}) is:\n{rep_url}")
 
+    # Read the csv to update from the repo
+    repo_url = "https://raw.githubusercontent.com/apalladi/covid_"
+    repo_url += "vaccini_monitoraggio/main/dati/dati_ISS_complessivi.csv"
+    df_0 = pd.read_csv(repo_url,
+                       sep=";",
+                       parse_dates=["data"],
+                       date_parser=date_parser,
+                       index_col="data")
+
+    # If table is already up-to-date stop the script
+    if rep_date in df_0.index:
+        print("I dati sono già aggiornati all'ultimo report")
+        exit()
+
     # Get table 3 page number
     table_page = page_from_url(rep_url)
 
@@ -172,16 +186,6 @@ def get_data_from_report(auto=True):
     results = [df_final[col][i:i+step_].sum()
                for i in np.arange(0, len(df_final)-step_+1, step_)
                for col in df_final.columns]
-
-    # Read the original general data csv from apalladi"s repo
-    # https://github.com/apalladi/covid_vaccini_monitoraggio/tree/main/dati
-    repo_url = "https://raw.githubusercontent.com/apalladi/covid_"
-    repo_url += "vaccini_monitoraggio/main/dati/dati_ISS_complessivi.csv"
-    df_0 = pd.read_csv(repo_url,
-                       sep=";",
-                       parse_dates=["data"],
-                       date_parser=date_parser,
-                       index_col="data")
 
     # Add the new row at the top of the df
     df_0.loc[rep_date] = results
