@@ -6,7 +6,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get clean
 # (...)
 
 # Python package management and basic dependencies
-RUN apt-get install -y curl python3.7 python3.7-dev python3.7-distutils locales default-jre git
+RUN apt-get install -y curl python3.7 python3.7-dev python3.7-distutils locales git ghostscript python3-tk
 
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/'        /etc/locale.gen \
  && sed -i -e 's/# it_IT.UTF-8 UTF-8/it_IT.UTF-8 UTF-8/' /etc/locale.gen \
@@ -24,4 +24,4 @@ RUN curl -s https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     rm get-pip.py
 
 # Install packages
-RUN pip install numpy matplotlib pandas beautifulsoup4 tabula-py requests pyopenssl
+RUN pip install numpy matplotlib pandas beautifulsoup4 camelot-py[base] pdfplumber requests pyopenssl
