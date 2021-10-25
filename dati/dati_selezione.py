@@ -104,7 +104,7 @@ def get_data_from_report(auto=True):
                                is automatically read
     - Manual (auto = False): Index of the report will be asked as input"""
 
-    error_msg = "Impossibile estrarre i dati! Procedi manualmente!"
+    error_msg = "Can't extract the table! DIY!"
 
     # Get reports
     reports = get_surveillance_reports()
@@ -117,7 +117,7 @@ def get_data_from_report(auto=True):
         reports_dict = dict(enumerate([date_from_url(report, True)
                             for report in reports]))
         # Select report index as input
-        rep_idx = input(f'\nScegli indice report:\n\n{reports_dict}\n\n')
+        rep_idx = input(f'\nChoose report index:\n\n{reports_dict}\n\n')
         rep_url = reports[int(rep_idx)]
 
     # Get report date
@@ -135,7 +135,7 @@ def get_data_from_report(auto=True):
 
     # If table is already up-to-date stop the script
     if rep_date in df_0.index:
-        print("I dati sono già aggiornati all'ultimo report")
+        print("\nCSV are already up-to-date!")
         exit()
 
     # Get table 3 page number
@@ -143,7 +143,7 @@ def get_data_from_report(auto=True):
 
     # Try a different pattern is no page is found
     if table_page is None:
-        print("Qualcosa è andato storto! Provo ancora!")
+        print("Something went wrong! Trying again!")
         # Older report?
         new_s = "TABELLA 7 – COPERTURA VACCINALE NELLA"
         new_s += " POPOLAZIONE ITALIANA DI ETÀ >12 ANNI"
@@ -167,14 +167,13 @@ def get_data_from_report(auto=True):
         print(error_msg)
         exit()
 
-    # keep the last and the third last column
+    # Keep the last and the third last column
     columns_to_keep = df_raw.columns[[-3, -1]]
     df_raw = df_raw[columns_to_keep]
-    df_raw.columns = ["Non vaccinati", "Immunizzati"]
 
     # Get rows containing the following pattern # (# %)
     to_find = r"[0-9]|\((.*)"
-    df_raw = df_raw[df_raw["Non vaccinati"].str.match(to_find)]
+    df_raw = df_raw[df_raw[columns_to_keep[0]].str.match(to_find)]
 
     # Remove dots and parentheses
     to_exclude = r"\((.*)|[^0-9]"
@@ -207,7 +206,7 @@ def get_data_from_report(auto=True):
     # Save to csv
     df_1.to_csv(f"data_iss_età_{rep_date.date()}.csv", sep=";")
 
-    print("\nFinito!")
+    print("\nDone!")
 
 
 if __name__ == "__main__":
