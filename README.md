@@ -1,14 +1,6 @@
-# covid_vaccini_monitoraggio
+[![Sito web](https://img.shields.io/website?up_color=pink&up_message=online&url=https%3A%2F%2Fenricocid.github.io%2Fcovid_vaccini_monitoraggio_risultati%2F)](https://enricocid.github.io/covid_vaccini_monitoraggio_risultati/)
 
-Questo repository è stato creato con lo scopo di monitorare l'andamento dell'epidemia provocata dal Covid19 in Italia e l'efficacia dei vaccini.
-
-[![Licenza: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](#dettagli-licenza)
-
-- [Installazione](#installazione)
-- [Utilizzo](#utilizzo)
-- [Risultati](#risultati)
-- [Licenza](#dettagli-licenza)
-
+Questo repository è stato creato con lo scopo di monitorare l'andamento dell'epidemia provocata dal virus Sars-Cov-2 in Italia e l'efficacia dei vaccini. Per rimanere aggiornato sui risultati puoi dare una occhiata al nostro [**sito**](https://enricocid.github.io/covid_vaccini_monitoraggio_risultati/).
 
 ## Installazione
 
@@ -33,7 +25,7 @@ Nell'environment virtuale è possibile installare automaticamente i pacchetti ri
 
 Nel repository vengono utilizzati i dati rilasciati nei [report settimanali](https://www.epicentro.iss.it/coronavirus/aggiornamenti) dell'Istituto Superiore di Sanità, come ad esempio: https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_8-settembre-2021.pdf.
 
-Lo script [`dati\dati_selezione.py`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) estrae i dati per l'analisi (tabella n.3) a partire dal report selezionato.
+Lo script [`dati\dati_selezione.py`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) estrae i dati per l'analisi (tabella n.3) a partire dal report selezionato. Sono necessari ghostscript e tkinker per il corretto funzionamento di [camelot](https://camelot-py.readthedocs.io/en/master/user/install-deps.html).
 
 I dati possono essere analizzati mediante i seguenti script:
 
@@ -57,84 +49,4 @@ Per eseguire un aggiornamento generale, utilizzare il comando
 
 `./update_all.sh`
 
-dalla directory principale
-
-## Risultati
-
-<details>
-  <summary>Andamento epidemia: incidenze settimanali (rapporto eventi/popolazione riferimento)</summary>
-  <p align="center"><img width="750" src="/risultati/andamento_epidemia.png"></p>
-</details>
-
-<details>
-  <summary>Andamento epidemia: numeri assoluti giornalieri</summary>
-  <p align="center"><img width="750" src="/risultati/andamento_epidemia_num_assoluti.png"></p>
-</details>
-
-<details>
-  <summary>Andamento epidemia: rapporto fra le incidenze per gli eventi</summary>
-  <p align="center"><img width="750" src="/risultati/rapporto_tra_tassi.png"></p>
-</details>
-
-<details>
-  <summary>Andamento epidemia: rapporto fra le incidenze per fascia di età</summary>
-  <p align="center"><img width="750" src="/risultati/andamento_rapporti_incidenze.png"></p>
-</details>
-
-<details>
-  <summary>Andamento epidemia per fasce d'età</summary><blockquote>
-    <details>
-      <summary>Nuovi casi</summary><blockquote>
-      <p align="center"><img width="750" src="/risultati/andamento_fasce_età_casi.png"></p>
-    </blockquote></details>
-    <details>
-      <summary>Ospedalizzati</summary><blockquote>
-      <p align="center"><img width="750" src="/risultati/andamento_fasce_età_ospedalizzati.png"></p>
-    </blockquote></details>
-    <details>
-      <summary>Ricoverati in terapia intensiva</summary><blockquote>
-      <p align="center"><img width="750" src="/risultati/andamento_fasce_età_ricoveratiTI.png"></p>
-    </blockquote></details>
-    <details>
-      <summary>Decessi</summary><blockquote>
-      <p align="center"><img width="750" src="/risultati/andamento_fasce_età_decessi.png"></p>
-    </blockquote></details>
-</blockquote></details>
-
-<details>
-  <summary>Incidenze settimanali ed efficacia vaccini per fascia di età</summary>
-  <p align="center"><img width="750" src="/risultati/tassi_efficacia.png"></p>
-</details>
-
-<details>
-  <summary>Efficacia vaccini: focus over 60</summary>
-  <p align="center"><img width="750" src="/risultati/focus_over60.png"></p>
-</details>
-
-<details>
-  <summary>Confronto curve epidemiche 2020 e 2021</summary>
-  <p align="center"><img width="750" src="/risultati/confrontro_2020_2021.png"></p>
-</details>
-
-<details>
-  <summary>Confronti internazionali</summary><blockquote>
-    <details>
-      <summary>Confronto incidenza contagi tra Bulgaria, Romania e Portogallo</summary><blockquote>
-      <p align="center"><img width="750" src="/risultati/confronto_nazioni_epidemia-vaccino.png"></p>
-    </blockquote></details>
-</blockquote></details>
-
-
-___
-
-
-### Dettagli licenza
-
-Questo repository è licenziato in base ai termini della licenza Creative Commons Attribuzione - Condividi allo stesso modo 4.0  (CC-BY-SA 4.0).
-
-[:it:](https://creativecommons.org/licenses/by/4.0/deed.it) - [:gb:](https://creativecommons.org/licenses/by/4.0/)
-<pre>
-<b>Permessi</b>                 <b>Condizioni</b>
-- Condividere            - Attribuzione (menzione di paternità adeguata)
-- Modificare             - Divieto restrizioni aggiuntive    
-</pre>
+dalla directory principale.

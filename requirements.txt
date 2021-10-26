@@ -3,5 +3,6 @@ matplotlib ~= 3.3.4
 pandas ~= 1.2.4
 beautifulsoup4
 jupyterlab
-tabula-py
+camelot-py[base]
+pdfplumber
 requests
