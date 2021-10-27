@@ -4,5 +4,4 @@ pandas ~= 1.2.4
 beautifulsoup4
 jupyterlab
 camelot-py[base]
-pdfplumber
-requests
+PyMuPDF
