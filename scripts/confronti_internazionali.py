@@ -82,9 +82,6 @@ def plot_data(show=False):
     x_date = ["2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01"]
     x_label = ["Lug\n2021", "Ago", "Set", "Ott"]
 
-    # Imposta stile plots
-    plt.style.use("seaborn-dark")
-
     fig, axes2 = plt.subplots(nrows=1, ncols=2, figsize=(8, 4))
 
     # Unpack all the axes subplots
