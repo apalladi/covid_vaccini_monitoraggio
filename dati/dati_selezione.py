@@ -9,21 +9,20 @@ https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-inte
 
 Requirements:
 Python 3.6+, Ghostscript (ghostscript), Tkinter (python3-tk)
-numpy, pandas, camelot, pdfplumber, requests, Beautiful Soup 4 """
+numpy, pandas, camelot, PyMuPDF, Beautiful Soup 4 """
 
 
 import locale
 import re
 from datetime import datetime
-from io import BytesIO
 from os import chdir, path
+from urllib import request
 from urllib.parse import urljoin
 
 import camelot
+import fitz
 import numpy as np
 import pandas as pd
-import pdfplumber
-import requests
 from bs4 import BeautifulSoup
 
 
@@ -34,45 +33,40 @@ def get_surveillance_reports():
 
     # Source of the ISS reports
     epicentro_url = "https://www.epicentro.iss.it/coronavirus/aggiornamenti"
-    # Requests URL and get response object
-    with requests.get(epicentro_url) as response:
+    # Requests URL and get http.client.HTTPResponse object
+    with request.urlopen(epicentro_url) as response:
         # Parse text obtained
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = BeautifulSoup(response, "html.parser")
         # Find all hyperlinks present on webpage
         links = soup.find_all("a")
         # Table 3 is available since 14/07/2021
-        cut_date = pd.to_datetime('2021-07-14')
+        cut_date = pd.to_datetime("2021-07-14")
     return [urljoin(epicentro_url, link["href"]) for link in links
             if ("Bollettino-sorveglianza-integrata-COVID-19" in link["href"])
             and (date_from_url(link["href"], is_raw=False) >= cut_date)]
 
 
-def page_from_url(sel_url,
-                  s="TABELLA 3 – POPOLAZIONE ITALIANA DI ETÀ >12 ANNI"):
+def page_from_url(sel_url):
     """page_from_url(sel_url) -> int
 
     sel_url: url of the report
-    s: search string
     return: number of the page containing table 3"""
 
-    with requests.get(sel_url) as response:
-        # Get raw data from url
-        raw_data = response.content
-        with BytesIO(raw_data) as data:
-            # Open the pdf file
-            pdf = pdfplumber.open(data)
-            # Get number of pages
-            num_pages = len(pdf.pages)
-            print(f"\nNum. of pages is: {num_pages}",
-                  f"\nSearching for: {s}")
-            # Extract text and do the search
-            found_page = None
-            for i in range(num_pages):
-                text = pdf.pages[i].extract_text()
-                if re.search(s, text, re.IGNORECASE):
-                    found_page = i
-                    break
-    return found_page + 1 if found_page is not None else None
+    queries = ["TABELLA 3 – POPOLAZIONE ITALIANA",
+               "TABELLA 3 – COPERTURA VACCINALE",
+               "TABELLA 7 – COPERTURA VACCINALE"]
+
+    with request.urlopen(sel_url) as response:
+        content = response.read()
+        with fitz.open(stream=content, filetype="pdf") as pdf:
+            for query in queries:
+                print(f"\nSearching for \n\"{query}\"...")
+                # Query for string
+                for page in pdf:
+                    text = page.get_text()
+                    if re.search(query, text, re.IGNORECASE):
+                        return page.number + 1
+    return None
 
 
 def date_from_url(sel_url, is_raw=True):
@@ -86,13 +80,26 @@ def date_from_url(sel_url, is_raw=True):
     return date_ if is_raw else datetime.strptime(date_, "%d-%B-%Y")
 
 
-def date_parser(x):
+def date_parser(sel_df):
     """date_parser(object) -> datetime
 
-    x: dataframe object
+    sel_df: dataframe object
     return: converts argument to datetime"""
 
-    return pd.to_datetime(x, format="%Y/%m/%d")
+    return pd.to_datetime(sel_df, format="%Y/%m/%d")
+
+
+def check_df(sel_df):
+    """check_df(sel_df) -> None
+
+    sel_df: dataframe object
+    return: check if the table has 2 columns"""
+
+    error_msg = "Can't extract the table! DIY!"
+    if len(sel_df.columns) < 3:
+        # Table is incomplete, bye bye
+        print(error_msg)
+        exit()
 
 
 def get_data_from_report(auto=True):
@@ -105,8 +112,6 @@ def get_data_from_report(auto=True):
                                is automatically read
     - Manual (auto = False): Index of the report will be asked as input"""
 
-    error_msg = "Can't extract the table! DIY!"
-
     # Get reports
     reports = get_surveillance_reports()
 
@@ -118,7 +123,7 @@ def get_data_from_report(auto=True):
         reports_dict = dict(enumerate([date_from_url(report)
                             for report in reports]))
         # Select report index as input
-        rep_idx = input(f'\nChoose report index:\n\n{reports_dict}\n\n')
+        rep_idx = input(f"\nChoose report index:\n\n{reports_dict}\n\n")
         rep_url = reports[int(rep_idx)]
 
     # Get report date
@@ -126,9 +131,9 @@ def get_data_from_report(auto=True):
     print(f"\nSelected report ({rep_date.date()}) is:\n{rep_url}")
 
     # Read the csv to update from the repo
-    repo_url = "https://raw.githubusercontent.com/apalladi/covid_"
-    repo_url += "vaccini_monitoraggio/main/dati/dati_ISS_complessivi.csv"
-    df_0 = pd.read_csv(repo_url,
+    csv_url = "https://raw.githubusercontent.com/apalladi/covid_"
+    csv_url += "vaccini_monitoraggio/main/dati/dati_ISS_complessivi.csv"
+    df_0 = pd.read_csv(csv_url,
                        sep=";",
                        parse_dates=["data"],
                        date_parser=date_parser,
@@ -142,39 +147,31 @@ def get_data_from_report(auto=True):
     # Get table 3 page number
     table_page = page_from_url(rep_url)
 
-    # Try a different pattern is no page is found
+    # Can't really find the page, stop
     if table_page is None:
-        print("Something went wrong! Trying again!")
-        # Older report?
-        new_s = "TABELLA 7 – COPERTURA VACCINALE NELLA"
-        new_s += " POPOLAZIONE ITALIANA DI ETÀ >12 ANNI"
-        table_page = page_from_url(rep_url,
-                                   s=new_s)
-        # Can't really find the page, stop
-        if table_page is None:
-            print(error_msg)
-            exit()
+        print("Table not found!")
+        exit()
 
     print("\nFound page is:", table_page)
 
     # Read the found page using camelot
-    df_raw = camelot.read_pdf(rep_url,
+    tables = camelot.read_pdf(rep_url,
                               pages=f"{table_page}",
-                              flavor="stream")[0].df
+                              flavor="stream")
+    df_raw = tables[0].df
 
     # Check if there are enough columns
     if len(df_raw.columns) < 3:
-        # Table is incomplete, bye bye
-        print(error_msg)
-        exit()
+        if len(tables) >= 1:
+            df_raw = tables[1].df
+        check_df(df_raw)
 
     # Keep the last and the third last column
     columns_to_keep = df_raw.columns[[-3, -1]]
     df_raw = df_raw[columns_to_keep]
 
-    # Get rows containing the following pattern # (# %)
-    to_find = r"[0-9]|\((.*)"
-    df_raw = df_raw[df_raw[columns_to_keep[0]].str.match(to_find)]
+    # Get rows containing "%)" at the end
+    df_raw = df_raw[df_raw[df_raw.columns[0]].str.endswith("%)")]
 
     # Remove dots and parentheses
     to_exclude = r"\((.*)|[^0-9]"

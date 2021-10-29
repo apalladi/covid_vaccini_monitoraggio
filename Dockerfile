@@ -6,8 +6,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get clean
 # (...)
 
 # Python package management and basic dependencies
-RUN DEBIAN_FRONTEND="noninteractive" TZ="Europe" apt-get install -y tzdata
-RUN apt-get install -y curl python3.7 python3.7-dev python3.7-distutils build-essential libssl-dev libffi-dev locales git ghostscript python3-tk python3-opencv
+RUN DEBIAN_FRONTEND="noninteractive" TZ="Europe" apt-get install -y curl python3.7 python3.7-dev python3.7-distutils build-essential locales git ghostscript python3-tk python3-opencv
 
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/'        /etc/locale.gen \
  && sed -i -e 's/# it_IT.UTF-8 UTF-8/it_IT.UTF-8 UTF-8/' /etc/locale.gen \
@@ -25,4 +24,4 @@ RUN curl -s https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     rm get-pip.py
 
 # Install packages
-RUN pip install numpy matplotlib pandas beautifulsoup4 camelot-py[base] pdfplumber requests pyopenssl
+RUN pip install numpy matplotlib pandas beautifulsoup4 camelot-py[base] PyMuPDF

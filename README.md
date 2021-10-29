@@ -1,6 +1,6 @@
-[![Sito web](https://img.shields.io/website?up_color=pink&up_message=online&url=https%3A%2F%2Fenricocid.github.io%2Fcovid_vaccini_monitoraggio_risultati%2F)](https://enricocid.github.io/covid_vaccini_monitoraggio_risultati/)
+[![Sito web](https://img.shields.io/website?up_color=brightgreen&up_message=online&url=https%3A%2F%2Fenricocid.github.io%2Fmonitoraggio-vaccini-italia%2F)](https://enricocid.github.io/monitoraggio-vaccini-italia/)
 
-Questo repository è stato creato con lo scopo di monitorare l'andamento dell'epidemia provocata dal virus Sars-Cov-2 in Italia e l'efficacia dei vaccini. Per rimanere aggiornato sui risultati puoi dare una occhiata al nostro [**sito**](https://enricocid.github.io/covid_vaccini_monitoraggio_risultati/).
+Questo repository è stato creato con lo scopo di monitorare l'andamento dell'epidemia provocata dal virus Sars-Cov-2 in Italia e l'efficacia dei vaccini. Per rimanere aggiornato sui risultati puoi dare una occhiata al nostro [**sito**](https://enricocid.github.io/monitoraggio-vaccini-italia/).
 
 ## Installazione
 
