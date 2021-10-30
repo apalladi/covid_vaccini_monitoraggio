@@ -4,7 +4,7 @@ import numpy as np
 
 def compute_incidence(df_età):
     # ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
-    tassi = (7/30)*10**5*np.transpose([df_età["casi non vaccinati"]/df_età["non vaccinati"],
+    tassi = 10**5*np.transpose([df_età["casi non vaccinati"]/df_età["non vaccinati"],
              df_età["casi vaccinati"]/df_età["vaccinati completo"],
              df_età["ospedalizzati non vaccinati"]/df_età["non vaccinati"],
              df_età["ospedalizzati vaccinati"]/df_età["vaccinati completo"],

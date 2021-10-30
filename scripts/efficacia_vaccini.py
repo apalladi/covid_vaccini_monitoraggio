@@ -92,19 +92,19 @@ def plot_tassi(show=False):
     axes = axes2.ravel()
 
     df_tassi.iloc[:, [0, 1]].plot(ax=axes[0], kind="bar")
-    axes[0].set_title("Incidenza settimanale dei nuovi casi")
+    axes[0].set_title("Incidenza mensile dei nuovi casi")
     which_axe(axes[0])
 
     df_tassi.iloc[:, [2, 3]].plot(ax=axes[1], kind="bar")
-    axes[1].set_title("Incidenza settimanale degli ospedalizzati")
+    axes[1].set_title("Incidenza mensile degli ospedalizzati")
     which_axe(axes[1])
 
     df_tassi.iloc[:, [4, 5]].plot(ax=axes[2], kind="bar")
-    axes[2].set_title("Incidenza settimanale dei ricoveri in TI")
+    axes[2].set_title("Incidenza mensile dei ricoveri in TI")
     which_axe(axes[2])
 
     df_tassi.iloc[:, [6, 7]].plot(ax=axes[3], kind="bar")
-    axes[3].set_title("Incidenza settimanale dei deceduti")
+    axes[3].set_title("Incidenza mensile dei deceduti")
     which_axe(axes[3])
 
     # Add watermarks
@@ -169,19 +169,19 @@ def plot_riassunto(show=False):
     axes = axes2.ravel()
 
     df_tassi.iloc[:, [0, 1]].plot(ax=axes[0], kind="bar")
-    axes[0].set_title("Incidenza settimanale dei nuovi casi")
+    axes[0].set_title("Incidenza mensile dei nuovi casi")
     which_axe(axes[0])
 
     df_tassi.iloc[:, [2, 3]].plot(ax=axes[1], kind="bar")
-    axes[1].set_title("Incidenza settimanale degli ospedalizzati")
+    axes[1].set_title("Incidenza mensile degli ospedalizzati")
     which_axe(axes[1])
 
     df_tassi.iloc[:, [4, 5]].plot(ax=axes[2], kind="bar")
-    axes[2].set_title("Incidenza settimanale dei ricoveri in TI")
+    axes[2].set_title("Incidenza mensile dei ricoveri in TI")
     which_axe(axes[2])
 
     df_tassi.iloc[:, [6, 7]].plot(ax=axes[3], kind="bar")
-    axes[3].set_title("Incidenza settimanale dei deceduti")
+    axes[3].set_title("Incidenza mensile dei deceduti")
     which_axe(axes[3])
 
     eff_contagio.plot(kind="bar", ax=axes[4], color="blue")
