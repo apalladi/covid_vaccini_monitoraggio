@@ -41,7 +41,7 @@ def get_epidemic_data_2020():
     df_2020 = df_IT[mask_2020]
     df_2020 = df_2020[["totale_casi",
                        "deceduti"]].diff().rolling(window=30).mean()
-    df_2020 = df_2020*7/(abitanti_over12/(10**5))
+    df_2020 = df_2020*30/(abitanti_over12/(10**5))
     df_2020.columns = ["casi", "decessi"]
 
     casi_2020 = np.array(df_2020["casi"])[30:]
@@ -80,7 +80,7 @@ def plot_confronto_2020_2021(show=False):
              label="2021 (non vaccinati)",
              color="red")
     plt.xticks(x_label1, x_label2)
-    plt.title("Casi settimanali (media mobile 30 gg)")
+    plt.title("Casi mensili (media mobile 30 gg)")
     plt.ylabel("Ogni 100.000 persone per ciascun gruppo")
     plt.legend()
     plt.xlim(0, 165)
@@ -96,7 +96,7 @@ def plot_confronto_2020_2021(show=False):
              label="2021 (non vaccinati)",
              color="red")
     plt.xticks(x_label1, x_label2)
-    plt.title("Decessi settimanali (media mobile 30 gg)")
+    plt.title("Decessi mensili (media mobile 30 gg)")
     plt.ylabel("Ogni 100.000 persone per ciascun gruppo")
     plt.legend()
     plt.xlim(0, 165)

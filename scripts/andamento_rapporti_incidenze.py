@@ -108,7 +108,7 @@ def plot_rapporti_incidenze(ticks, labels, show=False):
         plt.show()
 
 
-def ricava_andamenti_età(files, età, colonna, incidenza_settimanale):
+def ricava_andamenti_età(files, età, colonna, incidenza_mensile):
     """Ricava andamento delle varie incindenze nel tempo,
     divise per fascia d"età e categoria"""
 
@@ -131,11 +131,11 @@ def ricava_andamenti_età(files, età, colonna, incidenza_settimanale):
         vacc_labels = ["casi vaccinati", "ospedalizzati vaccinati",
                        "terapia intensiva vaccinati", "decessi vaccinati"]
 
-        if incidenza_settimanale is True:
-            # calcola incidenza settimanale ogni
+        if incidenza_mensile is True:
+            # calcola incidenza mensile ogni
             # 100.000 abitanti per ciascun gruppo
-            df[non_vacc_labels] = 7/30*df[non_vacc_labels]/df["non vaccinati"].values[0]*10**5  # noqa: E501
-            df[vacc_labels] = 7/30*df[vacc_labels]/df["vaccinati completo"].values[0]*10**5  # noqa: E501
+            df[non_vacc_labels] = df[non_vacc_labels]/df["non vaccinati"].values[0]*10**5  # noqa: E501
+            df[vacc_labels] = df[vacc_labels]/df["vaccinati completo"].values[0]*10**5  # noqa: E501
         else:
             # converti in numeri giornalieri, media mobile 30 giorni
             df[colonna] = df[colonna]/30
@@ -145,7 +145,7 @@ def ricava_andamenti_età(files, età, colonna, incidenza_settimanale):
 
     df_results = pd.DataFrame(results_date)
 
-    if incidenza_settimanale is True:
+    if incidenza_mensile is True:
         df_results.columns = ["date", "incidenza "+str(colonna)+", "+str(età)]
     else:
         df_results.columns = ["date", str(colonna)+", "+str(età)]
@@ -173,45 +173,45 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     ricava_andamenti_età(files,
                          "12-39",
                          categorie[0],
-                         incidenza_settimanale=False).plot(ax=axes[0],
+                         incidenza_mensile=False).plot(ax=axes[0],
                                                           color="blue")
     ricava_andamenti_età(files,
                          "40-59",
                          categorie[0],
-                         incidenza_settimanale=False).plot(ax=axes[0],
+                         incidenza_mensile=False).plot(ax=axes[0],
                                                            color="orange")
     ricava_andamenti_età(files,
                          "60-79",
                          categorie[0],
-                         incidenza_settimanale=False).plot(ax=axes[0],
+                         incidenza_mensile=False).plot(ax=axes[0],
                                                            color="green")
     ricava_andamenti_età(files,
                          "80+",
                          categorie[0],
-                         incidenza_settimanale=False).plot(ax=axes[0],
+                         incidenza_mensile=False).plot(ax=axes[0],
                                                            color="red")
     ricava_andamenti_età(files,
                          "12-39",
                          categorie[1],
-                         incidenza_settimanale=False).plot(ax=axes[0],
+                         incidenza_mensile=False).plot(ax=axes[0],
                                                            color="blue",
                                                            linestyle="--")
     ricava_andamenti_età(files,
                          "40-59",
                          categorie[1],
-                         incidenza_settimanale=False).plot(ax=axes[0],
+                         incidenza_mensile=False).plot(ax=axes[0],
                                                            color="orange",
                                                            linestyle="--")
     ricava_andamenti_età(files,
                          "60-79",
                          categorie[1],
-                         incidenza_settimanale=False).plot(ax=axes[0],
+                         incidenza_mensile=False).plot(ax=axes[0],
                                                            color="green",
                                                            linestyle="--")
     ricava_andamenti_età(files,
                          "80+",
                          categorie[1],
-                         incidenza_settimanale=False).plot(ax=axes[0],
+                         incidenza_mensile=False).plot(ax=axes[0],
                                                            color="red",
                                                            linestyle="--")
 
@@ -223,45 +223,45 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     ricava_andamenti_età(files,
                          "12-39",
                          categorie[0],
-                         incidenza_settimanale=True).plot(ax=axes[1],
+                         incidenza_mensile=True).plot(ax=axes[1],
                                                           color="blue")
     ricava_andamenti_età(files,
                          "40-59",
                          categorie[0],
-                         incidenza_settimanale=True).plot(ax=axes[1],
+                         incidenza_mensile=True).plot(ax=axes[1],
                                                           color="orange")
     ricava_andamenti_età(files,
                          "60-79",
                          categorie[0],
-                         incidenza_settimanale=True).plot(ax=axes[1],
+                         incidenza_mensile=True).plot(ax=axes[1],
                                                           color="green")
     ricava_andamenti_età(files,
                          "80+",
                          categorie[0],
-                         incidenza_settimanale=True).plot(ax=axes[1],
+                         incidenza_mensile=True).plot(ax=axes[1],
                                                           color="red")
     ricava_andamenti_età(files,
                          "12-39",
                          categorie[1],
-                         incidenza_settimanale=True).plot(ax=axes[1],
+                         incidenza_mensile=True).plot(ax=axes[1],
                                                           color="blue",
                                                           linestyle="--")
     ricava_andamenti_età(files,
                          "40-59",
                          categorie[1],
-                         incidenza_settimanale=True).plot(ax=axes[1],
+                         incidenza_mensile=True).plot(ax=axes[1],
                                                           color="orange",
                                                           linestyle="--")
     ricava_andamenti_età(files,
                          "60-79",
                          categorie[1],
-                         incidenza_settimanale=True).plot(ax=axes[1],
+                         incidenza_mensile=True).plot(ax=axes[1],
                                                           color="green",
                                                           linestyle="--")
     ricava_andamenti_età(files,
                          "80+",
                          categorie[1],
-                         incidenza_settimanale=True).plot(ax=axes[1],
+                         incidenza_mensile=True).plot(ax=axes[1],
                                                           color="red",
                                                           linestyle="--")
     axes[1].set_title(titoli[1])
@@ -300,7 +300,7 @@ if __name__ == "__main__":
     # casi
     categorie = ["casi non vaccinati", "casi vaccinati"]
     titoli = ["Casi giornalieri (media 30 giorni)",
-              "Incidenza settimanale per 100.000 abitanti"]
+              "Incidenza mensile per 100.000 abitanti"]
     plot_assoluti_incidenza_età(categorie,
                                 titoli,
                                 filename="../risultati/andamento_fasce_età_casi.png")  # noqa: E501
@@ -308,7 +308,7 @@ if __name__ == "__main__":
     # ospedalizzazioni
     categorie = ["ospedalizzati non vaccinati", "ospedalizzati vaccinati"]
     titoli = ["Ospedalizzati giornalieri (media 30 giorni)",
-              "Incidenza settimanale degli ospedalizzati per 100.000 abitanti"]
+              "Incidenza mensile degli ospedalizzati per 100.000 abitanti"]
     plot_assoluti_incidenza_età(categorie,
                                 titoli,
                                 filename="../risultati/andamento_fasce_età_ospedalizzati.png")  
@@ -317,7 +317,7 @@ if __name__ == "__main__":
     categorie = ["terapia intensiva non vaccinati",
                  "terapia intensiva vaccinati"]
     titoli = ["Ricoverati in TI giornalieri (media 30 giorni)",
-              "Incidenza settimanale dei ricoverati in TI per 100.000 abitanti"]  
+              "Incidenza mensile dei ricoverati in TI per 100.000 abitanti"]  
     plot_assoluti_incidenza_età(categorie,
                                 titoli,
                                 filename="../risultati/andamento_fasce_età_ricoveratiTI.png")  
@@ -325,7 +325,7 @@ if __name__ == "__main__":
     # decessi
     categorie = ["decessi non vaccinati", "decessi vaccinati"]
     titoli = ["Decessi giornalieri (media 30 giorni)",
-              "Incidenza settimanale dei decessi per 100.000 abitanti"]
+              "Incidenza mensile dei decessi per 100.000 abitanti"]
     plot_assoluti_incidenza_età(categorie,
                                 titoli,
                                 filename="../risultati/andamento_fasce_età_decessi.png")  
