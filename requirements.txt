@@ -5,3 +5,6 @@ beautifulsoup4
 jupyterlab
 tabula-py
 requests
+scikit-learn
+adjustText
+statsmodels
