@@ -1,5 +1,3 @@
-# type: ignore
-
 from datetime import datetime
 from glob import glob
 from re import findall
