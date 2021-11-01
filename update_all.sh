@@ -10,5 +10,5 @@ else
   python scripts/andamento_rapporti_incidenze.py
   python scripts/efficacia_vaccini.py
   python scripts/confronto_2020_2021.py
-  python scripts/confronti_internazionali.py
+  python scripts/confronti_europei.py
 fi
