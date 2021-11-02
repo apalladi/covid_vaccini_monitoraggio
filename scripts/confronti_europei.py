@@ -206,7 +206,16 @@ def linear_fit(vacc_res_2021, dec_res_2021):
     coeff_fit = np.polyfit(vacc_res_2021, dec_res_2021, 1)
     x_grid = np.arange(0, 100, 1)
     y_grid = [linear_model(v, coeff_fit) for v in x_grid]
-    return x_grid, y_grid
+    
+    # calcola R2 score
+    y_pred = [linear_model(v, coeff_fit) for v in vacc_res_2021]
+    y_test = dec_res_2021
+    
+    from sklearn.metrics import r2_score
+    score = round(r2_score(y_test, y_pred), 2)
+    print('R2 score è pari a', score)
+    
+    return x_grid, y_grid, score
 
 
 def corr_window(tw):
@@ -231,7 +240,7 @@ def compute_max_correlation():
     return ideal_window
 
 
-def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_grid, ideal_window):
+def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_grid, ideal_window, score):
     plt.style.use('seaborn-dark')
     fig = plt.figure(figsize=(15, 8))
     for i in range(len(vacc_res_2021)):
@@ -242,14 +251,14 @@ def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_gri
                    textcoords='offset points', ha='right', va='bottom',
                    bbox=dict(boxstyle='round,pad=0.2', fc='yellow', alpha=0.3),
                    arrowprops=dict(arrowstyle = '->', connectionstyle='arc3,rad=0'))
-    plt.plot(x_grid, y_grid, linestyle='--', label='Regressione lineare')
+    plt.plot(x_grid, y_grid, linestyle='--', label='Regressione lineare, R$^2$ score='+str(score))
     plt.xticks(np.arange(0, 101, 20), ['0%', '20%', '40%', '60%', '80%', '100%'])
-    plt.ylim(0, 1600)
-    plt.xlim(15, 90)
     plt.title('Frazione di vaccinati vs decessi nei 27 Paesi dell\'UE negli ultimi '+str(ideal_window)+' giorni \nCoefficiente di correlazione = '+str(corr_coeff), 
               fontsize=15)
     plt.xlabel('Vaccinati con ciclo completo', fontsize=15)
     plt.ylabel('Decessi per milione di abitanti', fontsize=15)
+    plt.ylim(0, )
+    plt.xlim(0, 100)
     plt.legend(fontsize=15)
     plt.grid()
     # Add watermarks
@@ -287,10 +296,10 @@ if __name__ == "__main__":
 
     ideal_window = compute_max_correlation()
     vacc_res_2021, dec_res_2021 = compute_vaccini_decessi(tw = ideal_window)
-    x_grid, y_grid = linear_fit(vacc_res_2021, dec_res_2021)
+    x_grid, y_grid, score = linear_fit(vacc_res_2021, dec_res_2021)
     corr_coeff = round(np.corrcoef(vacc_res_2021, dec_res_2021)[0, 1], 2)
     
     print('Coefficiente di correlazione tra vaccinati e deceduti:', corr_coeff)
     print('Finestra temporale in cui si registra la massima correlazione:', ideal_window, 'giorni')
 
-    plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_grid, ideal_window)
+    plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_grid, ideal_window, score)

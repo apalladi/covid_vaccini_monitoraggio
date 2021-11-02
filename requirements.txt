@@ -5,3 +5,4 @@ beautifulsoup4
 jupyterlab
 camelot-py[base]
 PyMuPDF
+scikit-learn
