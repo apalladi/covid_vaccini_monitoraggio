@@ -6,10 +6,10 @@ from os import chdir, path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from adjustText import adjust_text
 
 from custom.plots import aggiorna_ascissa
 from custom.watermarks import add_watermark
-
 
 paesi_abitanti_eu = {"Austria": 8.917, "Belgium": 11.56, "Bulgaria": 6.927,
                      "Cyprus": 1.207, "Croatia": 4.047, "Denmark": 5.831,
@@ -240,21 +240,29 @@ def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_gri
 
     # scatter plot
     paesi = list(paesi_abitanti_eu.keys())
-    for i in range(len(vacc_res_2021)):
-        plt.scatter(vacc_res_2021[i], dec_res_2021[i])
-        plt.annotate(paesi[i],
-                     xy=(vacc_res_2021[i]+0.1, dec_res_2021[i]),
-                     xytext=(-20, -10),
-                     textcoords="offset points", ha="right", va="bottom",
-                     bbox=dict(boxstyle="round,pad=0.2", fc="yellow", alpha=0.3),
-                     arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=0"))
-    # fit plot
+
+    # genera lista di colori
+    colors = plt.cm.nipy_spectral(np.linspace(0, 1, len(paesi)))
+    plt.scatter(vacc_res_2021, dec_res_2021, c=colors,
+                edgecolor="black", s=3*len(paesi))
+
+    texts = [plt.annotate(paesi[i],
+             xy=(vacc_res_2021[i], dec_res_2021[i]),
+             xytext=(15, -20),
+             textcoords="offset points",
+             bbox=dict(boxstyle='round,pad=0.2', fc=colors[i], alpha=0.3),
+             arrowprops=dict(arrowstyle="->", lw=1.0))
+             for i in range(len(vacc_res_2021))]
+
+    # fix text overlap
+    adjust_text(texts)
+
+    # plot fit equation
     plt.plot(x_grid, y_grid, linestyle="--", label="Regressione lineare")
 
+    plt.ylim(-200, 1700)
     plt.xlim(15, 90)
-    plt.ylim(0, 1600)
-    title = "Frazione di vaccinati vs decessi nei 27 Paesi dell'UE"
-    title += f" negli ultimi {ideal_window} giorni"
+    title = f"Frazione di vaccinati vs decessi nei 27 Paesi dell'UE negli ultimi {ideal_window} giorni"
     title += f"\nCoefficiente di correlazione = {corr_coeff}"
     plt.title(title, fontsize=15)
     plt.xlabel("Vaccinati con ciclo completo", fontsize=15)
@@ -286,6 +294,7 @@ if __name__ == "__main__":
     # Imposta stile grafici
     plt.style.use("seaborn-dark")
 
+    # importa dati
     df_confirmed, df_deaths, df_recovered = import_epidem_data()
     df_vacc = import_vaccines_data()
 
@@ -293,6 +302,7 @@ if __name__ == "__main__":
     plot_selection()
 
     # plot correlazione vaccini vs. decessi per paesi eu
+
     # calcola finestra temporale per cui si ottiene massima correlazione
     ideal_window = compute_max_correlation()
     # recupera dati per tale finestra temporale
@@ -310,5 +320,4 @@ if __name__ == "__main__":
                                       dec_res_2021,
                                       x_grid,
                                       y_grid,
-                                      ideal_window,
-                                      show=True)
+                                      ideal_window)
