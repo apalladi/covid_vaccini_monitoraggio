@@ -24,4 +24,4 @@ RUN curl -s https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     rm get-pip.py
 
 # Install packages
-RUN pip install numpy matplotlib pandas beautifulsoup4 camelot-py[base] PyMuPDF scikit-learn
+RUN pip install numpy matplotlib pandas beautifulsoup4 camelot-py[base] PyMuPDF scikit-learn adjustText

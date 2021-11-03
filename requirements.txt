@@ -6,3 +6,4 @@ jupyterlab
 camelot-py[base]
 PyMuPDF
 scikit-learn
+adjustText

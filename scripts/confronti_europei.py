@@ -6,6 +6,7 @@ from os import chdir, path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from adjustText import adjust_text
 from sklearn.metrics import r2_score
 
 from custom.plots import aggiorna_ascissa
@@ -51,6 +52,7 @@ def get_vaccine_data(country, df_vacc):
 def import_epidem_data():
     """ Recupera dati epidemiologici dal JHU CSSE
         (Johns Hopkins Unversity)"""
+
     base = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/"  # noqa: E501
     file_confirmed = base + "time_series_covid19_confirmed_global.csv"
     file_deaths = base + "time_series_covid19_deaths_global.csv"
@@ -126,6 +128,7 @@ def linear_model(x, coeff_fit):
 
 def linear_fit(vacc_res_2021, dec_res_2021):
     """ fit lineare """
+
     coeff_fit = np.polyfit(vacc_res_2021, dec_res_2021, 1)
     x_grid = np.arange(0, 100, 1)
     y_grid = [linear_model(v, coeff_fit) for v in x_grid]
@@ -143,6 +146,7 @@ def linear_fit(vacc_res_2021, dec_res_2021):
 def corr_window(tw):
     """ Recupera dati decessi e vaccini per la finestra
         temporale e i paesi selezionati """
+
     dec_res = []
     vacc_res = []
     for p, abitanti in paesi_abitanti_eu.items():
@@ -155,6 +159,7 @@ def corr_window(tw):
 def compute_max_correlation():
     """ calcola la finestra temporale in cui si ottiene
         la massima correlazione """
+
     tw_grid = np.arange(7, 300, 5)
     corr_grid = [np.abs(corr_window(tw)) for tw in tw_grid]
     ideal_window = tw_grid[np.argmax(corr_grid)]
@@ -248,18 +253,26 @@ def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_gri
 
     # scatter plot
     paesi = list(paesi_abitanti_eu.keys())
-    for i in range(len(vacc_res_2021)):
-        plt.scatter(vacc_res_2021[i], dec_res_2021[i])
-        plt.annotate(paesi[i],
-                     xy=(vacc_res_2021[i]+0.1, dec_res_2021[i]),
-                     xytext=(-20, -10),
-                     textcoords="offset points", ha="right", va="bottom",
-                     bbox=dict(boxstyle="round,pad=0.2", fc="yellow", alpha=0.3),
-                     arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=0"))
+    # genera lista di colori
+    colors = plt.cm.nipy_spectral(np.linspace(0, 1, len(paesi)))
+    plt.scatter(vacc_res_2021, dec_res_2021, c=colors,
+                edgecolor="black", s=3*len(paesi))
+
+    texts = [plt.annotate(paesi[i],
+             xy=(vacc_res_2021[i], dec_res_2021[i]),
+             xytext=(20, -15),
+             textcoords="offset points",
+             bbox=dict(boxstyle='round,pad=0.2', fc=colors[i], alpha=0.3),
+             arrowprops=dict(arrowstyle="->", lw=1.0))
+             for i in range(len(vacc_res_2021))]
+
+    # fix text overlap
+    adjust_text(texts)
+
     # fit plot
     plt.plot(x_grid, y_grid, linestyle="--", label=f"Regressione lineare, R$^2$ score={score}")
 
-    plt.ylim(0, )
+    plt.ylim(-100, )
     plt.xlim(0, 100)
     title = "Frazione di vaccinati vs decessi nei 27 Paesi dell'UE"
     title += f" negli ultimi {ideal_window} giorni"
@@ -294,6 +307,7 @@ if __name__ == "__main__":
     # Imposta stile grafici
     plt.style.use("seaborn-dark")
 
+    # importa dati
     df_confirmed, df_deaths, df_recovered = import_epidem_data()
     df_vacc = import_vaccines_data()
 
@@ -319,5 +333,4 @@ if __name__ == "__main__":
                                       x_grid,
                                       y_grid,
                                       ideal_window,
-                                      score,
-                                      show=True)
+                                      score)
