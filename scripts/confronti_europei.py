@@ -22,6 +22,12 @@ paesi_abitanti_eu = {"Austria": 8.917, "Belgium": 11.56, "Bulgaria": 6.927,
                      "Romania": 19.29, "Slovakia": 5.549, "Slovenia": 2.1,
                      "Spain": 47.35, "Sweden": 10.35, "Hungary": 9.75}
 
+paesi_eu_ita = ["Austria", "Belgio", "Bulgaria", "Cipro", "Croazia", "Danimarca",
+                "Estonia", "Finlandia", "Francia", "Germania", "Grecia", "Irlanda",
+                "Italia", "Lettonia", "Lituania", "Lussemburgo", "Malta", "Olanda",
+                "Polonia", "Portogallo", "Repubblica Ceca", "Romania", "Slovacchia",
+                "Slovenia", "Spagna", "Svezia", "Ungheria"]
+
 
 # Importa dati vaccini e dati epidemiologici
 def import_vaccines_data():
@@ -252,13 +258,12 @@ def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_gri
     fig = plt.figure(figsize=(15, 8))
 
     # scatter plot
-    paesi = list(paesi_abitanti_eu.keys())
     # genera lista di colori
-    colors = plt.cm.nipy_spectral(np.linspace(0, 1, len(paesi)))
+    colors = plt.cm.nipy_spectral(np.linspace(0, 1, len(paesi_eu_ita)))
     plt.scatter(vacc_res_2021, dec_res_2021, c=colors,
-                edgecolor="black", s=3*len(paesi))
+                edgecolor="black", s=3*len(paesi_eu_ita))
 
-    texts = [plt.annotate(paesi[i],
+    texts = [plt.annotate(paesi_eu_ita[i],
              xy=(vacc_res_2021[i], dec_res_2021[i]),
              xytext=(20, -15),
              textcoords="offset points",
