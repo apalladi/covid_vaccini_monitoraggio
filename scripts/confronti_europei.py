@@ -3,6 +3,7 @@
 import locale
 from os import chdir, path
 
+import matplotlib.patheffects as path_effects
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -258,21 +259,22 @@ def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_gri
     fig = plt.figure(figsize=(15, 8))
 
     # scatter plot
-    # genera lista di colori
+    # genera lista di colori e dimensioni
     colors = plt.cm.nipy_spectral(np.linspace(0, 1, len(paesi_eu_ita)))
+    sizes = 3*len(paesi_eu_ita)
     plt.scatter(vacc_res_2021, dec_res_2021, c=colors,
-                edgecolor="black", s=3*len(paesi_eu_ita))
+                edgecolor="black", linewidth=0.5, s=sizes)
 
-    texts = [plt.annotate(paesi_eu_ita[i],
-             xy=(vacc_res_2021[i], dec_res_2021[i]),
-             xytext=(20, -15),
-             textcoords="offset points",
-             bbox=dict(boxstyle='round,pad=0.2', fc=colors[i], alpha=0.3),
-             arrowprops=dict(arrowstyle="->", lw=1.0))
-             for i in range(len(vacc_res_2021))]
+    texts = [plt.text(vacc_res_2021[i],
+             dec_res_2021[i],
+             paesi_eu_ita[i],
+             path_effects=[path_effects.Stroke(linewidth=0.075, foreground=colors[i])])
+             for i in range(len(paesi_eu_ita))]
 
     # fix text overlap
-    adjust_text(texts)
+    adjust_text(texts,
+                expand_text=(1.15, 1.30),
+                arrowprops=dict(arrowstyle="-", lw=1))
 
     # fit plot
     plt.plot(x_grid, y_grid, linestyle="--", label=f"Regressione lineare, R$^2$ score={score}")
