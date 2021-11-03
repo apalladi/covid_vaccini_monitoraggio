@@ -168,8 +168,8 @@ def compute_max_correlation():
         la massima correlazione """
 
     tw_grid = np.arange(7, 300, 5)
-    corr_grid = [np.abs(corr_window(tw)) for tw in tw_grid]
-    ideal_window = tw_grid[np.argmax(corr_grid)]
+    corr_grid = [corr_window(tw) for tw in tw_grid]
+    ideal_window = tw_grid[np.argmin(corr_grid)]
     return ideal_window
 
 
