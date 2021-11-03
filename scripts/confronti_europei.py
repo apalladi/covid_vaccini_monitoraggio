@@ -117,7 +117,6 @@ def compute_vaccini_decessi_eu(tw):
 
     dec_res_2021 = []
     vacc_res_2021 = []
-    tw = ideal_window
     t0 = -1
     for p, abitanti in paesi_abitanti_eu.items():
         vacc_res_2021.append(get_vaccine_data_last(p,
@@ -325,7 +324,7 @@ if __name__ == "__main__":
     # calcola finestra temporale per cui si ottiene massima correlazione
     ideal_window = compute_max_correlation()
     # recupera dati per tale finestra temporale
-    vacc_res_2021, dec_res_2021 = compute_vaccini_decessi_eu(tw=ideal_window)
+    vacc_res_2021, dec_res_2021 = compute_vaccini_decessi_eu(ideal_window)
     x_grid, y_grid, score = linear_fit(vacc_res_2021, dec_res_2021)
     # calcola coefficiente di correlazione (pearson)
     corr_coeff = round(np.corrcoef(vacc_res_2021, dec_res_2021)[0, 1], 2)
