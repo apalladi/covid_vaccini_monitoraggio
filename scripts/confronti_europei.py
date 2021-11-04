@@ -285,7 +285,7 @@ def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_gri
     title += f" negli ultimi {window} giorni"
     title += f"\nCoefficiente di correlazione = {corr_coeff}"
     plt.title(title, fontsize=15)
-    plt.xlabel("Frazione media di vaccinati con ciclo completo negli ultimi "+str(window)+" giorni", fontsize=15)
+    plt.xlabel(f"Frazione media di vaccinati con ciclo completo negli ultimi {window} giorni", fontsize=15)
     plt.ylabel("Decessi per milione di abitanti", fontsize=15)
     plt.xticks(np.arange(0, 101, 20), ["0%", "20%", "40%", "60%", "80%", "100%"])
     plt.grid()
@@ -324,7 +324,7 @@ if __name__ == "__main__":
     # plot correlazione vaccini vs. decessi per paesi eu
     # calcola finestra temporale per cui si ottiene massima correlazione
     ideal_window = compute_max_correlation()
-    window = 30 # giorni
+    window = 30  # giorni
     # recupera dati per tale finestra temporale
     vacc_res_2021, dec_res_2021 = compute_vaccini_decessi_eu(window, fully=True, last_day=False)
     x_grid, y_grid, score = linear_fit(vacc_res_2021, dec_res_2021)
