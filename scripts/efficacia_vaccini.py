@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import locale
+from datetime import timedelta
 from os import chdir, path
 
 import matplotlib.pyplot as plt
@@ -45,11 +46,15 @@ def compute_efficacia():
 
 
 # Funzioni per il plot
-def get_label_month():
+def get_data_labels():
     """ Ricava label data dei grafici """
-    label_month = csv_date.strftime("%b").capitalize()
-    label_date = f"{csv_date_d} {label_month}"
-    return label_month, label_date
+    csv_date_start = csv_date - timedelta(days=30)
+    start_month = csv_date_start.strftime("%b").capitalize()
+    start_day = csv_date_start.strftime("%d")
+    start_date = f"{start_day} {start_month}"
+    end_month = csv_date.strftime("%b").capitalize()
+    end_date = f"{csv_date_d} {end_month}"
+    return start_date, end_date
 
 
 def which_axe(axis):
@@ -233,21 +238,21 @@ def plot_focus_60(show=False):
     plt.yticks(10**6*np.arange(0, 17, 2),
                ["0", "2M", "4M", "6M", "8M", "10M", "12M", "14M", "16M"])
     plt.grid()
-    plt.title(f"Popolazione over 60 \n30 Ago - {label_date}")
+    plt.title(f"Popolazione over 60 \n{start_date} - {end_date}")
 
     plt.subplot(1, 3, 2)
     plt.bar(0, over60_array[2], width=0.5, color="red")
     plt.bar(1, over60_array[3], width=0.5, color="green")
     plt.xticks([0, 1], ["Non vaccinati", "Vaccinati"])
     plt.grid()
-    plt.title(f"In terapia intensiva \n30 Ago - {label_date}")
+    plt.title(f"In terapia intensiva \n{start_date} - {end_date}")
 
     plt.subplot(1, 3, 3)
     plt.bar(0, over60_array[4], width=0.5, color="red")
     plt.bar(1, over60_array[5], width=0.5, color="green")
     plt.xticks([0, 1], ["Non vaccinati", "Vaccinati"])
     plt.grid()
-    plt.title(f"Deceduti \n30 Ago - {label_date}")
+    plt.title(f"Deceduti \n{start_date} - {end_date}")
 
     # Add watermarks
     ax = plt.gca()
@@ -287,7 +292,7 @@ if __name__ == "__main__":
 
     report_date, df_età, csv_date, csv_date_d = load_data()
 
-    label_month, label_date = get_label_month()
+    start_date, end_date = get_data_labels()
 
     # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
     df_tassi = compute_incidence(df_età)
