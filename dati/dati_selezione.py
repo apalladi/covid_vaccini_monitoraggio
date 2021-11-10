@@ -42,7 +42,7 @@ def get_surveillance_reports():
         # Table 3 is available since 14/07/2021
         cut_date = pd.to_datetime("2021-07-14")
     return [urljoin(epicentro_url, link["href"]) for link in links
-            if ("Bollettino-sorveglianza-integrata-COVID-19" in link["href"])
+            if "Bollettino-sorveglianza-integrata-COVID-19" in link["href"]
             and (date_from_url(link["href"], is_raw=False) >= cut_date)]
 
 
@@ -103,7 +103,7 @@ def check_df(sel_df):
 
 
 def get_data_from_report(auto=True):
-    """get_data_from_report(boolean, int) -> None
+    """get_data_from_report(boolean)
 
     The script saves data extracted from report.
 
@@ -133,7 +133,7 @@ def get_data_from_report(auto=True):
     # Read the csv to update from the repo
     csv_url = "https://raw.githubusercontent.com/apalladi/covid_"
     csv_url += "vaccini_monitoraggio/main/dati/dati_ISS_complessivi.csv"
-    df_0 = pd.read_csv(csv_url,
+    df_0 = pd.read_csv("dati_ISS_complessivi.csv",
                        sep=";",
                        parse_dates=["data"],
                        date_parser=date_parser,
@@ -166,8 +166,8 @@ def get_data_from_report(auto=True):
             df_raw = tables[1].df
         check_df(df_raw)
 
-    # Keep the last and the third last column
-    columns_to_keep = df_raw.columns[[-3, -1]]
+    # We are interested in the last 3 columns
+    columns_to_keep = df_raw.columns[-3:]
     df_raw = df_raw[columns_to_keep]
 
     # Get rows containing "%)" at the end
