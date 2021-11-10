@@ -27,7 +27,7 @@ def load_data():
     report_date = f"{csv_date_d}-{csv_date_m}-{csv_date.year}"
 
     message = f"Report ISS del {csv_date_d} {csv_date_m.capitalize()}: "
-    message += f"https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_{report_date}.pdf"  # noqa: E501
+    message += f"https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_{report_date}.pdf"
     message += " I dati si riferiscono ai 30 giorni precedenti."
     print(message)
 
@@ -42,7 +42,7 @@ def compute_efficacia():
     eff_osp = (1 - df_tassi.iloc[:, 3]/df_tassi.iloc[:, 2])*100
     eff_terint = (1 - df_tassi.iloc[:, 5]/df_tassi.iloc[:, 4])*100
     eff_decessi = (1 - df_tassi.iloc[:, 7]/df_tassi.iloc[:, 6])*100
-    return eff_contagio, eff_osp, eff_terint, eff_decessi  # noqa: E501
+    return eff_contagio, eff_osp, eff_terint, eff_decessi
 
 
 # Funzioni per il plot

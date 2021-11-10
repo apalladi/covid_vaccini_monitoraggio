@@ -131,8 +131,6 @@ def get_data_from_report(auto=True):
     print(f"\nSelected report ({rep_date.date()}) is:\n{rep_url}")
 
     # Read the csv to update from the repo
-    csv_url = "https://raw.githubusercontent.com/apalladi/covid_"
-    csv_url += "vaccini_monitoraggio/main/dati/dati_ISS_complessivi.csv"
     df_0 = pd.read_csv("dati_ISS_complessivi.csv",
                        sep=";",
                        parse_dates=["data"],
