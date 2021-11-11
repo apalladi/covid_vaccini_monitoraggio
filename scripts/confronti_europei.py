@@ -98,7 +98,7 @@ def get_vaccine_data_last(country, time_window=30, t0=-1, fully=True, last_day=F
     df_vacc_country = df_vacc[df_vacc["location"] == country].iloc[2:, :]
     vacc_fully = np.array(df_vacc_country["people_fully_vaccinated_per_hundred"
                                           if fully else
-                                          "total_vaccinated_per_hundred"])
+                                          "people_vaccinated_per_hundred"])
     vacc_ultimi_Ngiorni = np.mean(vacc_fully[t0-(time_window+1):t0
                                              if last_day
                                              else -1])
@@ -279,13 +279,13 @@ def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_gri
     # fit plot
     plt.plot(x_grid, y_grid, linestyle="--", label=f"Regressione lineare, R$^2$ score={score}")
 
-    plt.ylim(-100, )
+    plt.ylim(-70, )
     plt.xlim(0, 100)
     title = "Frazione di vaccinati vs decessi nei 27 Paesi dell'UE"
     title += f" negli ultimi {window} giorni"
     title += f"\nCoefficiente di correlazione = {corr_coeff}"
     plt.title(title, fontsize=15)
-    plt.xlabel(f"Frazione media di vaccinati con ciclo completo negli ultimi {window} giorni", fontsize=15)
+    plt.xlabel(f"Frazione media di vaccinati con almeno 1 dose negli ultimi {window} giorni", fontsize=15)
     plt.ylabel("Decessi per milione di abitanti", fontsize=15)
     plt.xticks(np.arange(0, 101, 20), ["0%", "20%", "40%", "60%", "80%", "100%"])
     plt.grid()
@@ -326,7 +326,7 @@ if __name__ == "__main__":
     ideal_window = compute_max_correlation()
     window = 30  # giorni
     # recupera dati per tale finestra temporale
-    vacc_res_2021, dec_res_2021 = compute_vaccini_decessi_eu(window, fully=True, last_day=False)
+    vacc_res_2021, dec_res_2021 = compute_vaccini_decessi_eu(window, fully=False, last_day=False)
     x_grid, y_grid, score = linear_fit(vacc_res_2021, dec_res_2021)
     # calcola coefficiente di correlazione (pearson)
     corr_coeff = round(np.corrcoef(vacc_res_2021, dec_res_2021)[0, 1], 2)

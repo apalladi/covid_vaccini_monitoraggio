@@ -174,46 +174,46 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
                          "12-39",
                          categorie[0],
                          incidenza_mensile=False).plot(ax=axes[0],
-                                                          color="blue")
+                                                       color="blue")
     ricava_andamenti_età(files,
                          "40-59",
                          categorie[0],
                          incidenza_mensile=False).plot(ax=axes[0],
-                                                           color="orange")
+                                                       color="orange")
     ricava_andamenti_età(files,
                          "60-79",
                          categorie[0],
                          incidenza_mensile=False).plot(ax=axes[0],
-                                                           color="green")
+                                                       color="green")
     ricava_andamenti_età(files,
                          "80+",
                          categorie[0],
                          incidenza_mensile=False).plot(ax=axes[0],
-                                                           color="red")
+                                                       color="red")
     ricava_andamenti_età(files,
                          "12-39",
                          categorie[1],
                          incidenza_mensile=False).plot(ax=axes[0],
-                                                           color="blue",
-                                                           linestyle="--")
+                                                       color="blue",
+                                                       linestyle="--")
     ricava_andamenti_età(files,
                          "40-59",
                          categorie[1],
                          incidenza_mensile=False).plot(ax=axes[0],
-                                                           color="orange",
-                                                           linestyle="--")
+                                                       color="orange",
+                                                       linestyle="--")
     ricava_andamenti_età(files,
                          "60-79",
                          categorie[1],
                          incidenza_mensile=False).plot(ax=axes[0],
-                                                           color="green",
-                                                           linestyle="--")
+                                                       color="green",
+                                                       linestyle="--")
     ricava_andamenti_età(files,
                          "80+",
                          categorie[1],
                          incidenza_mensile=False).plot(ax=axes[0],
-                                                           color="red",
-                                                           linestyle="--")
+                                                       color="red",
+                                                       linestyle="--")
 
     axes[0].set_title(titoli[0])
     axes[0].legend(shared_legend)
@@ -224,46 +224,46 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
                          "12-39",
                          categorie[0],
                          incidenza_mensile=True).plot(ax=axes[1],
-                                                          color="blue")
+                                                      color="blue")
     ricava_andamenti_età(files,
                          "40-59",
                          categorie[0],
                          incidenza_mensile=True).plot(ax=axes[1],
-                                                          color="orange")
+                                                      color="orange")
     ricava_andamenti_età(files,
                          "60-79",
                          categorie[0],
                          incidenza_mensile=True).plot(ax=axes[1],
-                                                          color="green")
+                                                      color="green")
     ricava_andamenti_età(files,
                          "80+",
                          categorie[0],
                          incidenza_mensile=True).plot(ax=axes[1],
-                                                          color="red")
+                                                      color="red")
     ricava_andamenti_età(files,
                          "12-39",
                          categorie[1],
                          incidenza_mensile=True).plot(ax=axes[1],
-                                                          color="blue",
-                                                          linestyle="--")
+                                                      color="blue",
+                                                      linestyle="--")
     ricava_andamenti_età(files,
                          "40-59",
                          categorie[1],
                          incidenza_mensile=True).plot(ax=axes[1],
-                                                          color="orange",
-                                                          linestyle="--")
+                                                      color="orange",
+                                                      linestyle="--")
     ricava_andamenti_età(files,
                          "60-79",
                          categorie[1],
                          incidenza_mensile=True).plot(ax=axes[1],
-                                                          color="green",
-                                                          linestyle="--")
+                                                      color="green",
+                                                      linestyle="--")
     ricava_andamenti_età(files,
                          "80+",
                          categorie[1],
                          incidenza_mensile=True).plot(ax=axes[1],
-                                                          color="red",
-                                                          linestyle="--")
+                                                      color="red",
+                                                      linestyle="--")
     axes[1].set_title(titoli[1])
     axes[1].grid()
     axes[1].legend(shared_legend)
@@ -303,7 +303,7 @@ if __name__ == "__main__":
               "Incidenza mensile per 100.000 abitanti"]
     plot_assoluti_incidenza_età(categorie,
                                 titoli,
-                                filename="../risultati/andamento_fasce_età_casi.png")  # noqa: E501
+                                filename="../risultati/andamento_fasce_età_casi.png")
 
     # ospedalizzazioni
     categorie = ["ospedalizzati non vaccinati", "ospedalizzati vaccinati"]
@@ -311,16 +311,16 @@ if __name__ == "__main__":
               "Incidenza mensile degli ospedalizzati per 100.000 abitanti"]
     plot_assoluti_incidenza_età(categorie,
                                 titoli,
-                                filename="../risultati/andamento_fasce_età_ospedalizzati.png")  
+                                filename="../risultati/andamento_fasce_età_ospedalizzati.png")
 
     # in terapia intensiva
     categorie = ["terapia intensiva non vaccinati",
                  "terapia intensiva vaccinati"]
     titoli = ["Ricoverati in TI giornalieri (media 30 giorni)",
-              "Incidenza mensile dei ricoverati in TI per 100.000 abitanti"]  
+              "Incidenza mensile dei ricoverati in TI per 100.000 abitanti"]
     plot_assoluti_incidenza_età(categorie,
                                 titoli,
-                                filename="../risultati/andamento_fasce_età_ricoveratiTI.png")  
+                                filename="../risultati/andamento_fasce_età_ricoveratiTI.png")
 
     # decessi
     categorie = ["decessi non vaccinati", "decessi vaccinati"]
@@ -328,4 +328,4 @@ if __name__ == "__main__":
               "Incidenza mensile dei decessi per 100.000 abitanti"]
     plot_assoluti_incidenza_età(categorie,
                                 titoli,
-                                filename="../risultati/andamento_fasce_età_decessi.png")  
+                                filename="../risultati/andamento_fasce_età_decessi.png")

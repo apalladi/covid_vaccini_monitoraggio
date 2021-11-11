@@ -127,19 +127,19 @@ def plot_num_assoluti(show=False):
     # Unpack all the axes subplots
     axes = axes2.ravel()
 
-    df_assoluti.iloc[:, [2, 3]].plot(ax=axes[0], marker="o", color=palette)
+    df_assoluti.iloc[:, [3, 5]].plot(ax=axes[0], marker="o", color=palette)
     axes[0].set_title("Nuovi casi giornalieri \n(media 30 gg)")
     which_axe(axes[0])
 
-    df_assoluti.iloc[:, [4, 5]].plot(ax=axes[1], marker="o", color=palette)
+    df_assoluti.iloc[:, [6, 8]].plot(ax=axes[1], marker="o", color=palette)
     axes[1].set_title("Nuovi ospedalizzati giornalieri \n(media 30 gg)")
     which_axe(axes[1])
 
-    df_assoluti.iloc[:, [6, 7]].plot(ax=axes[2], marker="o", color=palette)
+    df_assoluti.iloc[:, [9, 11]].plot(ax=axes[2], marker="o", color=palette)
     axes[2].set_title("Nuovi ricoverati in TI giornalieri \n(media 30 gg)")  # noqa: E501
     which_axe(axes[2])
 
-    df_assoluti.iloc[:, [8, 9]].plot(ax=axes[3], marker="o", color=palette)
+    df_assoluti.iloc[:, [12, 14]].plot(ax=axes[3], marker="o", color=palette)
     axes[3].set_title("Decessi giornalieri \n(media 30 gg)")
     which_axe(axes[3])
 
