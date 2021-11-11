@@ -279,7 +279,7 @@ def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_gri
     # fit plot
     plt.plot(x_grid, y_grid, linestyle="--", label=f"Regressione lineare, R$^2$ score={score}")
 
-    plt.ylim(-100, )
+    plt.ylim(-70, )
     plt.xlim(0, 100)
     title = "Frazione di vaccinati vs decessi nei 27 Paesi dell'UE"
     title += f" negli ultimi {window} giorni"
