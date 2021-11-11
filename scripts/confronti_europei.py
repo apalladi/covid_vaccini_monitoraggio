@@ -98,7 +98,7 @@ def get_vaccine_data_last(country, time_window=30, t0=-1, fully=True, last_day=F
     df_vacc_country = df_vacc[df_vacc["location"] == country].iloc[2:, :]
     vacc_fully = np.array(df_vacc_country["people_fully_vaccinated_per_hundred"
                                           if fully else
-                                          "total_vaccinated_per_hundred"])
+                                          "people_vaccinated_per_hundred"])
     vacc_ultimi_Ngiorni = np.mean(vacc_fully[t0-(time_window+1):t0
                                              if last_day
                                              else -1])
@@ -326,7 +326,7 @@ if __name__ == "__main__":
     ideal_window = compute_max_correlation()
     window = 30  # giorni
     # recupera dati per tale finestra temporale
-    vacc_res_2021, dec_res_2021 = compute_vaccini_decessi_eu(window, fully=True, last_day=False)
+    vacc_res_2021, dec_res_2021 = compute_vaccini_decessi_eu(window, fully=False, last_day=False)
     x_grid, y_grid, score = linear_fit(vacc_res_2021, dec_res_2021)
     # calcola coefficiente di correlazione (pearson)
     corr_coeff = round(np.corrcoef(vacc_res_2021, dec_res_2021)[0, 1], 2)
