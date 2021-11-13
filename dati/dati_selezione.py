@@ -167,39 +167,40 @@ def get_data_from_report(auto=True):
     # We are interested in the last 3 columns
     columns_to_keep = df_raw.columns[-5:]
     df_raw = df_raw[columns_to_keep]
-    
+
     # Get rows containing "%)" at the end
     df_raw = df_raw[df_raw[df_raw.columns[0]].str.endswith("%)")]
 
     # Remove dots and parentheses
     to_exclude = r"\((.*)|[^0-9]"
     df_final = df_raw.replace(to_exclude, "", regex=True).astype(np.int64)
-    
-    df_final.columns = ['non vaccinati', 
-                      'vaccinati 1 dose', 
-                      'vaccinati completo < 6 mesi',
-                      'vaccinati completo > 6 mesi',
-                      'vaccinati booster']
-    
-    df_final['vaccinati completo'] = df_final.iloc[:, 2:].sum(axis=1)
-    
-    df_final.drop(['vaccinati completo < 6 mesi',
-                  'vaccinati completo > 6 mesi',
-                  'vaccinati booster'], axis=1, inplace=True)
-    
+
+    df_final.columns = ["non vaccinati",
+                        "vaccinati 1 dose",
+                        "vaccinati completo < 6 mesi",
+                        "vaccinati completo > 6 mesi",
+                        "vaccinati booster"]
+
+    df_final["vaccinati completo"] = df_final.iloc[:, 2:-1].sum(axis=1)
+
+    df_final.drop(["vaccinati completo < 6 mesi",
+                   "vaccinati completo > 6 mesi",
+                   "vaccinati booster"], axis=1, inplace=True)
+
     df_final.reset_index(inplace=True)
-    df_final.drop('index', axis=1, inplace=True)
-    
+    df_final.drop("index", axis=1, inplace=True)
+
     # nelle nuove tabelle c'è anche il totale, dopo ogni 4 righe
-    rows_to_keep = [0, 1, 2, 3, 
-                    5, 6, 7, 8, 
-                    10, 11, 12, 13, 
-                    15, 16, 17, 18, 
+    rows_to_keep = [0, 1, 2, 3,
+                    5, 6, 7, 8,
+                    10, 11, 12, 13,
+                    15, 16, 17, 18,
                     20, 21, 22, 23]
     df_final = df_final.iloc[rows_to_keep, :]
-    
-    print(df_final)
-    print(df_final.shape)
+
+    # DEBUGONLY
+    # print(df_final)
+    # print(df_final.shape)
 
     # Get data
     # Sum value by age/event
