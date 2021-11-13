@@ -159,7 +159,7 @@ def get_data_from_report(auto=True):
     df_raw = tables[0].df
 
     # Check if there are enough columns
-    if len(df_raw.columns) < 3:
+    if len(df_raw.columns) < 5:
         if len(tables) >= 1:
             df_raw = tables[1].df
         check_df(df_raw)
@@ -181,16 +181,18 @@ def get_data_from_report(auto=True):
                         "vaccinati completo > 6 mesi",
                         "vaccinati booster"]
 
-    df_final["vaccinati completo"] = df_final.iloc[:, 2:-1].sum(axis=1)
+    # Merge immunized columns ("vaccinati completo < 6 mesi",
+    # "vaccinati completo > 6 mesi") into one
+    idx = df_final.columns.tolist().index("vaccinati 1 dose")
+    vaccinati_completo = df_final.iloc[:, 2:4].sum(axis=1)
+    df_final.insert(idx+1, "vaccinati completo", vaccinati_completo)
 
+    # Drop these columns
     df_final.drop(["vaccinati completo < 6 mesi",
-                   "vaccinati completo > 6 mesi",
-                   "vaccinati booster"], axis=1, inplace=True)
+                   "vaccinati completo > 6 mesi"], axis=1, inplace=True)
+    df_final.reset_index(inplace=True, drop=True)
 
-    df_final.reset_index(inplace=True)
-    df_final.drop("index", axis=1, inplace=True)
-
-    # nelle nuove tabelle c'è anche il totale, dopo ogni 4 righe
+    # Skip the totals column
     rows_to_keep = [0, 1, 2, 3,
                     5, 6, 7, 8,
                     10, 11, 12, 13,
