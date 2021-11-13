@@ -130,6 +130,12 @@ def get_data_from_report(auto=True):
     rep_date = date_from_url(rep_url, is_raw=False)
     print(f"\nSelected report ({rep_date.date()}) is:\n{rep_url}")
 
+    if rep_date < pd.to_datetime("2021-11-10"):
+        msg_old = "\nFor oldest reports please use"
+        msg_old += " the dati_selezione_old.py script!\n"
+        print(msg_old)
+        exit()
+
     # Read the csv to update from the repo
     df_0 = pd.read_csv("dati_ISS_complessivi.csv",
                        sep=";",

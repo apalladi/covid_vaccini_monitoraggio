@@ -41,9 +41,12 @@ def get_surveillance_reports():
         links = soup.find_all("a")
         # Table 3 is available since 14/07/2021
         cut_date = pd.to_datetime("2021-07-14")
+        cut_date_end = pd.to_datetime("2021-11-10")
+
     return [urljoin(epicentro_url, link["href"]) for link in links
-            if "Bollettino-sorveglianza-integrata-COVID-19" in link["href"]
-            and (date_from_url(link["href"], is_raw=False) >= cut_date)]
+            if ("Bollettino-sorveglianza-integrata-COVID-19" in link["href"])
+            and (date_from_url(link["href"], is_raw=False) >= cut_date)
+            and (date_from_url(link["href"], is_raw=False) < cut_date_end)]
 
 
 def page_from_url(sel_url):
@@ -131,7 +134,7 @@ def get_data_from_report(auto=True):
     print(f"\nSelected report ({rep_date.date()}) is:\n{rep_url}")
 
     # Read the csv to update from the repo
-    df_0 = pd.read_csv("dati_ISS_complessivi.csv",
+    df_0 = pd.read_csv("dati_ISS_complessivi_old.csv",
                        sep=";",
                        parse_dates=["data"],
                        date_parser=date_parser,
@@ -214,4 +217,4 @@ if __name__ == "__main__":
     locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
 
     # Get data
-    get_data_from_report()
+    get_data_from_report(auto=False)
