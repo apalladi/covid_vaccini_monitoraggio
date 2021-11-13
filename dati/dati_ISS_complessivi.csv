@@ -1,5 +1,5 @@
 data;non vaccinati;vaccinati 1 dose;vaccinati completo;vaccinati completo + booster;casi non vaccinati;casi vaccinati 1 dose;casi vaccinati;casi vaccinati + booster;ospedalizzati non vaccinati;ospedalizzati vaccinati 1 dose;ospedalizzati vaccinati;ospedalizzati vaccinati + booster;terapia intensiva non vaccinati;terapia intensiva vaccinati 1 dose;terapia intensiva vaccinati;terapia intensiva vaccinati + booster;decessi non vaccinati;decessi vaccinati 1 dose;decessi vaccinati;decessi vaccinati + booster
-2021-11-10;8302865;2538614;42873744;294719.0;40182;3466;52016;286.0;2890;144;2392;17.0;370;9;177;1.0;361;27;384;0.0
+2021-11-10;8302865;2538614;43168463;294719.0;40182;3466;52302;286.0;2890;144;2409;17.0;370;9;178;1.0;361;27;384;0.0
 2021-11-03;8683749;2653423;42672767;;35398;3207;40991;;2696;145;2037;;319;11;140;;416;27;423;
 2021-10-27;9231487;2863195;41915257;;34128;3421;34131;;2845;171;1815;;332;14;128;;511;40;461;
 2021-10-20;9829232;3259454;40921215;;36194;4127;31514;;3396;197;1954;;414;10;145;;636;42;511;

@@ -190,7 +190,7 @@ def get_data_from_report(auto=True):
     # Merge immunized columns ("vaccinati completo < 6 mesi",
     # "vaccinati completo > 6 mesi") into one
     idx = df_final.columns.tolist().index("vaccinati 1 dose")
-    vaccinati_completo = df_final.iloc[:, 2:4].sum(axis=1)
+    vaccinati_completo = df_final.iloc[:, 2:].sum(axis=1)
     df_final.insert(idx+1, "vaccinati completo", vaccinati_completo)
 
     # Drop these columns
