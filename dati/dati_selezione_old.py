@@ -41,9 +41,12 @@ def get_surveillance_reports():
         links = soup.find_all("a")
         # Table 3 is available since 14/07/2021
         cut_date = pd.to_datetime("2021-07-14")
+        cut_date_end = pd.to_datetime("2021-11-10")
+
     return [urljoin(epicentro_url, link["href"]) for link in links
-            if "Bollettino-sorveglianza-integrata-COVID-19" in link["href"]
-            and (date_from_url(link["href"], is_raw=False) >= cut_date)]
+            if ("Bollettino-sorveglianza-integrata-COVID-19" in link["href"])
+            and (date_from_url(link["href"], is_raw=False) >= cut_date)
+            and (date_from_url(link["href"], is_raw=False) < cut_date_end)]
 
 
 def page_from_url(sel_url):
@@ -130,14 +133,8 @@ def get_data_from_report(auto=True):
     rep_date = date_from_url(rep_url, is_raw=False)
     print(f"\nSelected report ({rep_date.date()}) is:\n{rep_url}")
 
-    if rep_date < pd.to_datetime("2021-11-10"):
-        msg_old = "\nFor oldest reports please use"
-        msg_old += " the dati_selezione_old.py script!\n"
-        print(msg_old)
-        exit()
-
     # Read the csv to update from the repo
-    df_0 = pd.read_csv("dati_ISS_complessivi.csv",
+    df_0 = pd.read_csv("dati_ISS_complessivi_old.csv",
                        sep=";",
                        parse_dates=["data"],
                        date_parser=date_parser,
@@ -165,13 +162,13 @@ def get_data_from_report(auto=True):
     df_raw = tables[0].df
 
     # Check if there are enough columns
-    if len(df_raw.columns) < 5:
+    if len(df_raw.columns) < 3:
         if len(tables) >= 1:
             df_raw = tables[1].df
         check_df(df_raw)
 
-    # We are interested in the last 5 columns
-    columns_to_keep = df_raw.columns[-5:]
+    # We are interested in the last 3 columns
+    columns_to_keep = df_raw.columns[-3:]
     df_raw = df_raw[columns_to_keep]
 
     # Get rows containing "%)" at the end
@@ -181,28 +178,12 @@ def get_data_from_report(auto=True):
     to_exclude = r"\((.*)|[^0-9]"
     df_final = df_raw.replace(to_exclude, "", regex=True).astype(np.int64)
 
-    df_final.columns = ["non vaccinati",
-                        "vaccinati 1 dose",
-                        "vaccinati completo < 6 mesi",
-                        "vaccinati completo > 6 mesi",
-                        "vaccinati booster"]
-
-    # Merge immunized columns ("vaccinati completo < 6 mesi",
-    # "vaccinati completo > 6 mesi", "vaccinati booster") into one
-    idx = df_final.columns.tolist().index("vaccinati 1 dose")
-    vaccinati_completo = df_final.iloc[:, 2:].sum(axis=1)
-    df_final.insert(idx+1, "vaccinati completo", vaccinati_completo)
-
-    # Drop these columns
-    df_final.drop(["vaccinati completo < 6 mesi",
-                   "vaccinati completo > 6 mesi"], axis=1, inplace=True)
-    df_final.reset_index(inplace=True, drop=True)
-
     # Get data
-
-    # Keep totals only
-    rows_tot = [4, 9, 14, 19, 24]
-    results = df_final.iloc[rows_tot, :].stack().values
+    # Sum value by age/event
+    step_ = 4  # groups (=5) are 4 rows (=20) distant (see foo.pdf)
+    results = [df_final[col][i:i+step_].sum()
+               for i in np.arange(0, len(df_final)-step_+1, step_)
+               for col in df_final.columns]
 
     # Add the new row at the top of the df
     df_0.loc[rep_date] = results
@@ -213,8 +194,7 @@ def get_data_from_report(auto=True):
 
     # Get data by age
     ages = ["12-39", "40-59", "60-79", "80+"]
-    rows_to_keep = np.arange(0, len(df_final), 5)
-    results_ = {age: df_final.iloc[rows_to_keep+i, :].stack().values
+    results_ = {age: df_final[i::step_].stack().values
                 for i, age in enumerate(ages)}
 
     # Load dict as df
@@ -237,4 +217,4 @@ if __name__ == "__main__":
     locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
 
     # Get data
-    get_data_from_report()
+    get_data_from_report(auto=False)
