@@ -198,25 +198,11 @@ def get_data_from_report(auto=True):
                    "vaccinati completo > 6 mesi"], axis=1, inplace=True)
     df_final.reset_index(inplace=True, drop=True)
 
-    # Skip the totals column
-    rows_to_keep = [0, 1, 2, 3,
-                    5, 6, 7, 8,
-                    10, 11, 12, 13,
-                    15, 16, 17, 18,
-                    20, 21, 22, 23]
-    df_final = df_final.iloc[rows_to_keep, :]
-
-    # DEBUGONLY
-    # print(df_final)
-    # print(df_final.shape)
-
     # Get data
-    # Sum value by age/event
-    step_ = 4  # groups (=5) are 4 rows (=20) distant (see foo.pdf)
-    positions = np.arange(0, len(df_final)-step_+1, step_)
-    results = [df_final[col][i:i+step_].sum()
-               for i in positions
-               for col in df_final.columns]
+
+    # Keep totals only
+    rows_tot = [4, 9, 14, 19, 24]
+    results = df_final.iloc[rows_tot, :].stack().values
 
     # Add the new row at the top of the df
     df_0.loc[rep_date] = results
@@ -227,7 +213,8 @@ def get_data_from_report(auto=True):
 
     # Get data by age
     ages = ["12-39", "40-59", "60-79", "80+"]
-    results_ = {age: df_final[i::step_].stack().values
+    rows_to_keep = np.arange(0, len(df_final), 5)
+    results_ = {age: df_final.iloc[rows_to_keep+i, :].stack().values
                 for i, age in enumerate(ages)}
 
     # Load dict as df
