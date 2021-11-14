@@ -170,7 +170,7 @@ def get_data_from_report(auto=True):
             df_raw = tables[1].df
         check_df(df_raw)
 
-    # We are interested in the last 3 columns
+    # We are interested in the last 5 columns
     columns_to_keep = df_raw.columns[-5:]
     df_raw = df_raw[columns_to_keep]
 
@@ -188,7 +188,7 @@ def get_data_from_report(auto=True):
                         "vaccinati booster"]
 
     # Merge immunized columns ("vaccinati completo < 6 mesi",
-    # "vaccinati completo > 6 mesi") into one
+    # "vaccinati completo > 6 mesi", "vaccinati booster") into one
     idx = df_final.columns.tolist().index("vaccinati 1 dose")
     vaccinati_completo = df_final.iloc[:, 2:].sum(axis=1)
     df_final.insert(idx+1, "vaccinati completo", vaccinati_completo)
@@ -213,8 +213,9 @@ def get_data_from_report(auto=True):
     # Get data
     # Sum value by age/event
     step_ = 4  # groups (=5) are 4 rows (=20) distant (see foo.pdf)
+    positions = np.arange(0, len(df_final)-step_+1, step_)
     results = [df_final[col][i:i+step_].sum()
-               for i in np.arange(0, len(df_final)-step_+1, step_)
+               for i in positions
                for col in df_final.columns]
 
     # Add the new row at the top of the df
