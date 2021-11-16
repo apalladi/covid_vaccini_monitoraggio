@@ -102,7 +102,7 @@ def check_df(sel_df):
         exit()
 
 
-def get_data_from_report(auto=True):
+def get_data_from_report(auto=True, force=False):
     """get_data_from_report(boolean)
 
     The script saves data extracted from report.
@@ -110,7 +110,8 @@ def get_data_from_report(auto=True):
     Select mode:
     - Automatic (auto = True): table of last available PDF
                                is automatically read
-    - Manual (auto = False): Index of the report will be asked as input"""
+    - Manual (auto = False): Index of the report will be asked as input
+    Use force=True to skip checks and force data extraction"""
 
     # Get reports
     reports = get_surveillance_reports()
@@ -144,7 +145,7 @@ def get_data_from_report(auto=True):
                        index_col="data")
 
     # If table is already up-to-date stop the script
-    if rep_date in df_0.index:
+    if rep_date in df_0.index and not force:
         print("\nCSV are already up-to-date!")
         exit()
 
@@ -237,4 +238,5 @@ if __name__ == "__main__":
     locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
 
     # Get data
+    # use force=True to skip the checks/for debug purposes
     get_data_from_report()
