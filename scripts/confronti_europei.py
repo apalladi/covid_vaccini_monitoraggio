@@ -186,7 +186,7 @@ def plot_selection(show=False):
     x_date = ["2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01"]
     x_label = ["Lug\n2021", "Ago", "Set", "Ott", "Nov"]
 
-    fig, axes2 = plt.subplots(nrows=1, ncols=2, figsize=(8, 4))
+    fig, axes2 = plt.subplots(nrows=1, ncols=2, figsize=(10, 5))
 
     # Unpack all the axes subplots
     axes = axes2.ravel()
@@ -201,7 +201,7 @@ def plot_selection(show=False):
         new_date = df_epid.index[-1]
         mask_ = df_epid.index >= "2021-06-01"
         values = 7/(abitanti_nazioni[i]*10)*df_epid["Daily cases (avg 7 days)"]
-        values[mask_].plot(ax=axes[0], label=label_nazioni[i], linewidth=2)
+        values[mask_].plot(ax=axes[0], label=label_nazioni[i])
         last_updated, x_date, x_label = aggiorna_ascissa(last_updated,
                                                          new_date,
                                                          x_date,
