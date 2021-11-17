@@ -274,10 +274,9 @@ def plot_selection(show=False):
 def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_grid, window, score, show=False):
     """ scatter plot correlazione vaccini e decessi """
 
-    fig = plt.figure(figsize=(18, 6))
+    fig = plt.figure(figsize=(13, 8))
 
     # scatter plot
-    plt.subplot(1, 2, 1)
     # genera lista di colori e dimensioni
     colors = plt.cm.nipy_spectral(np.linspace(0, 1, len(paesi_eu_ita)))
     sizes = 3*len(paesi_eu_ita)
@@ -313,13 +312,13 @@ def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_gri
     
     #barplot 
     df_grouped = group_vaccinated(vacc_res_2021, dec_res_2021)
-    plt.subplot(1, 2, 2)
-    df_grouped.plot(kind='bar')
+    a = plt.axes([.1, .15, .33, .33], facecolor='lightgrey')
+    df_grouped.plot(kind='bar', ax=a)
     plt.xticks(rotation=0)
     plt.grid()
-    plt.xlabel(f"Frazione media di vaccinati con almeno 1 dose negli ultimi {window} giorni", fontsize=15)
-    plt.ylabel('Decessi medi per milione di abitanti', fontsize=15)
-    plt.title("Frazione di vaccinati vs decessi nei 27 Paesi dell'UE negli ultimi "+str(window)+" giorni", fontsize=15)
+    plt.xlabel(f"Frazione media di vaccinati con almeno 1 dose negli ultimi {window} giorni")
+    plt.ylabel('Decessi medi per milione di abitanti')
+    #plt.title("Frazione di vaccinati vs decessi nei 27 Paesi dell'UE negli ultimi "+str(window)+" giorni")
     
     # Add watermarks
     ax = plt.gca()
