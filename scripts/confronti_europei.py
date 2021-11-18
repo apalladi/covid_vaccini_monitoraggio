@@ -201,8 +201,8 @@ def plot_selection(show=False):
     label_nazioni = ["Italia", "Romania", "Portogallo", "Spagna", "Bulgaria"]
     abitanti_nazioni = [59.55, 19.29, 10.31, 47.35, 6.927]
 
-    x_date = ["2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01"]
-    x_label = ["Lug\n2021", "Ago", "Set", "Ott", "Nov"]
+    x_date = ["2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01"]
+    x_label = ["Giu\n2021", "Lug", "Ago", "Set", "Ott", "Nov"]
 
     fig, axes2 = plt.subplots(nrows=1, ncols=2, figsize=(10, 5))
 
@@ -218,16 +218,17 @@ def plot_selection(show=False):
                                     df_recovered)
         new_date = df_epid.index[-1]
         mask_ = df_epid.index >= "2021-06-01"
-        values = 7/(abitanti_nazioni[i]*10)*df_epid["Daily cases (avg 7 days)"]
-        values[mask_].plot(ax=axes[0], label=label_nazioni[i])
+        df_epid = df_epid.loc[mask_, :]
+        values = 1/(abitanti_nazioni[i])*(df_epid["Total deaths"]-df_epid["Total deaths"][0])
+        values.plot(ax=axes[0], label=label_nazioni[i])
         last_updated, x_date, x_label = aggiorna_ascissa(last_updated,
                                                          new_date,
                                                          x_date,
                                                          x_label)
 
     axes[0].set_xlim("2021-06-01", last_updated)
-    axes[0].set_title("Incidenza settimanale nuovi casi")
-    axes[0].set_ylabel("Numeri ogni 100.000 abitanti")
+    axes[0].set_title("Decessi dal 1° Giugno ad oggi")
+    axes[0].set_ylabel("Decessi per milione di abitanti")
     axes[0].set_xlabel("")
     axes[0].set_xticks(x_date)
     axes[0].set_xticklabels(x_label)
@@ -251,7 +252,7 @@ def plot_selection(show=False):
     axes[1].set_ylim(0, 100)
     axes[1].set_yticks(np.arange(0, 101, 20))
     axes[1].set_yticklabels(["0%", "20%", "40%", "60%", "80%", "100%"])
-    axes[1].set_title("Vaccinati in modo completo")
+    axes[1].set_title("Vaccinati con ciclo completo")
     axes[1].set_xlabel("")
     axes[1].set_xticks(x_date)
     axes[1].set_xticklabels(x_label)
