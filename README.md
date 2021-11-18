@@ -3,7 +3,9 @@
 [![Sito web](https://img.shields.io/website?up_color=brightgreen&up_message=online&url=https%3A%2F%2Fenricocid.github.io%2Fmonitoraggio-vaccini-italia%2F)](https://enricocid.github.io/monitoraggio-vaccini-italia/)
 
 Questo repository è stato creato allo scopo di monitorare l'andamento dell'epidemia provocata dal virus Sars-Cov-2 in Italia e l'efficacia dei vaccini utilizzando i dati rilasciati nei [**report settimanali**](https://www.epicentro.iss.it/coronavirus/aggiornamenti) dell'Istituto Superiore di Sanità, come ad esempio: 
-> https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_8-settembre-2021.pdf.
+<p align="center">
+  <a href="https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_10-novembre-2021.pdf">Bollettino-sorveglianza-integrata-COVID-19_10-novembre-2021.pdf</a>
+</p>
 
 Per rimanere aggiornato sui risultati puoi dare una occhiata al nostro [**sito**](https://enricocid.github.io/monitoraggio-vaccini-italia/)!
 
@@ -29,9 +31,8 @@ Nell'environment virtuale è possibile installare automaticamente i pacchetti ri
 
 ## Utilizzo e spiegazione degli script
 
-Lo script [**`dati/dati_selezione.py`**](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) estrae i dati per l'analisi (tabella n.3) a partire dal report selezionato. I dati generali vengono salvati nel file csv [dati/dati_ISS_complessivi.csv](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_ISS_complessivi.csv) mentre il dettaglio per classe di età in [data_iss_età_YY-MM-D.csv](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/data_iss_età_2021-11-10.csv). Lo script è stato aggiornato al 10 novembre 2021 per includere i vaccinati con dose aggiuntiva. Per estrarre i report precedenti a questa data utilizzare [`dati/dati_selezione_old.py`](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione_old.py) e [dati/dati_ISS_complessivi_old.csv](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_ISS_complessivi_old.csv).
-
-Per il corretto funzionamento degli script sono necessari ghostscript e tkinker, dipendenze di [camelot](https://camelot-py.readthedocs.io/en/master/user/install-deps.html).
+Lo script [**`dati/dati_selezione.py`**](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) estrae i dati per l'analisi (tabella n.3) a partire dal report selezionato. I dati generali vengono salvati in [dati/dati_ISS_complessivi.csv](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_ISS_complessivi.csv) e [dati/data_iss_età_YY-MM-D.csv](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/data_iss_età_2021-11-10.csv). Lo script è stato aggiornato il [10/11/2021](https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_10-novembre-2021.pdf) per includere i vaccinati con dose aggiuntiva. Per i report precedenti a questa data utilizzare [dati/dati_selezione_old.py](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione_old.py) e [dati/dati_ISS_complessivi_old.csv](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_ISS_complessivi_old.csv).
+Sono necessari ghostscript e tkinker per il corretto funzionamento di [camelot](https://camelot-py.readthedocs.io/en/master/user/install-deps.html).
 
 
 I dati possono essere analizzati mediante i seguenti script:
