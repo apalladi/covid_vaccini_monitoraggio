@@ -28,14 +28,8 @@ def compute_incidence_ratio(category):
         r_ti *= 100
         r_dec = df_tassi.iloc[:, 6]/(df_tassi.iloc[:, 6]+df_tassi.iloc[:, 7])
         r_dec *= 100
-        rapporto_fra_tassi = pd.DataFrame(np.transpose([r_casi,
-                                                        r_osp,
-                                                        r_ti,
-                                                        r_dec]))
-        rapporto_fra_tassi.columns = ["Casi",
-                                      "Ospedalizzati",
-                                      "TI",
-                                      "Deceduti"]
+        rapporto_fra_tassi = pd.DataFrame(np.transpose([r_casi, r_osp, r_ti, r_dec]))
+        rapporto_fra_tassi.columns = ["Casi", "Ospedalizzati", "TI", "Deceduti"]
         rapporto_fra_tassi.index = df_tassi.index
         result_list.append(np.array(rapporto_fra_tassi[category]))
 
@@ -64,8 +58,7 @@ def add_to_plot(ticks, labels):
     plt.xticks(ticks, labels)
     plt.ylabel("Contributo dei non vaccinati alle incidenze")
     plt.legend(["12-39", "40-59", "60-79", "80+"], loc=4)
-    plt.yticks(np.arange(50, 101, 10),
-               ["50%", "60%", "70%", "80%", "90%", "100%"])
+    plt.yticks(np.arange(50, 101, 10), ["50%", "60%", "70%", "80%", "90%", "100%"])
     plt.ylim(60, 102)
     plt.grid()
 
@@ -134,8 +127,8 @@ def ricava_andamenti_età(files, età, colonna, incidenza_mensile):
         if incidenza_mensile is True:
             # calcola incidenza mensile ogni
             # 100.000 abitanti per ciascun gruppo
-            df[non_vacc_labels] = df[non_vacc_labels]/df["non vaccinati"].values[0]*10**5  # noqa: E501
-            df[vacc_labels] = df[vacc_labels]/df["vaccinati completo"].values[0]*10**5  # noqa: E501
+            df[non_vacc_labels] = df[non_vacc_labels]/df["non vaccinati"].values[0]*10**5
+            df[vacc_labels] = df[vacc_labels]/df["vaccinati completo"].values[0]*10**5
         else:
             # converti in numeri giornalieri, media mobile 30 giorni
             df[colonna] = df[colonna]/30
@@ -173,23 +166,19 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     ricava_andamenti_età(files,
                          "12-39",
                          categorie[0],
-                         incidenza_mensile=False).plot(ax=axes[0],
-                                                       color="blue")
+                         incidenza_mensile=False).plot(ax=axes[0], color="blue")
     ricava_andamenti_età(files,
                          "40-59",
                          categorie[0],
-                         incidenza_mensile=False).plot(ax=axes[0],
-                                                       color="orange")
+                         incidenza_mensile=False).plot(ax=axes[0], color="orange")
     ricava_andamenti_età(files,
                          "60-79",
                          categorie[0],
-                         incidenza_mensile=False).plot(ax=axes[0],
-                                                       color="green")
+                         incidenza_mensile=False).plot(ax=axes[0], color="green")
     ricava_andamenti_età(files,
                          "80+",
                          categorie[0],
-                         incidenza_mensile=False).plot(ax=axes[0],
-                                                       color="red")
+                         incidenza_mensile=False).plot(ax=axes[0], color="red")
     ricava_andamenti_età(files,
                          "12-39",
                          categorie[1],
@@ -223,23 +212,19 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     ricava_andamenti_età(files,
                          "12-39",
                          categorie[0],
-                         incidenza_mensile=True).plot(ax=axes[1],
-                                                      color="blue")
+                         incidenza_mensile=True).plot(ax=axes[1], color="blue")
     ricava_andamenti_età(files,
                          "40-59",
                          categorie[0],
-                         incidenza_mensile=True).plot(ax=axes[1],
-                                                      color="orange")
+                         incidenza_mensile=True).plot(ax=axes[1], color="orange")
     ricava_andamenti_età(files,
                          "60-79",
                          categorie[0],
-                         incidenza_mensile=True).plot(ax=axes[1],
-                                                      color="green")
+                         incidenza_mensile=True).plot(ax=axes[1], color="green")
     ricava_andamenti_età(files,
                          "80+",
                          categorie[0],
-                         incidenza_mensile=True).plot(ax=axes[1],
-                                                      color="red")
+                         incidenza_mensile=True).plot(ax=axes[1], color="red")
     ricava_andamenti_età(files,
                          "12-39",
                          categorie[1],

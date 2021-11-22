@@ -35,8 +35,7 @@ def load_data():
 
     # Calcola i numeri assoluti (medi, giornalieri) dell"epidemia
     df_assoluti = df_assoluti.copy(deep=True)
-    df_assoluti.index = pd.to_datetime(df_assoluti["data"],
-                                       format="%Y/%m/%d")
+    df_assoluti.index = pd.to_datetime(df_assoluti["data"], format="%Y/%m/%d")
     df_assoluti.drop("data", axis=1, inplace=True)
     # Trasforma in numeri giornalieri
     df_assoluti = (1/30)*df_assoluti
@@ -92,14 +91,10 @@ def plot_rapporto_tassi(show=False):
 
     fig = plt.figure(figsize=(6, 5))
 
-    (df_tassi.iloc[:, 0]/df_tassi.iloc[:, 1]).plot(label="Nuovi casi",
-                                                   color="blue")
-    (df_tassi.iloc[:, 2]/df_tassi.iloc[:, 3]).plot(label="Ospedalizzazione",
-                                                   color="green")
-    (df_tassi.iloc[:, 4]/df_tassi.iloc[:, 5]).plot(label="Ricovero in TI",
-                                                   color="red")
-    (df_tassi.iloc[:, 6]/df_tassi.iloc[:, 7]).plot(label="Decesso",
-                                                   color="gray")
+    (df_tassi.iloc[:, 0]/df_tassi.iloc[:, 1]).plot(label="Nuovi casi", color="blue")
+    (df_tassi.iloc[:, 2]/df_tassi.iloc[:, 3]).plot(label="Ospedalizzazione", color="green")
+    (df_tassi.iloc[:, 4]/df_tassi.iloc[:, 5]).plot(label="Ricovero in TI", color="red")
+    (df_tassi.iloc[:, 6]/df_tassi.iloc[:, 7]).plot(label="Decesso", color="gray")
 
     plt.title("Rapporto fra le incidenze")
     plt.ylabel("Non vaccinati/vaccinati")
@@ -136,7 +131,7 @@ def plot_num_assoluti(show=False):
     which_axe(axes[1])
 
     df_assoluti.iloc[:, [12, 14]].plot(ax=axes[2], marker="o", color=palette)
-    axes[2].set_title("Nuovi ricoverati in TI giornalieri \n(media 30 gg)")  # noqa: E501
+    axes[2].set_title("Nuovi ricoverati in TI giornalieri \n(media 30 gg)")
     which_axe(axes[2])
 
     df_assoluti.iloc[:, [16, 18]].plot(ax=axes[3], marker="o", color=palette)

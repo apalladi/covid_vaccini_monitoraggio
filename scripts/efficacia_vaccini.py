@@ -235,8 +235,7 @@ def plot_focus_60(show=False):
     plt.bar(0, over60_array[0], width=0.5, color="red")
     plt.bar(1, over60_array[1], width=0.5, color="green")
     plt.xticks([0, 1], ["Non vaccinati", "Vaccinati"])
-    plt.yticks(10**6*np.arange(0, 17, 2),
-               ["0", "2M", "4M", "6M", "8M", "10M", "12M", "14M", "16M"])
+    plt.yticks(10**6*np.arange(0, 17, 2), ["0", "2M", "4M", "6M", "8M", "10M", "12M", "14M", "16M"])
     plt.grid()
     plt.title(f"Popolazione over 60 \n{start_date} - {end_date}")
 
