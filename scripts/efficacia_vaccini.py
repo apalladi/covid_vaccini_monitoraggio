@@ -69,9 +69,9 @@ def which_axe(axis):
 
 def which_axe_bar(axis):
     """ Imposta proprietà grafici """
-    axis.set_ylim(80, 100)
-    axis.set_yticks(np.arange(70, 101, 5))
-    axis.set_yticklabels(["70%", "75%", "80%", "85%", "90%", "95%", "100%"])
+    axis.set_ylim(65, 100)
+    axis.set_yticks(np.arange(65, 101, 5))
+    axis.set_yticklabels(["65%", "70%", "75%", "80%", "85%", "90%", "95%", "100%"])
     axis.set_xlabel("Fascia d'età")
     axis.grid()
     for tick in axis.get_xticklabels():
@@ -80,11 +80,11 @@ def which_axe_bar(axis):
 
 def add_to_plot():
     """ Imposta proprietà grafici """
-    plt.ylim(70, 100)
+    plt.ylim(65, 100)
     plt.grid()
     plt.xlabel("Fascia d'età")
-    plt.yticks(np.arange(70, 101, 5),
-               ["70%", "75%", "80%", "85%", "90%", "95%", "100%"])
+    plt.yticks(np.arange(65, 101, 5),
+               ["65", "70%", "75%", "80%", "85%", "90%", "95%", "100%"])
 
 
 # Rappresentazione grafica dei risultati
