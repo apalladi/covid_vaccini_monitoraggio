@@ -1,8 +1,9 @@
-from matplotlib.font_manager import findfont, FontProperties
-from itertools import takewhile
-from PIL import ImageFont
-import numpy as np
 from datetime import datetime
+from itertools import takewhile
+
+import numpy as np
+from matplotlib.font_manager import FontProperties, findfont
+from PIL import ImageFont
 
 
 def watermark_specs(figure, watermark):

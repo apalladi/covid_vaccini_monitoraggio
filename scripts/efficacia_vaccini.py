@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from custom.plots import date_from_csv_path, list_età_csv
+from custom.plots import (apply_plot_treatment, date_from_csv_path,
+                          list_età_csv, palette)
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_watermark
 
@@ -83,8 +84,7 @@ def add_to_plot():
     plt.ylim(65, 100)
     plt.grid()
     plt.xlabel("Fascia d'età")
-    plt.yticks(np.arange(65, 101, 5),
-               ["65", "70%", "75%", "80%", "85%", "90%", "95%", "100%"])
+    plt.yticks(np.arange(65, 101, 5), ["65%", "70%", "75%", "80%", "85%", "90%", "95%", "100%"])
 
 
 # Rappresentazione grafica dei risultati
@@ -130,18 +130,18 @@ def plot_efficacia(show=False):
     plt.subplot(2, 2, 1)
     plt.bar(eff_contagio.index,
             eff_contagio,
-            color="blue",
+            color=palette[1],
             width=0.5)
     plt.title("Efficacia contro il contagio")
     add_to_plot()
 
     plt.subplot(2, 2, 2)
-    plt.bar(eff_osp.index, eff_osp, color="green", width=0.5)
+    plt.bar(eff_osp.index, eff_osp, color=palette[5], width=0.5)
     plt.title("Efficacia contro l'ospedalizzazione")
     add_to_plot()
 
     plt.subplot(2, 2, 3)
-    plt.bar(eff_terint.index, eff_terint, color="red", width=0.5)
+    plt.bar(eff_terint.index, eff_terint, color=palette[4], width=0.5)
     plt.title("Efficacia contro il ricovero in TI")
     add_to_plot()
 
@@ -189,15 +189,15 @@ def plot_riassunto(show=False):
     axes[3].set_title("Incidenza mensile dei deceduti")
     which_axe(axes[3])
 
-    eff_contagio.plot(kind="bar", ax=axes[4], color="blue")
+    eff_contagio.plot(kind="bar", ax=axes[4], color=palette[1])
     axes[4].set_title("Efficacia contro il contagio")
     which_axe_bar(axes[4])
 
-    eff_osp.plot(kind="bar", ax=axes[5], color="green")
+    eff_osp.plot(kind="bar", ax=axes[5], color=palette[5])
     axes[5].set_title("Efficacia contro l'ospedalizzazione")
     which_axe_bar(axes[5])
 
-    eff_terint.plot(kind="bar", ax=axes[6], color="red")
+    eff_terint.plot(kind="bar", ax=axes[6], color=palette[4])
     axes[6].set_title("Efficacia contro il ricovero in TI")
     which_axe_bar(axes[6])
 
@@ -232,23 +232,24 @@ def plot_focus_60(show=False):
     fig = plt.figure(figsize=(10, 3.5))
 
     plt.subplot(1, 3, 1)
-    plt.bar(0, over60_array[0], width=0.5, color="red")
-    plt.bar(1, over60_array[1], width=0.5, color="green")
+    plt.bar(0, over60_array[0], width=0.5, color=palette[4])
+    plt.bar(1, over60_array[1], width=0.5, color=palette[5])
     plt.xticks([0, 1], ["Non vaccinati", "Vaccinati"])
-    plt.yticks(10**6*np.arange(0, 17, 2), ["0", "2M", "4M", "6M", "8M", "10M", "12M", "14M", "16M"])
+    plt.yticks(10**6*np.arange(0, 17, 2),
+               ["0", "2M", "4M", "6M", "8M", "10M", "12M", "14M", "16M"])
     plt.grid()
     plt.title(f"Popolazione over 60 \n{start_date} - {end_date}")
 
     plt.subplot(1, 3, 2)
-    plt.bar(0, over60_array[2], width=0.5, color="red")
-    plt.bar(1, over60_array[3], width=0.5, color="green")
+    plt.bar(0, over60_array[2], width=0.5, color=palette[4])
+    plt.bar(1, over60_array[3], width=0.5, color=palette[5])
     plt.xticks([0, 1], ["Non vaccinati", "Vaccinati"])
     plt.grid()
     plt.title(f"In terapia intensiva \n{start_date} - {end_date}")
 
     plt.subplot(1, 3, 3)
-    plt.bar(0, over60_array[4], width=0.5, color="red")
-    plt.bar(1, over60_array[5], width=0.5, color="green")
+    plt.bar(0, over60_array[4], width=0.5, color=palette[4])
+    plt.bar(1, over60_array[5], width=0.5, color=palette[5])
     plt.xticks([0, 1], ["Non vaccinati", "Vaccinati"])
     plt.grid()
     plt.title(f"Deceduti \n{start_date} - {end_date}")
@@ -287,7 +288,7 @@ if __name__ == "__main__":
     locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
 
     # Imposta stile grafici
-    plt.style.use("seaborn-dark")
+    apply_plot_treatment()
 
     report_date, df_età, csv_date, csv_date_d = load_data()
 

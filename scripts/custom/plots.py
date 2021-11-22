@@ -2,8 +2,23 @@ from datetime import datetime
 from glob import glob
 from re import findall
 
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 from numpy import sort
 from pandas import to_datetime
+
+# see: https://personal.sron.nl/~pault/
+palette = ["#EE7733", "#0077BB", "#33BBEE", "#EE3377", "#CC3311", "#009988", "#BBBBBB"]
+
+
+def apply_plot_treatment():
+    plt.style.use("seaborn-dark")
+    mpl.rcParams["lines.linewidth"] = 1.5
+    mpl.rcParams["lines.markersize"] = 3
+    mpl.rcParams["lines.marker"] = "o"
+    mpl.rcParams["legend.labelspacing"] = 0.25
+    mpl.rcParams["legend.borderaxespad"] = 0.25
+    mpl.rcParams["axes.prop_cycle"] = mpl.cycler(color=palette)
 
 
 def aggiorna_ascissa(last_updated, new_date, x_date, x_label):
