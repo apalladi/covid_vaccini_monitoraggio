@@ -3,6 +3,7 @@
 import locale
 from os import chdir, path
 
+import matplotlib as mpl
 import matplotlib.patheffects as path_effects
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,7 +11,7 @@ import pandas as pd
 from adjustText import adjust_text
 from sklearn.metrics import r2_score
 
-from custom.plots import aggiorna_ascissa
+from custom.plots import aggiorna_ascissa, apply_plot_treatment, palette
 from custom.watermarks import add_watermark
 
 paesi_abitanti_eu = {"Austria": 8.917, "Belgium": 11.56, "Bulgaria": 6.927,
@@ -174,14 +175,14 @@ def compute_max_correlation():
 
 
 def map_vaccinated(f_vacc):
-    if f_vacc >=20 and f_vacc < 40:
-        return "20%-40%"
-    elif f_vacc >=40 and f_vacc < 60:
-        return "40%-60%"
-    elif f_vacc >=60 and f_vacc < 80:
-        return "60%-80%"
-    elif f_vacc >=80 and f_vacc <= 100:
-        return "80%-100%"
+    if f_vacc >= 20 and f_vacc < 40:
+        return "20-40%"
+    elif f_vacc >= 40 and f_vacc < 60:
+        return "40-60%"
+    elif f_vacc >= 60 and f_vacc < 80:
+        return "60-80%"
+    elif f_vacc >= 80 and f_vacc <= 100:
+        return "80-100%"
 
 
 def group_vaccinated(vacc_res_2021, dec_res_2021):
@@ -193,6 +194,7 @@ def group_vaccinated(vacc_res_2021, dec_res_2021):
 
 
 # Rappresentazione grafica risultati
+@mpl.rc_context({"lines.marker": None})
 def plot_selection(show=False):
     """ Plot dati epidemiologia e vaccini dei paesi selezionati """
 
@@ -273,6 +275,7 @@ def plot_selection(show=False):
         plt.show()
 
 
+@mpl.rc_context({"lines.marker": None})
 def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_grid, window, score, show=False):
     """ scatter plot correlazione vaccini e decessi """
 
@@ -298,7 +301,7 @@ def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_gri
                 arrowprops=dict(arrowstyle="-", lw=1))
 
     # fit plot
-    plt.plot(x_grid, y_grid, linestyle="--", label=f"Regressione lineare, R$^2$ score={score}")
+    plt.plot(x_grid, y_grid, linestyle="--", c=palette[1], label=f"Regressione lineare, R$^2$ score={score}")
 
     plt.ylim(-70, )
     plt.xlim(0, 100)
@@ -313,14 +316,15 @@ def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_gri
     plt.legend(fontsize=15)
     plt.tight_layout()
 
-    # barplot
+    # bar plot
     df_grouped = group_vaccinated(vacc_res_2021, dec_res_2021)
-    a = plt.axes([.1, .15, .33, .33], facecolor="lightgrey")
-    df_grouped.plot(kind="bar", ax=a)
+    a = plt.axes([.10, .15, .275, .275], facecolor="gainsboro")
+
+    df_grouped.plot(kind="bar", color=palette[1], ax=a)
     plt.xticks(rotation=0)
     plt.grid()
-    plt.xlabel(f"Frazione media di vaccinati con almeno 1 dose negli ultimi {window} giorni")
-    plt.ylabel('Decessi medi per milione di abitanti')
+    plt.xlabel(f"Frazione media vaccinati")
+    plt.ylabel("Decessi medi per mln")
     # plt.title("Frazione di vaccinati vs decessi nei 27 Paesi dell'UE negli ultimi "+str(window)+" giorni")
 
     # Add watermarks
@@ -343,7 +347,7 @@ if __name__ == "__main__":
     locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
 
     # Imposta stile grafici
-    plt.style.use("seaborn-dark")
+    apply_plot_treatment()
 
     # importa dati
     df_confirmed, df_deaths, df_recovered = import_epidem_data()

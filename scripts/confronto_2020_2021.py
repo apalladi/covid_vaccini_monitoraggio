@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from os import chdir, path
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+from custom.plots import apply_plot_treatment
 from custom.preprocessing_dataframe import compute_incidence, date_parser
 from custom.watermarks import add_watermark
 
@@ -60,6 +62,7 @@ def get_epidemic_data_2021():
 
 
 # Rappresentazione grafica risultati
+@mpl.rc_context({"lines.marker": None})
 def plot_confronto_2020_2021(show=False):
     """ Andamento curve epidemiche """
 
@@ -73,12 +76,10 @@ def plot_confronto_2020_2021(show=False):
     plt.subplot(1, 2, 1)
     plt.plot(xgrid_2020, casi_2020, label="2020")
     plt.plot(xgrid_2021, casi_2021_vacc,
-             label="2021 (vaccinati)",
-             color="green")
+             label="2021 (vaccinati)")
     plt.plot(xgrid_2021,
              casi_2021_novacc,
-             label="2021 (non vaccinati)",
-             color="red")
+             label="2021 (non vaccinati)")
     plt.xticks(x_label1, x_label2)
     plt.title("Casi mensili (media mobile 30 gg)")
     plt.ylabel("Ogni 100.000 persone per ciascun gruppo")
@@ -89,12 +90,10 @@ def plot_confronto_2020_2021(show=False):
     plt.subplot(1, 2, 2)
     plt.plot(xgrid_2020, dec_2020, label="2020")
     plt.plot(xgrid_2021,
-             dec_2021_vacc, label="2021 (vaccinati)",
-             color="green")
+             dec_2021_vacc, label="2021 (vaccinati)")
     plt.plot(xgrid_2021,
              dec_2021_novacc,
-             label="2021 (non vaccinati)",
-             color="red")
+             label="2021 (non vaccinati)")
     plt.xticks(x_label1, x_label2)
     plt.title("Decessi mensili (media mobile 30 gg)")
     plt.ylabel("Ogni 100.000 persone per ciascun gruppo")
@@ -120,7 +119,7 @@ if __name__ == "__main__":
     chdir(scriptpath)
 
     # Imposta stile grafici
-    plt.style.use("seaborn-dark")
+    apply_plot_treatment()
 
     df_IT, df_assoluti, df_tassi = import_data()
     casi_2020, dec_2020 = get_epidemic_data_2020()

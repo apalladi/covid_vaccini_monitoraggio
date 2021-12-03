@@ -2,11 +2,13 @@
 import locale
 from os import chdir, path
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from custom.plots import date_from_csv_path, list_età_csv
+from custom.plots import (apply_plot_treatment, date_from_csv_path,
+                          list_età_csv, palette)
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_watermark
 
@@ -64,6 +66,7 @@ def add_to_plot(ticks, labels):
 
 
 # Rappresentazione grafica risultati
+@mpl.rc_context({"lines.marker": None})
 def plot_rapporti_incidenze(ticks, labels, show=False):
     """ Rapporto fra incidenze """
 
@@ -149,6 +152,7 @@ def ricava_andamenti_età(files, età, colonna, incidenza_mensile):
     return df_results
 
 
+@mpl.rc_context({'lines.marker': None})
 def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     """Plot delle incidenze in funzione del tempo"""
 
@@ -166,42 +170,42 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     ricava_andamenti_età(files,
                          "12-39",
                          categorie[0],
-                         incidenza_mensile=False).plot(ax=axes[0], color="blue")
+                         incidenza_mensile=False).plot(ax=axes[0])
     ricava_andamenti_età(files,
                          "40-59",
                          categorie[0],
-                         incidenza_mensile=False).plot(ax=axes[0], color="orange")
+                         incidenza_mensile=False).plot(ax=axes[0])
     ricava_andamenti_età(files,
                          "60-79",
                          categorie[0],
-                         incidenza_mensile=False).plot(ax=axes[0], color="green")
+                         incidenza_mensile=False).plot(ax=axes[0])
     ricava_andamenti_età(files,
                          "80+",
                          categorie[0],
-                         incidenza_mensile=False).plot(ax=axes[0], color="red")
+                         incidenza_mensile=False).plot(ax=axes[0])
     ricava_andamenti_età(files,
                          "12-39",
                          categorie[1],
                          incidenza_mensile=False).plot(ax=axes[0],
-                                                       color="blue",
+                                                       color=palette[0],
                                                        linestyle="--")
     ricava_andamenti_età(files,
                          "40-59",
                          categorie[1],
                          incidenza_mensile=False).plot(ax=axes[0],
-                                                       color="orange",
+                                                       color=palette[1],
                                                        linestyle="--")
     ricava_andamenti_età(files,
                          "60-79",
                          categorie[1],
                          incidenza_mensile=False).plot(ax=axes[0],
-                                                       color="green",
+                                                       color=palette[2],
                                                        linestyle="--")
     ricava_andamenti_età(files,
                          "80+",
                          categorie[1],
                          incidenza_mensile=False).plot(ax=axes[0],
-                                                       color="red",
+                                                       color=palette[3],
                                                        linestyle="--")
 
     axes[0].set_title(titoli[0])
@@ -212,42 +216,42 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     ricava_andamenti_età(files,
                          "12-39",
                          categorie[0],
-                         incidenza_mensile=True).plot(ax=axes[1], color="blue")
+                         incidenza_mensile=True).plot(ax=axes[1])
     ricava_andamenti_età(files,
                          "40-59",
                          categorie[0],
-                         incidenza_mensile=True).plot(ax=axes[1], color="orange")
+                         incidenza_mensile=True).plot(ax=axes[1])
     ricava_andamenti_età(files,
                          "60-79",
                          categorie[0],
-                         incidenza_mensile=True).plot(ax=axes[1], color="green")
+                         incidenza_mensile=True).plot(ax=axes[1])
     ricava_andamenti_età(files,
                          "80+",
                          categorie[0],
-                         incidenza_mensile=True).plot(ax=axes[1], color="red")
+                         incidenza_mensile=True).plot(ax=axes[1])
     ricava_andamenti_età(files,
                          "12-39",
                          categorie[1],
                          incidenza_mensile=True).plot(ax=axes[1],
-                                                      color="blue",
+                                                      color=palette[0],
                                                       linestyle="--")
     ricava_andamenti_età(files,
                          "40-59",
                          categorie[1],
                          incidenza_mensile=True).plot(ax=axes[1],
-                                                      color="orange",
+                                                      color=palette[1],
                                                       linestyle="--")
     ricava_andamenti_età(files,
                          "60-79",
                          categorie[1],
                          incidenza_mensile=True).plot(ax=axes[1],
-                                                      color="green",
+                                                      color=palette[2],
                                                       linestyle="--")
     ricava_andamenti_età(files,
                          "80+",
                          categorie[1],
                          incidenza_mensile=True).plot(ax=axes[1],
-                                                      color="red",
+                                                      color=palette[3],
                                                       linestyle="--")
     axes[1].set_title(titoli[1])
     axes[1].grid()
@@ -273,7 +277,7 @@ if __name__ == "__main__":
     locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
 
     # Imposta stile grafici
-    plt.style.use("seaborn-dark")
+    apply_plot_treatment()
 
     # Lista i csv
     files = list_età_csv()
