@@ -152,7 +152,7 @@ def ricava_andamenti_età(files, età, colonna, incidenza_mensile):
     return df_results
 
 
-@mpl.rc_context({'lines.marker': None})
+@mpl.rc_context({"lines.marker": None})
 def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     """Plot delle incidenze in funzione del tempo"""
 
