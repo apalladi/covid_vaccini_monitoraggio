@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """ dati_selezione.ipynb
 
-Extraction of table 3 from ISS weekly covid-19 reports
+Extraction of data from ISS weekly covid-19 reports
 https://www.epicentro.iss.it/coronavirus/aggiornamenti
 
 See example pdf:
-https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_8-settembre-2021.pdf
+https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_10-novembre-2021.pdf
 
 Requirements:
 Python 3.6+, Ghostscript (ghostscript), Tkinter (python3-tk)
@@ -39,8 +39,10 @@ def get_surveillance_reports():
         soup = BeautifulSoup(response, "html.parser")
         # Find all hyperlinks present on webpage
         links = soup.find_all("a")
-        # Table 3 is available since 14/07/2021
-        cut_date = pd.to_datetime("2021-07-14")
+        # The table is available since 14/07/2021
+        # The script has been updated to 2021-11-10 report
+        # for older reports use "dati_selezione_old.py"
+        cut_date = pd.to_datetime("2021-11-10")
     return [urljoin(epicentro_url, link["href"]) for link in links
             if "Bollettino-sorveglianza-integrata-COVID-19" in link["href"]
             and (date_from_url(link["href"], is_raw=False) >= cut_date)]
@@ -50,9 +52,10 @@ def page_from_url(sel_url):
     """page_from_url(sel_url) -> int
 
     sel_url: url of the report
-    return: number of the page containing table 3"""
+    return: number of the page containing the table"""
 
-    queries = ["TABELLA 3 – POPOLAZIONE ITALIANA",
+    queries = ["TABELLA 4 – POPOLAZIONE ITALIANA",
+               "TABELLA 3 – POPOLAZIONE ITALIANA",
                "TABELLA 3 – COPERTURA VACCINALE",
                "TABELLA 7 – COPERTURA VACCINALE"]
 
@@ -106,12 +109,11 @@ def get_data_from_report(auto=True, force=False):
     """get_data_from_report(boolean)
 
     The script saves data extracted from report.
+    Use force=True to skip checks and force data extraction
 
     Select mode:
-    - Automatic (auto = True): table of last available PDF
-                               is automatically read
-    - Manual (auto = False): Index of the report will be asked as input
-    Use force=True to skip checks and force data extraction"""
+    - Automatic (auto=True): table of last available PDF is automatically read
+    - Manual (auto=False): Index of the report will be asked as input"""
 
     # Get reports
     reports = get_surveillance_reports()
@@ -124,18 +126,15 @@ def get_data_from_report(auto=True, force=False):
         reports_dict = dict(enumerate([date_from_url(report)
                             for report in reports]))
         # Select report index as input
-        rep_idx = input(f"\nChoose report index:\n\n{reports_dict}\n\n")
+        rep_idx = input(f"\nChoose report index:\
+                        \nFor oldest reports please use \
+                        the dati_selezione_old.py script!\n\
+                        \n\n{reports_dict}\n\n")
         rep_url = reports[int(rep_idx)]
 
     # Get report date
     rep_date = date_from_url(rep_url, is_raw=False)
     print(f"\nSelected report ({rep_date.date()}) is:\n{rep_url}")
-
-    if rep_date < pd.to_datetime("2021-11-10"):
-        msg_old = "\nFor oldest reports please use"
-        msg_old += " the dati_selezione_old.py script!\n"
-        print(msg_old)
-        exit()
 
     # Read the csv to update from the repo
     df_0 = pd.read_csv("dati_ISS_complessivi.csv",
@@ -149,7 +148,7 @@ def get_data_from_report(auto=True, force=False):
         print("\nCSV are already up-to-date!")
         exit()
 
-    # Get table 3 page number
+    # Get table page number
     table_page = page_from_url(rep_url)
 
     # Can't really find the page, stop
@@ -176,7 +175,13 @@ def get_data_from_report(auto=True, force=False):
     df_raw = df_raw[columns_to_keep]
 
     # Get rows containing "%)" at the end
-    df_raw = df_raw[df_raw[df_raw.columns[0]].str.endswith("%)")]
+
+    if rep_date >= pd.to_datetime("2021-12-01"):
+        # select rows containing numbers
+        selection = r"[0-9]"
+        df_raw = df_raw[df_raw[df_raw.columns[0]].str.match(selection)]
+    else:
+        df_raw = df_raw[df_raw[df_raw.columns[0]].str.endswith("%)")]
 
     # Remove dots and parentheses
     to_exclude = r"\((.*)|[^0-9]"
@@ -184,19 +189,19 @@ def get_data_from_report(auto=True, force=False):
 
     df_final.columns = ["non vaccinati",
                         "vaccinati 1 dose",
-                        "vaccinati completo < 6 mesi",
-                        "vaccinati completo > 6 mesi",
+                        "vaccinati completo < x mesi",
+                        "vaccinati completo > x mesi",
                         "vaccinati booster"]
 
-    # Merge immunized columns ("vaccinati completo < 6 mesi",
-    # "vaccinati completo > 6 mesi", "vaccinati booster") into one
+    # Merge immunized columns ("vaccinati completo < x mesi",
+    # "vaccinati completo > x mesi", "vaccinati booster") into one
     idx = df_final.columns.tolist().index("vaccinati 1 dose")
     vaccinati_completo = df_final.iloc[:, 2:].sum(axis=1)
     df_final.insert(idx+1, "vaccinati completo", vaccinati_completo)
 
     # Drop these columns
-    df_final.drop(["vaccinati completo < 6 mesi",
-                   "vaccinati completo > 6 mesi"], axis=1, inplace=True)
+    df_final.drop(["vaccinati completo < x mesi",
+                   "vaccinati completo > x mesi"], axis=1, inplace=True)
     df_final.reset_index(inplace=True, drop=True)
 
     # Get data
