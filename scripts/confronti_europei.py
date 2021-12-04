@@ -219,15 +219,22 @@ def plot_selection(show=False):
                                     df_confirmed,
                                     df_deaths,
                                     df_recovered)
-        new_date = df_epid.index[-1]
         mask_ = df_epid.index >= "2021-06-01"
         df_epid = df_epid.loc[mask_, :]
         values = 1/(abitanti_nazioni[i])*(df_epid["Total deaths"]-df_epid["Total deaths"][0])
         values.plot(ax=axes[0], label=label_nazioni[i])
-        last_updated, x_date, x_label = aggiorna_ascissa(last_updated,
-                                                         new_date,
-                                                         x_date,
-                                                         x_label)
+
+    for i in range(len(nomi_nazioni)):
+        df_country = get_vaccine_data(nomi_nazioni[i], df_vacc)
+        mask_ = df_country.index >= "2021-06-01"
+        df_country["% fully vaccinated"][mask_].plot(ax=axes[1],
+                                                     label=label_nazioni[i],
+                                                     linewidth=2)
+    new_date = df_epid.index[-1]
+    last_updated, x_date, x_label = aggiorna_ascissa(last_updated,
+                                                     new_date,
+                                                     x_date,
+                                                     x_label)
 
     axes[0].set_xlim("2021-06-01", last_updated)
     axes[0].set_title("Decessi dal 1° Giugno ad oggi")
@@ -238,18 +245,6 @@ def plot_selection(show=False):
     axes[0].legend()
     axes[0].grid()
     axes[0].minorticks_off()
-
-    for i in range(len(nomi_nazioni)):
-        df_country = get_vaccine_data(nomi_nazioni[i], df_vacc)
-        new_date = df_country.index[-1]
-        mask_ = df_country.index >= "2021-06-01"
-        df_country["% fully vaccinated"][mask_].plot(ax=axes[1],
-                                                     label=label_nazioni[i],
-                                                     linewidth=2)
-        last_updated, x_date, x_label = aggiorna_ascissa(last_updated,
-                                                         new_date,
-                                                         x_date,
-                                                         x_label)
 
     axes[1].set_xlim("2021-06-01", last_updated)
     axes[1].set_ylim(0, 100)
