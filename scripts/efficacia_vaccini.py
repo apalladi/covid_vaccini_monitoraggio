@@ -71,6 +71,9 @@ def which_axe(axis):
 def which_axe_bar(axis):
     """ Imposta proprietà grafici """
     axis.set_xlabel("Fascia d'età")
+    axis.set_yticks(np.arange(50, 101, 10))
+    axis.set_yticklabels(["50%", "60%", "70%", "80%", "90%", "100%"])
+    axis.set_ylim(50, 100)
     axis.grid()
     for tick in axis.get_xticklabels():
         tick.set_rotation(0)
@@ -80,6 +83,9 @@ def add_to_plot():
     """ Imposta proprietà grafici """
     plt.grid()
     plt.xlabel("Fascia d'età")
+    plt.yticks(np.arange(50, 101, 10),
+               ["50%", "60%", "70%", "80%", "90%", "100%"])
+    plt.ylim(50, 100)
 
 
 # Rappresentazione grafica dei risultati
