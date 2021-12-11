@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from custom.plots import (apply_plot_treatment, date_from_csv_path,
-                          list_età_csv, palette)
+from custom.plots import (apply_plot_treatment, axis_date_formatter,
+                          date_from_csv_path, list_età_csv, palette)
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_watermark
 
@@ -109,9 +109,7 @@ def ricava_andamenti_età(files, età, colonna, incidenza_mensile):
     divise per fascia d"età e categoria"""
 
     # create dates
-    dates = []
-    for f in files:
-        dates.append(date_from_csv_path(f))
+    dates = [date_from_csv_path(f) for f in files]
 
     # loop around the .csv files
     results_date = []
@@ -211,6 +209,8 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     axes[0].set_title(titoli[0])
     axes[0].legend(shared_legend)
     axes[0].grid()
+    axes[0].xaxis.reset_ticks()
+    axes[0].xaxis.set_major_formatter(axis_date_formatter)
     axes[0].set_xlabel("")
 
     ricava_andamenti_età(files,
@@ -256,6 +256,8 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     axes[1].set_title(titoli[1])
     axes[1].grid()
     axes[1].legend(shared_legend)
+    axes[1].xaxis.reset_ticks()
+    axes[1].xaxis.set_major_formatter(axis_date_formatter)
     axes[1].set_xlabel("")
 
     ax = plt.gca()

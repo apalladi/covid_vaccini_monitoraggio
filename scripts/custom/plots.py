@@ -3,6 +3,7 @@ from glob import glob
 from re import findall
 
 import matplotlib as mpl
+import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 from numpy import sort
 from pandas import to_datetime
@@ -60,3 +61,13 @@ def list_età_csv(is_most_recent=False):
 def date_from_csv_path(csv_path):
     date_ = findall(r"\d+-\d+-\d+", csv_path)[0]
     return datetime.strptime(date_, "%Y-%m-%d")
+
+
+def axis_date_formatter(x, pos=None):
+    x_ = mdates.num2date(x)
+    if pos == 0 or x_.strftime("%m") == "01":
+        fmt = "%b\n%Y"
+    else:
+        fmt = "%b"
+    label = x_.strftime(fmt)
+    return label.capitalize()
