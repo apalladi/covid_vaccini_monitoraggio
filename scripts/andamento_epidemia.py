@@ -6,7 +6,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from custom.plots import apply_plot_treatment, axis_date_formatter, palette
+from custom.plots import apply_plot_treatment, get_xticks_labels, palette
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_watermark
 
@@ -16,7 +16,7 @@ def which_axe(axis):
     """ Imposta proprietà grafico """
     axis.set_xlabel("")
     axis.xaxis.reset_ticks()
-    axis.xaxis.set_major_formatter(axis_date_formatter)
+    axis.set_xticks(x_ticks, x_labels)
     axis.legend(["Non vaccinati", "Vaccinati"])
     axis.grid()
 
@@ -105,7 +105,7 @@ def plot_rapporto_tassi(show=False):
 
     ax = plt.gca()
     ax.xaxis.reset_ticks()
-    ax.xaxis.set_major_formatter(axis_date_formatter)
+    ax.set_xticks(x_ticks, x_labels)
 
     plt.title("Rapporto fra le incidenze")
     plt.ylabel("Non vaccinati/vaccinati")
@@ -176,6 +176,8 @@ if __name__ == "__main__":
     palette_ = [palette[4], palette[5]]
 
     df_tassi, df_assoluti = load_data()
+
+    x_ticks, x_labels = get_xticks_labels(reports_dates=df_assoluti.index)
 
     plot_incidenza()
     plot_rapporto_tassi()
