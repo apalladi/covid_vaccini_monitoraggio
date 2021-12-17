@@ -16,7 +16,8 @@ def which_axe(axis):
     """ Imposta proprietà grafico """
     axis.set_xlabel("")
     axis.xaxis.reset_ticks()
-    axis.set_xticks(x_ticks, x_labels)
+    axis.set_xticks(x_ticks)
+    axis.set_xticklabels(x_labels)
     axis.legend(["Non vaccinati", "Vaccinati"])
     axis.grid()
 
@@ -105,7 +106,8 @@ def plot_rapporto_tassi(show=False):
 
     ax = plt.gca()
     ax.xaxis.reset_ticks()
-    ax.set_xticks(x_ticks, x_labels)
+    ax.set_xticks(x_ticks)
+    ax.set_xticklabels(x_labels)
 
     plt.title("Rapporto fra le incidenze")
     plt.ylabel("Non vaccinati/vaccinati")

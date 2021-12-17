@@ -232,7 +232,8 @@ def plot_selection(show=False):
     axes[0].set_title("Decessi dal 1° Giugno ad oggi")
     axes[0].set_ylabel("Decessi per milione di abitanti")
     axes[0].set_xlabel("")
-    axes[0].set_xticks(x_ticks, x_labels)
+    axes[0].set_xticks(x_ticks)
+    axes[0].set_xticklabels(x_labels)
     axes[0].legend()
     axes[0].grid()
 
@@ -241,7 +242,8 @@ def plot_selection(show=False):
     axes[1].set_yticklabels(["0%", "20%", "40%", "60%", "80%", "100%"])
     axes[1].set_title("Vaccinati con ciclo completo")
     axes[1].set_xlabel("")
-    axes[1].set_xticks(x_ticks, x_labels)
+    axes[1].set_xticks(x_ticks)
+    axes[1].set_xticklabels(x_labels)
     axes[1].legend()
     axes[1].grid()
 

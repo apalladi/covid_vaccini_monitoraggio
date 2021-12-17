@@ -210,7 +210,8 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     axes[0].legend(shared_legend)
     axes[0].grid()
     axes[0].xaxis.reset_ticks()
-    axes[0].set_xticks(x_ticks, x_labels)
+    axes[0].set_xticks(x_ticks)
+    axes[0].set_xticklabels(x_labels)
     axes[0].set_xlabel("")
 
     ricava_andamenti_età(files,
@@ -257,7 +258,8 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     axes[1].grid()
     axes[1].legend(shared_legend)
     axes[1].xaxis.reset_ticks()
-    axes[1].set_xticks(x_ticks, x_labels)
+    axes[1].set_xticks(x_ticks)
+    axes[1].set_xticklabels(x_labels)
     axes[1].set_xlabel("")
 
     ax = plt.gca()
