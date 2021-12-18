@@ -5,6 +5,8 @@ import numpy as np
 from matplotlib.font_manager import FontProperties, findfont
 from PIL import ImageFont
 
+from custom.plots import palette
+
 
 def watermark_specs(figure, watermark):
     # Get the default Matplotlib font
@@ -43,13 +45,17 @@ def add_watermark(figure, axis_font_size):
                 0.5,
                 watermark,
                 fontsize=fontsize,
-                color="gray",
-                alpha=0.25,
+                color=palette[-1],
+                alpha=0.50,
                 ha="center",
                 va="center",
                 rotation=angle,
                 zorder=0)
 
+    add_last_updated(figure, axis_font_size)
+
+
+def add_last_updated(figure, axis_font_size):
     # explicit link and last update date at the bottom
     last_update = datetime.today().strftime("%d-%m-%Y %H:%M")
     watermark_btm = r"$\bf{Fonte:}$ "
@@ -59,6 +65,6 @@ def add_watermark(figure, axis_font_size):
                 -0.06,
                 watermark_btm,
                 fontsize=axis_font_size,
-                color="darkslategray",
+                color="black",
                 ha="center",
                 va="bottom")

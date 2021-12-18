@@ -4,15 +4,15 @@ import locale
 from os import chdir, path
 
 import matplotlib as mpl
-import matplotlib.patheffects as path_effects
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from adjustText import adjust_text
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from sklearn.metrics import r2_score
 
 from custom.plots import apply_plot_treatment, get_xticks_labels, palette
-from custom.watermarks import add_watermark
+from custom.watermarks import add_last_updated, add_watermark
 
 paesi_abitanti_eu = {"Austria": 8.917, "Belgium": 11.56, "Bulgaria": 6.927,
                      "Cyprus": 1.207, "Croatia": 4.047, "Denmark": 5.831,
@@ -268,21 +268,20 @@ def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_gri
     # scatter plot
     # genera lista di colori e dimensioni
     colors = plt.cm.nipy_spectral(np.linspace(0, 1, len(paesi_eu_ita)))
-    sizes = 3*len(paesi_eu_ita)
+    volume = 3.5*len(paesi_eu_ita)
 
-    plt.scatter(vacc_res_2021, dec_res_2021, c=colors,
-                edgecolor="black", linewidth=0.5, s=sizes)
+    plt.scatter(vacc_res_2021, dec_res_2021, c=colors, alpha=0.50,
+                edgecolor="black", linewidth=0.5, s=volume)
 
     texts = [plt.text(vacc_res_2021[i],
              dec_res_2021[i],
-             paesi_eu_ita[i],
-             path_effects=[path_effects.Stroke(linewidth=0.075, foreground=colors[i])])
+             paesi_eu_ita[i])
              for i in range(len(paesi_eu_ita))]
 
     # fix text overlap
     adjust_text(texts,
-                expand_text=(1.15, 1.30),
-                arrowprops=dict(arrowstyle="-", lw=1))
+                expand_text=(1.20, 1.35),
+                arrowprops=dict(arrowstyle="-", linewidth=.75))
 
     # fit plot
     plt.plot(x_grid, y_grid, linestyle="--", c=palette[1], label=f"Regressione lineare, R$^2$ score={score}")
@@ -301,19 +300,36 @@ def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_gri
     plt.tight_layout()
 
     # bar plot
+    ax = plt.gca()
     df_grouped = group_vaccinated(vacc_res_2021, dec_res_2021)
-    a = plt.axes([.10, .15, .275, .275], facecolor="gainsboro")
 
-    df_grouped.plot(kind="bar", color=palette[1], ax=a)
-    plt.xticks(rotation=0)
-    plt.grid()
-    plt.xlabel(f"Frazione media vaccinati")
-    plt.ylabel("Decessi medi per mln")
-    # plt.title("Frazione di vaccinati vs decessi nei 27 Paesi dell'UE negli ultimi "+str(window)+" giorni")
+    ax_bar = inset_axes(ax, "30%", "30%",
+                        loc="lower left",
+                        bbox_to_anchor=(0.01, 0.075, 0.98, 0.95),
+                        bbox_transform=ax.transAxes)
+    ax_bar.set_facecolor((0, 0, 0, 0))
+    ax_bar.bar(df_grouped.index, df_grouped, width=1,
+               edgecolor="black", color=palette[1], alpha=0.30)
+    for index, data in enumerate(df_grouped):
+        plt.text(x=index, y=data-40 if data > 100 else data+20,
+                 ha="center", s=round(data), fontdict=dict(fontweight="bold"))
+
+    ax_bar.xaxis.set_tick_params(rotation=0)
+    ax_bar.set_title(f"Decessi medi per milione\n(ultimi {window} giorni)")
+    ax_bar.set_xlabel("Frazione media vaccinati")
+    ax_bar.set_yticks([])
+    ax_bar.spines["bottom"].set_linewidth(1.5)
+    ax_bar.spines["bottom"].set_color("black")
 
     # Add watermarks
-    ax = plt.gca()
-    add_watermark(fig, ax.xaxis.label.get_fontsize())
+    fig.text(0.95, 0.425,
+             "github.com/apalladi/covid_vaccini_monitoraggio",
+             fontsize=16,
+             alpha=0.50,
+             color=palette[-1],
+             va="center",
+             rotation="vertical")
+    add_last_updated(fig, ax.xaxis.label.get_fontsize())
 
     plt.savefig("../risultati/vaccini_decessi_EU.png",
                 dpi=300,
