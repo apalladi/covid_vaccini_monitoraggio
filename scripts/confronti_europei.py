@@ -11,7 +11,7 @@ import pandas as pd
 from adjustText import adjust_text
 from sklearn.metrics import r2_score
 
-from custom.plots import aggiorna_ascissa, apply_plot_treatment, palette
+from custom.plots import apply_plot_treatment, get_xticks_labels, palette
 from custom.watermarks import add_watermark
 
 paesi_abitanti_eu = {"Austria": 8.917, "Belgium": 11.56, "Bulgaria": 6.927,
@@ -204,15 +204,10 @@ def plot_selection(show=False):
     label_nazioni = ["Italia", "Romania", "Portogallo", "Spagna", "Bulgaria"]
     abitanti_nazioni = [59.55, 19.29, 10.31, 47.35, 6.927]
 
-    x_date = ["2021-06-01", "2021-07-01", "2021-08-01", "2021-09-01", "2021-10-01", "2021-11-01"]
-    x_label = ["Giu\n2021", "Lug", "Ago", "Set", "Ott", "Nov"]
-
     fig, axes2 = plt.subplots(nrows=1, ncols=2, figsize=(10, 5))
 
     # Unpack all the axes subplots
     axes = axes2.ravel()
-
-    last_updated = pd.to_datetime(x_date[-1])
 
     for i in range(len(nomi_nazioni)):
         df_epid = get_epidemic_data(nomi_nazioni[i],
@@ -227,36 +222,30 @@ def plot_selection(show=False):
     for i in range(len(nomi_nazioni)):
         df_country = get_vaccine_data(nomi_nazioni[i], df_vacc)
         mask_ = df_country.index >= "2021-06-01"
-        df_country["% fully vaccinated"][mask_].plot(ax=axes[1],
-                                                     label=label_nazioni[i],
-                                                     linewidth=2)
-    new_date = df_epid.index[-1]
-    last_updated, x_date, x_label = aggiorna_ascissa(last_updated,
-                                                     new_date,
-                                                     x_date,
-                                                     x_label)
+        df_country = df_country.loc[mask_, :]
+        df_country["% fully vaccinated"].plot(ax=axes[1],
+                                              label=label_nazioni[i],
+                                              linewidth=2)
 
-    axes[0].set_xlim("2021-06-01", last_updated)
+    x_ticks, x_labels = get_xticks_labels(df_country.index)
+
     axes[0].set_title("Decessi dal 1° Giugno ad oggi")
     axes[0].set_ylabel("Decessi per milione di abitanti")
     axes[0].set_xlabel("")
-    axes[0].set_xticks(x_date)
-    axes[0].set_xticklabels(x_label)
+    axes[0].set_xticks(x_ticks)
+    axes[0].set_xticklabels(x_labels)
     axes[0].legend()
     axes[0].grid()
-    axes[0].minorticks_off()
 
-    axes[1].set_xlim("2021-06-01", last_updated)
     axes[1].set_ylim(0, 100)
     axes[1].set_yticks(np.arange(0, 101, 20))
     axes[1].set_yticklabels(["0%", "20%", "40%", "60%", "80%", "100%"])
     axes[1].set_title("Vaccinati con ciclo completo")
     axes[1].set_xlabel("")
-    axes[1].set_xticks(x_date)
-    axes[1].set_xticklabels(x_label)
+    axes[1].set_xticks(x_ticks)
+    axes[1].set_xticklabels(x_labels)
     axes[1].legend()
     axes[1].grid()
-    axes[1].minorticks_off()
 
     # Add watermarks
     ax = plt.gca()

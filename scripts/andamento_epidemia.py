@@ -6,7 +6,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from custom.plots import apply_plot_treatment, palette
+from custom.plots import apply_plot_treatment, get_xticks_labels, palette
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_watermark
 
@@ -15,6 +15,9 @@ from custom.watermarks import add_watermark
 def which_axe(axis):
     """ Imposta proprietà grafico """
     axis.set_xlabel("")
+    axis.xaxis.reset_ticks()
+    axis.set_xticks(x_ticks)
+    axis.set_xticklabels(x_labels)
     axis.legend(["Non vaccinati", "Vaccinati"])
     axis.grid()
 
@@ -33,12 +36,13 @@ def load_data():
 
     # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
     df_tassi = compute_incidence(df_assoluti)
-    df_tassi.index = pd.to_datetime(df_assoluti["data"], format="%Y/%m/%d")
+    df_tassi.index = pd.to_datetime(df_assoluti["data"])
 
     # Calcola i numeri assoluti (medi, giornalieri) dell"epidemia
     df_assoluti = df_assoluti.copy(deep=True)
-    df_assoluti.index = pd.to_datetime(df_assoluti["data"], format="%Y/%m/%d")
-    df_assoluti.drop("data", axis=1, inplace=True)
+    df_assoluti["data"] = pd.to_datetime(df_assoluti["data"])
+    df_assoluti.set_index("data", drop=True, inplace=True)
+
     # Trasforma in numeri giornalieri
     df_assoluti = (1/30)*df_assoluti
 
@@ -100,6 +104,11 @@ def plot_rapporto_tassi(show=False):
     (df_tassi.iloc[:, 4]/df_tassi.iloc[:, 5]).plot(label="Ricovero in TI")
     (df_tassi.iloc[:, 6]/df_tassi.iloc[:, 7]).plot(label="Decesso")
 
+    ax = plt.gca()
+    ax.xaxis.reset_ticks()
+    ax.set_xticks(x_ticks)
+    ax.set_xticklabels(x_labels)
+
     plt.title("Rapporto fra le incidenze")
     plt.ylabel("Non vaccinati/vaccinati")
     plt.xlabel("")
@@ -108,7 +117,6 @@ def plot_rapporto_tassi(show=False):
     plt.tight_layout()
 
     # Add watermarks
-    ax = plt.gca()
     add_watermark(fig, ax.xaxis.label.get_fontsize())
 
     plt.savefig("../risultati/rapporto_tra_tassi.png",
@@ -170,6 +178,8 @@ if __name__ == "__main__":
     palette_ = [palette[4], palette[5]]
 
     df_tassi, df_assoluti = load_data()
+
+    x_ticks, x_labels = get_xticks_labels(reports_dates=df_assoluti.index)
 
     plot_incidenza()
     plot_rapporto_tassi()
