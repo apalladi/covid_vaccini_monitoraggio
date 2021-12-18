@@ -65,6 +65,6 @@ def add_last_updated(figure, axis_font_size):
                 -0.06,
                 watermark_btm,
                 fontsize=axis_font_size,
-                color="black",
+                color="darkslategray",
                 ha="center",
                 va="bottom")

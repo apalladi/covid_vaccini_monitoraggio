@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import locale
+from datetime import date, timedelta
 from os import chdir, path
 
 import matplotlib as mpl
@@ -260,8 +261,14 @@ def plot_selection(show=False):
 
 
 @mpl.rc_context({"lines.marker": None})
-def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_grid, window, score, show=False):
+def plot_correlazione_vaccini_decessi(tw=30, show=False):
     """ scatter plot correlazione vaccini e decessi """
+
+    # recupera dati per la finestra temporale selezionata
+    vacc_res, dec_res = compute_vaccini_decessi_eu(tw, fully=False, last_day=False)
+    x_grid, y_grid, score = linear_fit(vacc_res, dec_res)
+    # calcola coefficiente di correlazione (pearson)
+    corr_coeff = round(np.corrcoef(vacc_res, dec_res)[0, 1], 2)
 
     fig = plt.figure(figsize=(13, 8))
 
@@ -270,12 +277,10 @@ def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_gri
     colors = plt.cm.nipy_spectral(np.linspace(0, 1, len(paesi_eu_ita)))
     volume = 3.5*len(paesi_eu_ita)
 
-    plt.scatter(vacc_res_2021, dec_res_2021, c=colors, alpha=0.50,
+    plt.scatter(vacc_res, dec_res, c=colors, alpha=0.50,
                 edgecolor="black", linewidth=0.5, s=volume)
 
-    texts = [plt.text(vacc_res_2021[i],
-             dec_res_2021[i],
-             paesi_eu_ita[i])
+    texts = [plt.text(vacc_res[i], dec_res[i], paesi_eu_ita[i])
              for i in range(len(paesi_eu_ita))]
 
     # fix text overlap
@@ -288,11 +293,19 @@ def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_gri
 
     plt.ylim(-70, )
     plt.xlim(0, 100)
-    title = "Frazione di vaccinati vs decessi nei 27 Paesi dell'UE"
-    title += f" negli ultimi {window} giorni"
+
+    f_name = "vaccini_decessi_EU"
+    title = f"Frazione di vaccinati vs decessi nei 27 Paesi dell'UE negli ultimi {tw} giorni"
+    if tw > 30:
+        date_start = date.today() - timedelta(days=tw)
+        start_day = date_start.strftime("%d-%m-%Y")
+        title = f"Frazione di vaccinati vs decessi nei 27 Paesi dell'UE dal {start_day}"
+        start_day.replace("-", "_")
+        f_name = f"vaccini_decessi_EU_{start_day}"
+
     title += f"\nCoefficiente di correlazione = {corr_coeff}"
     plt.title(title, fontsize=15)
-    plt.xlabel(f"Frazione media di vaccinati con almeno 1 dose negli ultimi {window} giorni", fontsize=15)
+    plt.xlabel(f"Frazione media di vaccinati con almeno 1 dose", fontsize=15)
     plt.ylabel("Decessi per milione di abitanti", fontsize=15)
     plt.xticks(np.arange(0, 101, 20), ["0%", "20%", "40%", "60%", "80%", "100%"])
     plt.grid()
@@ -301,7 +314,7 @@ def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_gri
 
     # bar plot
     ax = plt.gca()
-    df_grouped = group_vaccinated(vacc_res_2021, dec_res_2021)
+    df_grouped = group_vaccinated(vacc_res, dec_res)
 
     ax_bar = inset_axes(ax, "30%", "30%",
                         loc="lower left",
@@ -311,11 +324,11 @@ def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_gri
     ax_bar.bar(df_grouped.index, df_grouped, width=1,
                edgecolor="black", color=palette[1], alpha=0.30)
     for index, data in enumerate(df_grouped):
-        plt.text(x=index, y=data-40 if data > 100 else data+20,
+        plt.text(x=index, y=data - data/2 if data > 300 else data + 20,
                  ha="center", s=round(data), fontdict=dict(fontweight="bold"))
 
     ax_bar.xaxis.set_tick_params(rotation=0)
-    ax_bar.set_title(f"Decessi medi per milione\n(ultimi {window} giorni)")
+    ax_bar.set_title(f"Decessi medi per milione")
     ax_bar.set_xlabel("Frazione media vaccinati")
     ax_bar.set_yticks([])
     ax_bar.spines["bottom"].set_linewidth(1.5)
@@ -331,7 +344,7 @@ def plot_correlazione_vaccini_decessi(vacc_res_2021, dec_res_2021, x_grid, y_gri
              rotation="vertical")
     add_last_updated(fig, ax.xaxis.label.get_fontsize())
 
-    plt.savefig("../risultati/vaccini_decessi_EU.png",
+    plt.savefig(f"../risultati/{f_name}.png",
                 dpi=300,
                 bbox_inches="tight")
     if show:
@@ -357,20 +370,10 @@ if __name__ == "__main__":
     plot_selection()
 
     # plot correlazione vaccini vs. decessi per paesi eu
-    # calcola finestra temporale per cui si ottiene massima correlazione
-    window = 30  # giorni
-    # recupera dati per tale finestra temporale
-    vacc_res_2021, dec_res_2021 = compute_vaccini_decessi_eu(window, fully=False, last_day=False)
-    x_grid, y_grid, score = linear_fit(vacc_res_2021, dec_res_2021)
-    # calcola coefficiente di correlazione (pearson)
-    corr_coeff = round(np.corrcoef(vacc_res_2021, dec_res_2021)[0, 1], 2)
+    # negli ultimi 30 giorni
+    plot_correlazione_vaccini_decessi()
 
-    print("Finestra temporale scelta", window, "giorni")
-    print("Coefficiente di correlazione tra vaccinati e deceduti:", corr_coeff)
-
-    plot_correlazione_vaccini_decessi(vacc_res_2021,
-                                      dec_res_2021,
-                                      x_grid,
-                                      y_grid,
-                                      window,
-                                      score)
+    # plot correlazione vaccini vs. decessi per paesi eu
+    # dal 1° settembre 2021
+    window = abs((date.today() - date(2021, 9, 1)).days)
+    plot_correlazione_vaccini_decessi(tw=window)
