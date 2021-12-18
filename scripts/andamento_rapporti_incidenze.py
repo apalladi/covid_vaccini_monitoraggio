@@ -38,26 +38,9 @@ def compute_incidence_ratio(category):
     return np.array(result_list)
 
 
-def get_ticks_labels():
-    # Aggiorna ticks e label dinamicamente
-    ticks = np.arange(0, len(files), 2)
-
-    # Calcola step in base ai ticks
-    # arrotonda il risultato
-    n_ticks = len(ticks)
-    slice_end = round(len(files)/n_ticks)
-    if (len(files[0::slice_end]) > n_ticks):
-        # Arrotonda per eccesso
-        slice_end += 1
-
-    labels = [date_from_csv_path(csv).strftime("%d\n%b").title()
-              for csv in files][0::slice_end]
-    return ticks, labels
-
-
 def add_to_plot():
     """ Imposta proprietà grafico """
-    plt.xticks(rapp_x_ticks, rapp_x_labels)
+    plt.xticks(ratio_x_ticks, ratio_x_labels)
     plt.ylabel("Contributo dei non vaccinati alle incidenze")
     plt.legend(["12-39", "40-59", "60-79", "80+"], loc=4)
     plt.yticks(np.arange(50, 101, 10), ["50%", "60%", "70%", "80%", "90%", "100%"])
@@ -286,7 +269,7 @@ if __name__ == "__main__":
     # Lista i csv
     files = list_età_csv()
 
-    rapp_x_ticks, rapp_x_labels = get_ticks_labels()
+    ratio_x_ticks, ratio_x_labels = get_xticks_labels(full=True)
 
     plot_rapporti_incidenze()
 
