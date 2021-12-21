@@ -45,7 +45,7 @@ def get_surveillance_reports():
         cut_date = pd.to_datetime("2021-11-10")
     return [urljoin(epicentro_url, link["href"]) for link in links
             if "Bollettino-sorveglianza-integrata-COVID-19" in link["href"]
-            and (date_from_url(link["href"], is_raw=False) >= cut_date)]
+            and date_from_url(link["href"], is_raw=False) >= cut_date]
 
 
 def page_from_url(sel_url):
@@ -81,15 +81,6 @@ def date_from_url(sel_url, is_raw=True):
 
     date_ = re.findall(r"\d+[a-z-A-Z]+\d+", sel_url)[0]
     return date_ if is_raw else datetime.strptime(date_, "%d-%B-%Y")
-
-
-def date_parser(sel_df):
-    """date_parser(object) -> datetime
-
-    sel_df: dataframe object
-    return: converts argument to datetime"""
-
-    return pd.to_datetime(sel_df, format="%Y/%m/%d")
 
 
 def check_df(sel_df):
@@ -140,7 +131,6 @@ def get_data_from_report(auto=True, force=False):
     df_0 = pd.read_csv("dati_ISS_complessivi.csv",
                        sep=";",
                        parse_dates=["data"],
-                       date_parser=date_parser,
                        index_col="data")
 
     # If table is already up-to-date stop the script
@@ -174,13 +164,12 @@ def get_data_from_report(auto=True, force=False):
     columns_to_keep = df_raw.columns[-5:]
     df_raw = df_raw[columns_to_keep]
 
-    # Get rows containing "%)" at the end
-
     if rep_date >= pd.to_datetime("2021-12-01"):
         # select rows containing numbers
         selection = r"[0-9]"
         df_raw = df_raw[df_raw[df_raw.columns[0]].str.match(selection)]
     else:
+        # Get rows containing "%)" at the end
         df_raw = df_raw[df_raw[df_raw.columns[0]].str.endswith("%)")]
 
     # Remove dots and parentheses

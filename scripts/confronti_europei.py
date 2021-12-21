@@ -301,7 +301,7 @@ def plot_correlazione_vaccini_decessi(tw=30, show=False):
         start_day = date_start.strftime("%d-%m-%Y")
         title = f"Frazione di vaccinati vs decessi nei 27 Paesi dell'UE dal {start_day}"
         start_day.replace("-", "_")
-        f_name = f"vaccini_decessi_EU_{start_day}"
+        f_name += f"_{start_day}"
 
     title += f"\nCoefficiente di correlazione = {corr_coeff}"
     plt.title(title, fontsize=15)
