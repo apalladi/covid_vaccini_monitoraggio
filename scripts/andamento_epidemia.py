@@ -50,7 +50,7 @@ def load_data():
 
 
 # Rappresentazione grafica dei risultati
-@mpl.rc_context({"legend.handlelength": 1.0})
+@mpl.rc_context({"legend.handlelength": 1.0, "axes.prop_cycle": mpl.cycler(color=palette[4:6])})
 def plot_incidenza(show=False):
     """ Tassi di infezione, ricovero, decesso """
 
@@ -61,22 +61,22 @@ def plot_incidenza(show=False):
 
     y_label = "Ogni 100.000 persone per ciascun gruppo"
 
-    df_tassi.iloc[:, [0, 1]].plot(ax=axes[0], color=palette_)
+    df_tassi.iloc[:, [0, 1]].plot(ax=axes[0])
     axes[0].set_title("Incidenza mensile dei nuovi casi")
     axes[0].set_ylabel(y_label)
     which_axe(axes[0])
 
-    df_tassi.iloc[:, [2, 3]].plot(ax=axes[1], color=palette_)
+    df_tassi.iloc[:, [2, 3]].plot(ax=axes[1])
     axes[1].set_title("Incidenza mensile degli ospedalizzati")
     axes[1].set_ylabel(y_label)
     which_axe(axes[1])
 
-    df_tassi.iloc[:, [4, 5]].plot(ax=axes[2], color=palette_)
+    df_tassi.iloc[:, [4, 5]].plot(ax=axes[2])
     axes[2].set_title("Incidenza mensile dei ricoverati in TI")
     axes[2].set_ylabel(y_label)
     which_axe(axes[2])
 
-    df_tassi.iloc[:, [6, 7]].plot(ax=axes[3], color=palette_)
+    df_tassi.iloc[:, [6, 7]].plot(ax=axes[3])
     axes[3].set_title("Incidenza mensile dei deceduti")
     axes[3].set_ylabel(y_label)
     which_axe(axes[3])
@@ -126,7 +126,7 @@ def plot_rapporto_tassi(show=False):
         plt.show()
 
 
-@mpl.rc_context({"legend.handlelength": 1.0})
+@mpl.rc_context({"legend.handlelength": 1.0, "axes.prop_cycle": mpl.cycler(color=palette[4:6])})
 def plot_num_assoluti(show=False):
     """ Andamento dei numeri assoluti """
 
@@ -135,19 +135,19 @@ def plot_num_assoluti(show=False):
     # Unpack all the axes subplots
     axes = axes2.ravel()
 
-    df_assoluti.iloc[:, [4, 6]].plot(ax=axes[0], color=palette_)
+    df_assoluti.iloc[:, [4, 6]].plot(ax=axes[0])
     axes[0].set_title("Nuovi casi giornalieri \n(media 30 gg)")
     which_axe(axes[0])
 
-    df_assoluti.iloc[:, [8, 10]].plot(ax=axes[1], color=palette_)
+    df_assoluti.iloc[:, [8, 10]].plot(ax=axes[1])
     axes[1].set_title("Nuovi ospedalizzati giornalieri \n(media 30 gg)")
     which_axe(axes[1])
 
-    df_assoluti.iloc[:, [12, 14]].plot(ax=axes[2], color=palette_)
+    df_assoluti.iloc[:, [12, 14]].plot(ax=axes[2])
     axes[2].set_title("Nuovi ricoverati in TI giornalieri \n(media 30 gg)")
     which_axe(axes[2])
 
-    df_assoluti.iloc[:, [16, 18]].plot(ax=axes[3], color=palette_)
+    df_assoluti.iloc[:, [16, 18]].plot(ax=axes[3])
     axes[3].set_title("Decessi giornalieri \n(media 30 gg)")
     which_axe(axes[3])
 
@@ -173,9 +173,6 @@ if __name__ == "__main__":
 
     # Imposta stile grafici
     apply_plot_treatment()
-
-    # Colori per plot vaccinati/non vaccinati
-    palette_ = [palette[4], palette[5]]
 
     df_tassi, df_assoluti = load_data()
 

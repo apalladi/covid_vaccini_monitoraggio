@@ -147,7 +147,7 @@ def linear_fit(vacc_res_2021, dec_res_2021):
     y_test = dec_res_2021
 
     score = round(r2_score(y_test, y_pred), 2)
-    print('R2 score è pari a', score)
+    print("R\u00b2 score è pari a", score)
 
     return x_grid, y_grid, score
 
@@ -305,7 +305,7 @@ def plot_correlazione_vaccini_decessi(tw=30, show=False):
 
     title += f"\nCoefficiente di correlazione = {corr_coeff}"
     plt.title(title, fontsize=15)
-    plt.xlabel(f"Frazione media di vaccinati con almeno 1 dose", fontsize=15)
+    plt.xlabel("Frazione media di vaccinati con almeno 1 dose", fontsize=15)
     plt.ylabel("Decessi per milione di abitanti", fontsize=15)
     plt.xticks(np.arange(0, 101, 20), ["0%", "20%", "40%", "60%", "80%", "100%"])
     plt.grid()
@@ -323,12 +323,10 @@ def plot_correlazione_vaccini_decessi(tw=30, show=False):
     ax_bar.set_facecolor((0, 0, 0, 0))
     ax_bar.bar(df_grouped.index, df_grouped, width=1,
                edgecolor="black", color=palette[1], alpha=0.30)
-    for index, data in enumerate(df_grouped):
-        plt.text(x=index, y=data - data/2 if data > 300 else data + 20,
-                 ha="center", s=round(data), fontdict=dict(fontweight="bold"))
+    ax_bar.bar_label(ax_bar.containers[0], fmt="%.f", padding=1, fontweight="bold")
 
     ax_bar.xaxis.set_tick_params(rotation=0)
-    ax_bar.set_title(f"Decessi medi per milione")
+    ax_bar.set_title("Decessi medi per milione", pad=15)
     ax_bar.set_xlabel("Frazione media vaccinati")
     ax_bar.set_yticks([])
     ax_bar.spines["bottom"].set_linewidth(1.5)
