@@ -10,9 +10,14 @@ import pandas as pd
 from custom.plots import (apply_plot_treatment, date_from_csv_path,
                           get_xticks_labels, list_età_csv, palette)
 from custom.preprocessing_dataframe import compute_incidence
-from custom.watermarks import add_watermark
+from custom.watermarks import add_last_updated, add_watermark
 
 classi_età = ["12-39", "40-59", "60-79", "80+"]
+
+shared_legend = ["12-39 non vaccinati", "40-59 non vaccinati",
+                 "60-79 non vaccinati", "80+ non vaccinati",
+                 "12-39 vaccinati", "40-59 vaccinati",
+                 "60-79 vaccinati", "80+ vaccinati"]
 
 
 # Funzioni per il plot
@@ -36,14 +41,25 @@ def compute_incidence_ratio(category):
     return np.array(result_list)
 
 
-def add_to_plot():
+def add_to_plot(ax):
     """ Imposta proprietà grafico """
-    plt.xticks(ratio_x_ticks, ratio_x_labels)
-    plt.ylabel("Contributo dei non vaccinati alle incidenze")
-    plt.legend(classi_età, loc=4)
-    plt.yticks(np.arange(50, 101, 10), ["50%", "60%", "70%", "80%", "90%", "100%"])
-    plt.ylim(60, 102)
-    plt.grid()
+    ax.set_xticks(ratio_x_ticks, ratio_x_labels)
+    ax.set_ylabel("Contributo dei non vaccinati alle incidenze")
+    ax.set_yticks(np.arange(50, 101, 10), ["50%", "60%", "70%", "80%", "90%", "100%"])
+    ax.set_ylim(60, 102)
+    ax.grid()
+    ax.legend(classi_età, loc=4)
+
+
+def add_to_plot_abs(ax, title):
+    """ Imposta proprietà grafico """
+    ax.set_title(title)
+    ax.xaxis.reset_ticks()
+    ax.set_xticks(x_ticks)
+    ax.set_xticklabels(x_labels)
+    ax.set_xlabel("")
+    ax.legend(shared_legend)
+    ax.grid()
 
 
 # Rappresentazione grafica risultati
@@ -51,33 +67,33 @@ def add_to_plot():
 def plot_rapporti_incidenze(show=False):
     """ Rapporto fra incidenze """
 
-    fig = plt.figure(figsize=(9, 8))
+    fig, ax = plt.subplots(ncols=2, nrows=2, figsize=(9, 8))
 
-    plt.subplot(2, 2, 1)
-    plt.plot(compute_incidence_ratio("Casi"))
-    plt.title("Casi")
-    add_to_plot()
+    # unpack axes
+    axes = ax.ravel()
 
-    plt.subplot(2, 2, 2)
-    plt.plot(compute_incidence_ratio("Ospedalizzati"))
-    plt.title("Ospedalizzati")
-    add_to_plot()
+    axes[0].plot(compute_incidence_ratio("Casi"))
+    axes[0].set_title("Casi")
+    add_to_plot(axes[0])
 
-    plt.subplot(2, 2, 3)
-    plt.plot(compute_incidence_ratio("TI"))
-    plt.title("In terapia intensiva")
-    add_to_plot()
+    axes[1].plot(compute_incidence_ratio("Ospedalizzati"))
+    axes[1].set_title("Ospedalizzati")
+    add_to_plot(axes[1])
 
-    plt.subplot(2, 2, 4)
-    plt.plot(compute_incidence_ratio("Deceduti"))
-    plt.title("Decessi")
-    add_to_plot()
+    axes[2].plot(compute_incidence_ratio("TI"))
+    axes[2].set_title("In terapia intensiva")
+    add_to_plot(axes[2])
+
+    axes[3].plot(compute_incidence_ratio("Deceduti"))
+    axes[3].set_title("Decessi")
+    add_to_plot(axes[3])
 
     # Add watermarks
     add_watermark(fig)
+    add_last_updated(fig, axes[-1])
 
-    plt.tight_layout()
-    plt.savefig("../risultati/andamento_rapporti_incidenze.png",
+    fig.tight_layout()
+    fig.savefig("../risultati/andamento_rapporti_incidenze.png",
                 dpi=300,
                 bbox_inches="tight")
     if show:
@@ -134,12 +150,8 @@ def ricava_andamenti_età(files, età, colonna, incidenza_mensile):
 def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     """Plot delle incidenze in funzione del tempo"""
 
-    shared_legend = ["12-39 non vaccinati", "40-59 non vaccinati",
-                     "60-79 non vaccinati", "80+ non vaccinati",
-                     "12-39 vaccinati", "40-59 vaccinati",
-                     "60-79 vaccinati", "80+ vaccinati"]
-
-    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
+    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
+    axes = ax.ravel()
 
     for età in classi_età:
         ricava_andamenti_età(files,
@@ -152,13 +164,7 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
                              categorie[1],
                              incidenza_mensile=False).plot(ax=axes[0],
                                                            linestyle="--")
-    axes[0].set_title(titoli[0])
-    axes[0].legend(shared_legend)
-    axes[0].grid()
-    axes[0].xaxis.reset_ticks()
-    axes[0].set_xticks(x_ticks)
-    axes[0].set_xticklabels(x_labels)
-    axes[0].set_xlabel("")
+    add_to_plot_abs(axes[0], titoli[0])
 
     for età in classi_età:
         ricava_andamenti_età(files,
@@ -171,18 +177,13 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
                              categorie[1],
                              incidenza_mensile=True).plot(ax=axes[1],
                                                           linestyle="--")
-    axes[1].set_title(titoli[1])
-    axes[1].grid()
-    axes[1].legend(shared_legend)
-    axes[1].xaxis.reset_ticks()
-    axes[1].set_xticks(x_ticks)
-    axes[1].set_xticklabels(x_labels)
-    axes[1].set_xlabel("")
+    add_to_plot_abs(axes[1], titoli[1])
 
     add_watermark(fig)
+    add_last_updated(fig, axes[-1])
 
-    plt.tight_layout()
-    plt.savefig(filename, dpi=300, bbox_inches="tight")
+    fig.tight_layout()
+    fig.savefig(filename, dpi=300, bbox_inches="tight")
 
     if show is True:
         plt.show()

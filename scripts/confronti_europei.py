@@ -205,10 +205,10 @@ def plot_selection(show=False):
     label_nazioni = ["Italia", "Romania", "Portogallo", "Spagna", "Bulgaria"]
     abitanti_nazioni = [59.55, 19.29, 10.31, 47.35, 6.927]
 
-    fig, axes2 = plt.subplots(nrows=1, ncols=2, figsize=(10, 5))
+    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 5))
 
     # Unpack all the axes subplots
-    axes = axes2.ravel()
+    axes = ax.ravel()
 
     for i in range(len(nomi_nazioni)):
         df_epid = get_epidemic_data(nomi_nazioni[i],
@@ -250,9 +250,10 @@ def plot_selection(show=False):
 
     # Add watermarks
     add_watermark(fig)
+    add_last_updated(fig, axes[-1], dati="JHU, Our World in Data")
 
-    plt.tight_layout()
-    plt.savefig("../risultati/confronto_nazioni_epidemia-vaccino.png",
+    fig.tight_layout()
+    fig.savefig("../risultati/confronto_nazioni_epidemia-vaccino.png",
                 dpi=300,
                 bbox_inches="tight")
     if show:
@@ -269,17 +270,17 @@ def plot_correlazione_vaccini_decessi(tw=30, show=False):
     # calcola coefficiente di correlazione (pearson)
     corr_coeff = round(np.corrcoef(vacc_res, dec_res)[0, 1], 2)
 
-    fig = plt.figure(figsize=(13, 8))
+    fig, ax = plt.subplots(figsize=(13, 8))
 
     # scatter plot
     # genera lista di colori e dimensioni
     colors = plt.cm.nipy_spectral(np.linspace(0, 1, len(paesi_eu_ita)))
     volume = 3.5*len(paesi_eu_ita)
 
-    plt.scatter(vacc_res, dec_res, c=colors, alpha=0.50,
-                edgecolor="black", linewidth=0.5, s=volume)
+    ax.scatter(vacc_res, dec_res, c=colors, alpha=0.50,
+               edgecolor="black", linewidth=0.5, s=volume)
 
-    texts = [plt.text(vacc_res[i], dec_res[i], paesi_eu_ita[i])
+    texts = [ax.text(vacc_res[i], dec_res[i], paesi_eu_ita[i])
              for i in range(len(paesi_eu_ita))]
 
     # fix text overlap
@@ -288,10 +289,10 @@ def plot_correlazione_vaccini_decessi(tw=30, show=False):
                 arrowprops=dict(arrowstyle="-", linewidth=.75))
 
     # fit plot
-    plt.plot(x_grid, y_grid, linestyle="--", c=palette[1], label=f"Regressione lineare, R$^2$ score={score}")
+    ax.plot(x_grid, y_grid, linestyle="--", c=palette[1], label=f"Regressione lineare, R$^2$ score={score}")
 
-    plt.ylim(-70, )
-    plt.xlim(0, 100)
+    ax.set_ylim(-70, )
+    ax.set_xlim(0, 100)
 
     f_name = "vaccini_decessi_EU"
     title = f"Frazione di vaccinati vs decessi nei 27 Paesi dell'UE negli ultimi {tw} giorni"
@@ -303,16 +304,15 @@ def plot_correlazione_vaccini_decessi(tw=30, show=False):
         f_name += f"_{start_day}"
 
     title += f"\nCoefficiente di correlazione = {corr_coeff}"
-    plt.title(title, fontsize=15)
-    plt.xlabel("Frazione media di vaccinati con almeno 1 dose", fontsize=15)
-    plt.ylabel("Decessi per milione di abitanti", fontsize=15)
-    plt.xticks(np.arange(0, 101, 20), ["0%", "20%", "40%", "60%", "80%", "100%"])
-    plt.grid()
-    plt.legend(fontsize=15)
-    plt.tight_layout()
+    ax.set_title(title, fontsize=15)
+    ax.set_xlabel("Frazione media di vaccinati con almeno 1 dose", fontsize=15)
+    ax.set_ylabel("Decessi per milione di abitanti", fontsize=15)
+    ax.set_xticks(np.arange(0, 101, 20), ["0%", "20%", "40%", "60%", "80%", "100%"])
+    ax.grid()
+    ax.legend(fontsize=15)
+    fig.tight_layout()
 
     # bar plot
-    ax = plt.gca()
     df_grouped = group_vaccinated(vacc_res, dec_res)
 
     ax_bar = inset_axes(ax, "30%", "30%",
@@ -339,11 +339,12 @@ def plot_correlazione_vaccini_decessi(tw=30, show=False):
              color=palette[-1],
              va="center",
              rotation="vertical")
-    add_last_updated(fig)
+    add_last_updated(fig, ax, dati="JHU, Our World in Data", y=-0.05)
 
-    plt.savefig(f"../risultati/{f_name}.png",
+    fig.savefig(f"../risultati/{f_name}.png",
                 dpi=300,
                 bbox_inches="tight")
+
     if show:
         plt.show()
 

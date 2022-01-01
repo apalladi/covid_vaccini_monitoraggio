@@ -10,7 +10,7 @@ import pandas as pd
 from custom.plots import (apply_plot_treatment, date_from_csv_path,
                           list_età_csv, palette)
 from custom.preprocessing_dataframe import compute_incidence
-from custom.watermarks import add_watermark
+from custom.watermarks import add_last_updated, add_watermark
 
 
 # Recupero dati dai csv estratti dai report
@@ -79,13 +79,13 @@ def which_axe_bar(axis):
         tick.set_rotation(0)
 
 
-def add_to_plot():
+def add_to_plot(ax):
     """ Imposta proprietà grafici """
-    plt.grid()
-    plt.xlabel("Fascia d'età")
-    plt.yticks(np.arange(50, 101, 10),
-               ["50%", "60%", "70%", "80%", "90%", "100%"])
-    plt.ylim(50, 100)
+    ax.set_xlabel("Fascia d'età")
+    ax.set_yticks(np.arange(50, 101, 10),
+                  ["50%", "60%", "70%", "80%", "90%", "100%"])
+    ax.set_ylim(50, 100)
+    ax.grid()
 
 
 # Rappresentazione grafica dei risultati
@@ -115,9 +115,10 @@ def plot_tassi(show=False):
 
     # Add watermarks
     add_watermark(fig)
+    add_last_updated(fig, axes[-1])
 
-    plt.tight_layout()
-    plt.savefig("../risultati/tassi_per_età.png", dpi=300, bbox_inches="tight")
+    fig.tight_layout()
+    fig.savefig("../risultati/tassi_per_età.png", dpi=300, bbox_inches="tight")
     if show:
         plt.show()
 
@@ -125,39 +126,31 @@ def plot_tassi(show=False):
 def plot_efficacia(show=False):
     """ Efficacia dei vaccini """
 
-    fig = plt.figure(figsize=(7.5, 7.5))
+    fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(7.5, 7.5))
+    axes = ax.ravel()
 
-    plt.subplot(2, 2, 1)
-    plt.bar(eff_contagio.index,
-            eff_contagio,
-            color=palette[1],
-            width=0.5)
-    plt.title("Efficacia contro il contagio")
-    add_to_plot()
+    axes[0].bar(eff_contagio.index, eff_contagio, color=palette[1], width=0.5)
+    axes[0].set_title("Efficacia contro il contagio")
+    add_to_plot(axes[0])
 
-    plt.subplot(2, 2, 2)
-    plt.bar(eff_osp.index, eff_osp, color=palette[5], width=0.5)
-    plt.title("Efficacia contro l'ospedalizzazione")
-    add_to_plot()
+    axes[1].bar(eff_osp.index, eff_osp, color=palette[5], width=0.5)
+    axes[1].set_title("Efficacia contro l'ospedalizzazione")
+    add_to_plot(axes[1])
 
-    plt.subplot(2, 2, 3)
-    plt.bar(eff_terint.index, eff_terint, color=palette[4], width=0.5)
-    plt.title("Efficacia contro il ricovero in TI")
-    add_to_plot()
+    axes[2].bar(eff_terint.index, eff_terint, color=palette[4], width=0.5)
+    axes[2].set_title("Efficacia contro il ricovero in TI")
+    add_to_plot(axes[2])
 
-    plt.subplot(2, 2, 4)
-    plt.bar(eff_decessi.index,
-            eff_decessi,
-            color="black",
-            width=0.5)
-    plt.title("Efficacia contro il decesso")
-    add_to_plot()
+    axes[3].bar(eff_decessi.index, eff_decessi, color="black", width=0.5)
+    axes[3].set_title("Efficacia contro il decesso")
+    add_to_plot(axes[3])
 
     # Add watermarks
     add_watermark(fig)
+    add_last_updated(fig, axes[-1])
 
-    plt.tight_layout()
-    plt.savefig("../risultati/efficacia_vaccini.png",
+    fig.tight_layout()
+    fig.savefig("../risultati/efficacia_vaccini.png",
                 dpi=300,
                 bbox_inches="tight")
     if show:
@@ -167,10 +160,10 @@ def plot_efficacia(show=False):
 def plot_riassunto(show=False):
     """ Grafico riassuntivo """
 
-    fig, axes2 = plt.subplots(nrows=2, ncols=4, figsize=(15, 7.5))
+    fig, ax = plt.subplots(nrows=2, ncols=4, figsize=(15, 7.5))
 
     # Unpack all the axes subplots
-    axes = axes2.ravel()
+    axes = ax.ravel()
 
     df_tassi.iloc[:, [0, 1]].plot(ax=axes[0], kind="bar")
     axes[0].set_title("Incidenza mensile dei nuovi casi")
@@ -206,9 +199,10 @@ def plot_riassunto(show=False):
 
     # add watermarks
     add_watermark(fig)
+    add_last_updated(fig, axes[-1])
 
-    plt.tight_layout()
-    plt.savefig("../risultati/tassi_efficacia.png",
+    fig.tight_layout()
+    fig.savefig("../risultati/tassi_efficacia.png",
                 dpi=300,
                 bbox_inches="tight")
     if show:
@@ -227,36 +221,35 @@ def plot_focus_60(show=False):
                             "decessi vaccinati"]].sum()
     over60_array = np.array(df_over60)
 
-    fig = plt.figure(figsize=(10, 3.5))
+    fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(10, 3.5))
+    axes = ax.ravel()
 
-    plt.subplot(1, 3, 1)
-    plt.bar(0, over60_array[0], width=0.5, color=palette[4])
-    plt.bar(1, over60_array[1], width=0.5, color=palette[5])
-    plt.xticks([0, 1], ["Non vaccinati", "Vaccinati"])
-    plt.yticks(10**6*np.arange(0, 17, 2),
-               ["0", "2M", "4M", "6M", "8M", "10M", "12M", "14M", "16M"])
-    plt.grid()
-    plt.title(f"Popolazione over 60 \n{start_date} - {end_date}")
+    axes[0].bar(0, over60_array[0], width=0.5, color=palette[4])
+    axes[0].bar(1, over60_array[1], width=0.5, color=palette[5])
+    axes[0].set_xticks([0, 1], ["Non vaccinati", "Vaccinati"])
+    axes[0].set_yticks(10**6*np.arange(0, 17, 2),
+                       ["0", "2M", "4M", "6M", "8M", "10M", "12M", "14M", "16M"])
+    axes[0].set_title(f"Popolazione over 60 \n{start_date} - {end_date}")
+    axes[0].grid()
 
-    plt.subplot(1, 3, 2)
-    plt.bar(0, over60_array[2], width=0.5, color=palette[4])
-    plt.bar(1, over60_array[3], width=0.5, color=palette[5])
-    plt.xticks([0, 1], ["Non vaccinati", "Vaccinati"])
-    plt.grid()
-    plt.title(f"In terapia intensiva \n{start_date} - {end_date}")
+    axes[1].bar(0, over60_array[2], width=0.5, color=palette[4])
+    axes[1].bar(1, over60_array[3], width=0.5, color=palette[5])
+    axes[1].set_xticks([0, 1], ["Non vaccinati", "Vaccinati"])
+    axes[1].set_title(f"In terapia intensiva \n{start_date} - {end_date}")
+    axes[1].grid()
 
-    plt.subplot(1, 3, 3)
-    plt.bar(0, over60_array[4], width=0.5, color=palette[4])
-    plt.bar(1, over60_array[5], width=0.5, color=palette[5])
-    plt.xticks([0, 1], ["Non vaccinati", "Vaccinati"])
-    plt.grid()
-    plt.title(f"Deceduti \n{start_date} - {end_date}")
+    axes[2].bar(0, over60_array[4], width=0.5, color=palette[4])
+    axes[2].bar(1, over60_array[5], width=0.5, color=palette[5])
+    axes[2].set_xticks([0, 1], ["Non vaccinati", "Vaccinati"])
+    axes[2].set_title(f"Deceduti \n{start_date} - {end_date}")
+    axes[2].grid()
 
     # Add watermarks
     add_watermark(fig)
+    add_last_updated(fig, axes[-1], y=-0.05)
 
-    plt.tight_layout()
-    plt.savefig("../risultati/focus_over60.png", dpi=300, bbox_inches="tight")
+    fig.tight_layout()
+    fig.savefig("../risultati/focus_over60.png", dpi=300, bbox_inches="tight")
 
     ratio_vacc_novacc = round(over60_array[1]/over60_array[0], 1)
     ratio_terint = round(over60_array[2]/over60_array[3], 1)

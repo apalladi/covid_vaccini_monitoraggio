@@ -8,7 +8,7 @@ import pandas as pd
 
 from custom.plots import apply_plot_treatment, get_xticks_labels, palette
 from custom.preprocessing_dataframe import compute_incidence
-from custom.watermarks import add_watermark
+from custom.watermarks import add_last_updated, add_watermark
 
 
 # Funzioni per il plot
@@ -54,10 +54,10 @@ def load_data():
 def plot_incidenza(show=False):
     """ Tassi di infezione, ricovero, decesso """
 
-    fig, axes2 = plt.subplots(nrows=2, ncols=2, figsize=(8.5, 8.5))
+    fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(8.5, 8.5))
 
     # Unpack all the axes subplots
-    axes = axes2.ravel()
+    axes = ax.ravel()
 
     y_label = "Ogni 100.000 persone per ciascun gruppo"
 
@@ -84,8 +84,11 @@ def plot_incidenza(show=False):
     # Add watermarks
     add_watermark(fig)
 
-    plt.tight_layout()
-    plt.savefig("../risultati/andamento_epidemia.png",
+    add_last_updated(fig, axes[-1])
+
+    fig.tight_layout()
+
+    fig.savefig("../risultati/andamento_epidemia.png",
                 dpi=300,
                 bbox_inches="tight")
     if show:
@@ -96,29 +99,30 @@ def plot_incidenza(show=False):
 def plot_rapporto_tassi(show=False):
     """ Rapporto fra tassi """
 
-    fig = plt.figure(figsize=(6, 5))
+    fig, ax = plt.subplots(figsize=(6, 5))
 
     (df_tassi.iloc[:, 0]/df_tassi.iloc[:, 1]).plot(label="Nuovi casi")
     (df_tassi.iloc[:, 2]/df_tassi.iloc[:, 3]).plot(label="Ospedalizzazione")
     (df_tassi.iloc[:, 4]/df_tassi.iloc[:, 5]).plot(label="Ricovero in TI")
     (df_tassi.iloc[:, 6]/df_tassi.iloc[:, 7]).plot(label="Decesso")
 
-    ax = plt.gca()
     ax.xaxis.reset_ticks()
     ax.set_xticks(x_ticks)
     ax.set_xticklabels(x_labels)
 
-    plt.title("Rapporto fra le incidenze")
-    plt.ylabel("Non vaccinati/vaccinati")
-    plt.xlabel("")
-    plt.legend()
-    plt.grid()
-    plt.tight_layout()
+    ax.set_title("Rapporto fra le incidenze")
+    ax.set_ylabel("Non vaccinati/vaccinati")
+    ax.set_xlabel("")
+    ax.grid()
+    ax.legend()
+    fig.tight_layout()
 
     # Add watermarks
     add_watermark(fig)
 
-    plt.savefig("../risultati/rapporto_tra_tassi.png",
+    add_last_updated(fig, ax)
+
+    fig.savefig("../risultati/rapporto_tra_tassi.png",
                 dpi=300,
                 bbox_inches="tight")
     if show:
@@ -129,10 +133,10 @@ def plot_rapporto_tassi(show=False):
 def plot_num_assoluti(show=False):
     """ Andamento dei numeri assoluti """
 
-    fig, axes2 = plt.subplots(nrows=2, ncols=2, figsize=(8.5, 8.5))
+    fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(8.5, 8.5))
 
     # Unpack all the axes subplots
-    axes = axes2.ravel()
+    axes = ax.ravel()
 
     df_assoluti.iloc[:, [4, 6]].plot(ax=axes[0])
     axes[0].set_title("Nuovi casi giornalieri \n(media 30 gg)")
@@ -152,9 +156,10 @@ def plot_num_assoluti(show=False):
 
     # Add watermarks
     add_watermark(fig)
+    add_last_updated(fig, axes[-1])
 
-    plt.tight_layout()
-    plt.savefig("../risultati/andamento_epidemia_num_assoluti.png",
+    fig.tight_layout()
+    fig.savefig("../risultati/andamento_epidemia_num_assoluti.png",
                 dpi=300,
                 bbox_inches="tight")
     if show:

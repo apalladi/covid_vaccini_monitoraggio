@@ -7,6 +7,8 @@ from PIL import ImageFont
 
 from custom.plots import palette
 
+fonte = "github.com/apalladi/covid_vaccini_monitoraggio"
+
 
 def watermark_specs(figure, watermark):
     # Get the default Matplotlib font
@@ -38,12 +40,11 @@ def watermark_specs(figure, watermark):
 
 
 def add_watermark(figure):
-    watermark = "github.com/apalladi/covid_vaccini_monitoraggio"
     # Get the scaled watermark fontsize and angle
-    fontsize, angle = watermark_specs(figure, watermark)
+    fontsize, angle = watermark_specs(figure, fonte)
     figure.text(0.5,
                 0.5,
-                watermark,
+                fonte,
                 fontsize=fontsize,
                 color=palette[-1],
                 alpha=0.50,
@@ -52,19 +53,16 @@ def add_watermark(figure):
                 rotation=angle,
                 zorder=0)
 
-    add_last_updated(figure)
 
-
-def add_last_updated(figure):
-    # explicit link and last update date at the bottom
-    last_update = datetime.today().strftime("%d-%m-%Y %H:%M")
-    watermark_btm = r"$\bf{Fonte:}$ ISS, "
-    watermark_btm += "https://github.com/apalladi/covid_vaccini_monitoraggio"
-    watermark_btm += f"\n Ultimo aggiornamento: {last_update}"
-    figure.text(0.5,
-                -0.025,
-                watermark_btm,
-                fontsize=8,
-                color="k",
-                ha="center",
-                va="bottom")
+def add_last_updated(fig, ax, dati="ISS", y=-0.020):
+    last_update = datetime.today().strftime("%d-%m-%Y alle %H:%M")
+    src = r"$\bf{Fonte:}$ "
+    src += f"{dati}, "
+    src += f"{fonte}\n"
+    src += f"Ultimo aggiornamento: {last_update}"
+    fig.text(0.50,
+             y,
+             s=src,
+             ha="center",
+             fontsize=ax.xaxis.label.get_fontsize()-2,
+             alpha=0.90)

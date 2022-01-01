@@ -8,7 +8,10 @@ import pandas as pd
 
 from custom.plots import apply_plot_treatment
 from custom.preprocessing_dataframe import compute_incidence, date_parser
-from custom.watermarks import add_watermark
+from custom.watermarks import add_last_updated, add_watermark
+
+x_label1 = np.arange(15, 170, 30)
+x_label2 = ["Ago", "Set", "Ott", "Nov", "Dic", "Gen"]
 
 
 # Importa dati
@@ -61,51 +64,44 @@ def get_epidemic_data_2021():
     return casi_2021_vacc, casi_2021_novacc, dec_2021_vacc, dec_2021_novacc
 
 
+def which_axe(ax):
+    "Imposta proprietà grafici"
+    ax.set_xticks(x_label1, x_label2)
+    ax.set_title("Casi mensili (media mobile 30 gg)")
+    ax.set_ylabel("Ogni 100.000 persone per ciascun gruppo")
+    ax.legend()
+    ax.set_xlim(0, 165)
+    ax.grid()
+
+
 # Rappresentazione grafica risultati
 @mpl.rc_context({"lines.marker": None})
 def plot_confronto_2020_2021(show=False):
     """ Andamento curve epidemiche """
 
-    x_label1 = np.arange(15, 170, 30)
-    x_label2 = ["Ago", "Set", "Ott", "Nov", "Dic", "Gen"]
     xgrid_2020 = np.arange(0, len(casi_2020))
     xgrid_2021 = np.arange(0, 7*len(casi_2021_vacc), 7)
 
     # Casi e decessi 2021
-    fig = plt.figure(figsize=(10, 4))
-    plt.subplot(1, 2, 1)
-    plt.plot(xgrid_2020, casi_2020, label="2020")
-    plt.plot(xgrid_2021, casi_2021_vacc,
-             label="2021 (vaccinati)")
-    plt.plot(xgrid_2021,
-             casi_2021_novacc,
-             label="2021 (non vaccinati)")
-    plt.xticks(x_label1, x_label2)
-    plt.title("Casi mensili (media mobile 30 gg)")
-    plt.ylabel("Ogni 100.000 persone per ciascun gruppo")
-    plt.legend()
-    plt.xlim(0, 165)
-    plt.grid()
+    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 4))
+    axes = ax.ravel()
 
-    plt.subplot(1, 2, 2)
-    plt.plot(xgrid_2020, dec_2020, label="2020")
-    plt.plot(xgrid_2021,
-             dec_2021_vacc, label="2021 (vaccinati)")
-    plt.plot(xgrid_2021,
-             dec_2021_novacc,
-             label="2021 (non vaccinati)")
-    plt.xticks(x_label1, x_label2)
-    plt.title("Decessi mensili (media mobile 30 gg)")
-    plt.ylabel("Ogni 100.000 persone per ciascun gruppo")
-    plt.legend()
-    plt.xlim(0, 165)
-    plt.grid()
+    axes[0].plot(xgrid_2020, casi_2020, label="2020")
+    axes[0].plot(xgrid_2021, casi_2021_vacc, label="2021 (vaccinati)")
+    axes[0].plot(xgrid_2021, casi_2021_novacc, label="2021 (non vaccinati)")
+    which_axe(axes[0])
+
+    axes[1].plot(xgrid_2020, dec_2020, label="2020")
+    axes[1].plot(xgrid_2021, dec_2021_vacc, label="2021 (vaccinati)")
+    axes[1].plot(xgrid_2021, dec_2021_novacc, label="2021 (non vaccinati)")
+    which_axe(axes[1])
 
     # Add watermarks
     add_watermark(fig)
+    add_last_updated(fig, axes[-1], dati="ISS, Protezione Civile", y=-0.05)
 
-    plt.tight_layout()
-    plt.savefig("../risultati/confrontro_2020_2021.png",
+    fig.tight_layout()
+    fig.savefig("../risultati/confrontro_2020_2021.png",
                 dpi=300,
                 bbox_inches="tight")
     if show is True:
