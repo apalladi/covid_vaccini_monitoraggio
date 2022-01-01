@@ -82,8 +82,7 @@ def plot_incidenza(show=False):
     which_axe(axes[3])
 
     # Add watermarks
-    ax = plt.gca()
-    add_watermark(fig, ax.xaxis.label.get_fontsize())
+    add_watermark(fig)
 
     plt.tight_layout()
     plt.savefig("../risultati/andamento_epidemia.png",
@@ -117,7 +116,7 @@ def plot_rapporto_tassi(show=False):
     plt.tight_layout()
 
     # Add watermarks
-    add_watermark(fig, ax.xaxis.label.get_fontsize())
+    add_watermark(fig)
 
     plt.savefig("../risultati/rapporto_tra_tassi.png",
                 dpi=300,
@@ -152,8 +151,7 @@ def plot_num_assoluti(show=False):
     which_axe(axes[3])
 
     # Add watermarks
-    ax = plt.gca()
-    add_watermark(fig, ax.xaxis.label.get_fontsize())
+    add_watermark(fig)
 
     plt.tight_layout()
     plt.savefig("../risultati/andamento_epidemia_num_assoluti.png",

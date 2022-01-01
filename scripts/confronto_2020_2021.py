@@ -102,8 +102,7 @@ def plot_confronto_2020_2021(show=False):
     plt.grid()
 
     # Add watermarks
-    ax = plt.gca()
-    add_watermark(fig, ax.xaxis.label.get_fontsize())
+    add_watermark(fig)
 
     plt.tight_layout()
     plt.savefig("../risultati/confrontro_2020_2021.png",

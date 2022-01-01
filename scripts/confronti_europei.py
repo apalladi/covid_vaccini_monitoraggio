@@ -249,8 +249,7 @@ def plot_selection(show=False):
     axes[1].grid()
 
     # Add watermarks
-    ax = plt.gca()
-    add_watermark(fig, ax.xaxis.label.get_fontsize())
+    add_watermark(fig)
 
     plt.tight_layout()
     plt.savefig("../risultati/confronto_nazioni_epidemia-vaccino.png",
@@ -340,7 +339,7 @@ def plot_correlazione_vaccini_decessi(tw=30, show=False):
              color=palette[-1],
              va="center",
              rotation="vertical")
-    add_last_updated(fig, ax.xaxis.label.get_fontsize())
+    add_last_updated(fig)
 
     plt.savefig(f"../risultati/{f_name}.png",
                 dpi=300,

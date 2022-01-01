@@ -37,7 +37,7 @@ def watermark_specs(figure, watermark):
     return fontsize, angle
 
 
-def add_watermark(figure, axis_font_size):
+def add_watermark(figure):
     watermark = "github.com/apalladi/covid_vaccini_monitoraggio"
     # Get the scaled watermark fontsize and angle
     fontsize, angle = watermark_specs(figure, watermark)
@@ -52,10 +52,10 @@ def add_watermark(figure, axis_font_size):
                 rotation=angle,
                 zorder=0)
 
-    add_last_updated(figure, axis_font_size)
+    add_last_updated(figure)
 
 
-def add_last_updated(figure, axis_font_size):
+def add_last_updated(figure):
     # explicit link and last update date at the bottom
     last_update = datetime.today().strftime("%d-%m-%Y %H:%M")
     watermark_btm = r"$\bf{Fonte:}$ ISS, "

@@ -74,8 +74,7 @@ def plot_rapporti_incidenze(show=False):
     add_to_plot()
 
     # Add watermarks
-    ax = plt.gca()
-    add_watermark(fig, ax.xaxis.label.get_fontsize())
+    add_watermark(fig)
 
     plt.tight_layout()
     plt.savefig("../risultati/andamento_rapporti_incidenze.png",
@@ -180,8 +179,7 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     axes[1].set_xticklabels(x_labels)
     axes[1].set_xlabel("")
 
-    ax = plt.gca()
-    add_watermark(fig, ax.xaxis.label.get_fontsize())
+    add_watermark(fig)
 
     plt.tight_layout()
     plt.savefig(filename, dpi=300, bbox_inches="tight")

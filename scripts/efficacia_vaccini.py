@@ -114,8 +114,7 @@ def plot_tassi(show=False):
     which_axe(axes[3])
 
     # Add watermarks
-    ax = plt.gca()
-    add_watermark(fig, ax.xaxis.label.get_fontsize())
+    add_watermark(fig)
 
     plt.tight_layout()
     plt.savefig("../risultati/tassi_per_età.png", dpi=300, bbox_inches="tight")
@@ -155,8 +154,7 @@ def plot_efficacia(show=False):
     add_to_plot()
 
     # Add watermarks
-    ax = plt.gca()
-    add_watermark(fig, ax.xaxis.label.get_fontsize())
+    add_watermark(fig)
 
     plt.tight_layout()
     plt.savefig("../risultati/efficacia_vaccini.png",
@@ -207,8 +205,7 @@ def plot_riassunto(show=False):
     which_axe_bar(axes[7])
 
     # add watermarks
-    ax = plt.gca()
-    add_watermark(fig, ax.xaxis.label.get_fontsize())
+    add_watermark(fig)
 
     plt.tight_layout()
     plt.savefig("../risultati/tassi_efficacia.png",
@@ -256,8 +253,7 @@ def plot_focus_60(show=False):
     plt.title(f"Deceduti \n{start_date} - {end_date}")
 
     # Add watermarks
-    ax = plt.gca()
-    add_watermark(fig, ax.xaxis.label.get_fontsize())
+    add_watermark(fig)
 
     plt.tight_layout()
     plt.savefig("../risultati/focus_over60.png", dpi=300, bbox_inches="tight")
