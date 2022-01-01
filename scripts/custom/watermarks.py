@@ -58,13 +58,13 @@ def add_watermark(figure, axis_font_size):
 def add_last_updated(figure, axis_font_size):
     # explicit link and last update date at the bottom
     last_update = datetime.today().strftime("%d-%m-%Y %H:%M")
-    watermark_btm = r"$\bf{Fonte:}$ "
+    watermark_btm = r"$\bf{Fonte:}$ ISS, "
     watermark_btm += "https://github.com/apalladi/covid_vaccini_monitoraggio"
     watermark_btm += f"\n Ultimo aggiornamento: {last_update}"
     figure.text(0.5,
-                -0.06,
+                -0.025,
                 watermark_btm,
-                fontsize=axis_font_size,
-                color="darkslategray",
+                fontsize=8,
+                color="k",
                 ha="center",
                 va="bottom")

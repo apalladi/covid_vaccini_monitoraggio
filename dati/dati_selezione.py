@@ -54,7 +54,8 @@ def page_from_url(sel_url):
     sel_url: url of the report
     return: number of the page containing the table"""
 
-    queries = ["TABELLA 4 – POPOLAZIONE ITALIANA",
+    queries = ["TABELLA 5 – POPOLAZIONE ITALIANA",
+               "TABELLA 4 – POPOLAZIONE ITALIANA",
                "TABELLA 3 – POPOLAZIONE ITALIANA",
                "TABELLA 3 – COPERTURA VACCINALE",
                "TABELLA 7 – COPERTURA VACCINALE"]
@@ -198,6 +199,10 @@ def get_data_from_report(auto=True, force=False):
     # Keep totals only
     rows_tot = [4, 9, 14, 19, 24]
     results = df_final.iloc[rows_tot, :].stack().values
+
+    if (df_0.iloc[0].values == results).all():
+        print("Data already on the file!")
+        exit()
 
     # Add the new row at the top of the df
     df_0.loc[rep_date] = results
