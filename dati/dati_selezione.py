@@ -53,23 +53,17 @@ def page_from_url(sel_url):
 
     sel_url: url of the report
     return: number of the page containing the table"""
-
-    queries = ["TABELLA 5 – POPOLAZIONE ITALIANA",
-               "TABELLA 4 – POPOLAZIONE ITALIANA",
-               "TABELLA 3 – POPOLAZIONE ITALIANA",
-               "TABELLA 3 – COPERTURA VACCINALE",
-               "TABELLA 7 – COPERTURA VACCINALE"]
+    query = "TABELLA [0-9] – POPOLAZIONE ITALIANA"
 
     with request.urlopen(sel_url) as response:
         content = response.read()
         with fitz.open(stream=content, filetype="pdf") as pdf:
-            for query in queries:
-                print(f"\nSearching for \n\"{query}\"...")
-                # Query for string
-                for page in pdf:
-                    text = page.get_text()
-                    if re.search(query, text, re.IGNORECASE):
-                        return page.number + 1
+            print("\nSearching for the table...")
+            # Query for string
+            for page in pdf:
+                text = page.get_text()
+                if re.search(query, text, re.IGNORECASE):
+                    return page.number + 1
     return None
 
 
@@ -175,7 +169,7 @@ def get_data_from_report(auto=True, force=False):
 
     # Remove dots and parentheses
     to_exclude = r"\((.*)|[^0-9]"
-    df_final = df_raw.replace(to_exclude, "", regex=True).astype(np.int64)
+    df_final = df_raw.replace(to_exclude, "", regex=True).apply(np.int64)
 
     df_final.columns = ["non vaccinati",
                         "vaccinati 1 dose",
@@ -200,7 +194,7 @@ def get_data_from_report(auto=True, force=False):
     rows_tot = [4, 9, 14, 19, 24]
     results = df_final.iloc[rows_tot, :].stack().values
 
-    if (df_0.iloc[0].values == results).all():
+    if (df_0.iloc[0].values == results).all() and not force:
         print("Data already on the file!")
         exit()
 
@@ -209,6 +203,7 @@ def get_data_from_report(auto=True, force=False):
     df_0.sort_index(ascending=False, inplace=True)
 
     # Save to a csv
+    df_0 = df_0.apply(np.int64)
     df_0.to_csv("dati_ISS_complessivi.csv", sep=";")
 
     # Get data by age
