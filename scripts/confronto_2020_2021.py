@@ -10,8 +10,8 @@ from custom.plots import apply_plot_treatment
 from custom.preprocessing_dataframe import compute_incidence, date_parser
 from custom.watermarks import add_last_updated, add_watermark
 
-x_label1 = np.arange(15, 170, 30)
-x_label2 = ["Ago", "Set", "Ott", "Nov", "Dic", "Gen"]
+x_ticks = np.arange(15, 170, 30)
+x_labels = ["Ago", "Set", "Ott", "Nov", "Dic", "Gen"]
 
 
 # Importa dati
@@ -19,7 +19,7 @@ def import_data():
     """ Imposta dati ISS e Protezione Civile """
 
     # Dati nazionali sui contagi
-    url = "https://github.com/pcm-dpc/COVID-19/raw/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv"  # noqa: E501
+    url = "https://github.com/pcm-dpc/COVID-19/raw/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv"
     df_IT = pd.read_csv(url,
                         parse_dates=["data"],
                         date_parser=date_parser,
@@ -42,8 +42,7 @@ def get_epidemic_data_2020():
     # Casi e decessi 2020
     abitanti_over12 = 540*10**5
 
-    mask_2020 = (df_IT.index >= "2020-06-15") & (df_IT.index <= "2020-12-31")
-    df_2020 = df_IT[mask_2020]
+    df_2020 = df_IT.loc["2020-06-15":"2020-12-31"]
     df_2020 = df_2020[["totale_casi",
                        "deceduti"]].diff().rolling(window=30).mean()
     df_2020 = df_2020*30/(abitanti_over12/(10**5))
@@ -66,7 +65,8 @@ def get_epidemic_data_2021():
 
 def which_axe(ax):
     "Imposta proprietà grafici"
-    ax.set_xticks(x_label1, x_label2)
+    ax.set_xticks(x_ticks)
+    ax.set_xticklabels(x_labels)
     ax.set_title("Casi mensili (media mobile 30 gg)")
     ax.set_ylabel("Ogni 100.000 persone per ciascun gruppo")
     ax.legend()

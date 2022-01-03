@@ -7,8 +7,6 @@ from PIL import ImageFont
 
 from custom.plots import palette
 
-fonte = "github.com/apalladi/covid_vaccini_monitoraggio"
-
 
 def watermark_specs(figure, watermark):
     # Get the default Matplotlib font
@@ -40,6 +38,7 @@ def watermark_specs(figure, watermark):
 
 
 def add_watermark(figure):
+    fonte = "github.com/apalladi/covid_vaccini_monitoraggio"
     # Get the scaled watermark fontsize and angle
     fontsize, angle = watermark_specs(figure, fonte)
     figure.text(0.5,
@@ -56,9 +55,8 @@ def add_watermark(figure):
 
 def add_last_updated(fig, ax, dati="ISS", y=-0.020):
     last_update = datetime.today().strftime("%d-%m-%Y alle %H:%M")
-    src = r"$\bf{Fonte:}$ "
-    src += f"{dati}, "
-    src += f"{fonte}\n"
+    src = r"$\bf{Fonti:}$ "
+    src += f"{dati}, https://github.com/apalladi/covid_vaccini_monitoraggio\n"
     src += f"Ultimo aggiornamento: {last_update}"
     fig.text(0.50,
              y,

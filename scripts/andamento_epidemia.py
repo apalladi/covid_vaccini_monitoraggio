@@ -10,6 +10,8 @@ from custom.plots import apply_plot_treatment, get_xticks_labels, palette
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
 
+colori_incidenza = [palette[i] for i in [4, 1, 5]]
+
 
 # Funzioni per il plot
 def which_axe(axis):
@@ -18,7 +20,8 @@ def which_axe(axis):
     axis.xaxis.reset_ticks()
     axis.set_xticks(x_ticks)
     axis.set_xticklabels(x_labels)
-    axis.legend(["Non vaccinati", "Vaccinati"])
+    axis.legend(["Non vaccinati", "Vaccinati con 2 dosi", "Vaccinati con terza dose"],
+                loc="upper left")
     axis.grid()
 
 
@@ -50,7 +53,7 @@ def load_data():
 
 
 # Rappresentazione grafica dei risultati
-@mpl.rc_context({"legend.handlelength": 1.0, "axes.prop_cycle": mpl.cycler(color=palette[4:6])})
+@mpl.rc_context({"legend.handlelength": 1.0, "axes.prop_cycle": mpl.cycler(color=colori_incidenza)})
 def plot_incidenza(show=False):
     """ Tassi di infezione, ricovero, decesso """
 
@@ -61,34 +64,97 @@ def plot_incidenza(show=False):
 
     y_label = "Ogni 100.000 persone per ciascun gruppo"
 
-    df_tassi.iloc[:, [0, 1]].plot(ax=axes[0])
-    axes[0].set_title("Incidenza mensile dei nuovi casi")
-    axes[0].set_ylabel(y_label)
-    which_axe(axes[0])
+    titoli = ["dei nuovi casi", "degli ospedalizzati",
+              "dei ricoverati in TI", "dei deceduti"]
+    eventi = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]]
 
-    df_tassi.iloc[:, [2, 3]].plot(ax=axes[1])
-    axes[1].set_title("Incidenza mensile degli ospedalizzati")
-    axes[1].set_ylabel(y_label)
-    which_axe(axes[1])
-
-    df_tassi.iloc[:, [4, 5]].plot(ax=axes[2])
-    axes[2].set_title("Incidenza mensile dei ricoverati in TI")
-    axes[2].set_ylabel(y_label)
-    which_axe(axes[2])
-
-    df_tassi.iloc[:, [6, 7]].plot(ax=axes[3])
-    axes[3].set_title("Incidenza mensile dei deceduti")
-    axes[3].set_ylabel(y_label)
-    which_axe(axes[3])
+    for i, evento in enumerate(eventi):
+        df_tassi.iloc[:, evento].plot(ax=axes[i])
+        axes[i].set_title("Incidenza mensile " + titoli[i])
+        axes[i].set_ylabel(y_label)
+        which_axe(axes[i])
 
     # Add watermarks
     add_watermark(fig)
-
     add_last_updated(fig, axes[-1])
 
     fig.tight_layout()
 
     fig.savefig("../risultati/andamento_epidemia.png",
+                dpi=300,
+                bbox_inches="tight")
+    if show:
+        plt.show()
+
+
+@mpl.rc_context({"legend.handlelength": 1.0, "axes.prop_cycle": mpl.cycler(color=colori_incidenza)})
+def plot_num_assoluti(show=False):
+    """ Andamento dei numeri assoluti """
+
+    fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(8.5, 8.5))
+
+    # Unpack all the axes subplots
+    axes = ax.ravel()
+
+    titoli = ["Nuovi casi giornalieri", "Nuovi ospedalizzati giornalieri",
+              "Nuovi ricoverati in TI", "Decessi giornalieri"]
+    eventi = [[4, 6, 7], [8, 10, 11], [12, 14, 15], [16, 18, 19]]
+
+    for i, evento in enumerate(eventi):
+        df_assoluti.iloc[:, evento].plot(ax=axes[i])
+        axes[i].set_title(titoli[i] + " (media 30 gg)")
+        which_axe(axes[i])
+
+    # Add watermarks
+    add_watermark(fig)
+    add_last_updated(fig, axes[-1])
+
+    fig.tight_layout()
+    fig.savefig("../risultati/andamento_epidemia_num_assoluti.png",
+                dpi=300,
+                bbox_inches="tight")
+    if show:
+        plt.show()
+
+
+@mpl.rc_context({"legend.handlelength": 1.0, "axes.prop_cycle": mpl.cycler(color=colori_incidenza)})
+def plot_riassuto(show=False):
+    """ Plot figura riassuntiva incidenze/numeri assoluti"""
+
+    fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(12, 8))
+
+    # Unpack all the axes subplots
+    axes = ax.ravel()
+
+    # plot incidenze
+    y_label = "Ogni 100.000 persone per ciascun gruppo"
+
+    titoli = ["degli ospedalizzati", "dei ricoverati in TI", "dei deceduti"]
+    eventi = [[3, 4, 5], [6, 7, 8], [9, 10, 11]]
+
+    for i, evento in enumerate(eventi):
+        df_tassi.iloc[:, evento].plot(ax=axes[i])
+        axes[i].set_title("Incidenza mensile " + titoli[i])
+        axes[i].set_ylabel(y_label)
+        which_axe(axes[i])
+
+    # plot numeri assoluti
+    titoli = ["Nuovi ospedalizzati giornalieri",
+              "Nuovi ricoverati in TI", "Decessi giornalieri"]
+    eventi = [[8, 10, 11], [12, 14, 15], [16, 18, 19]]
+
+    for i, evento in enumerate(eventi):
+        df_assoluti.iloc[:, evento].plot(ax=axes[i+3])
+        axes[i+3].set_title(titoli[i] + " (media 30 gg)")
+        which_axe(axes[i+3])
+
+    fig.tight_layout()
+
+    # Add watermarks
+    add_watermark(fig)
+    add_last_updated(fig, axes[-1])
+
+    fig.savefig("../risultati/andamento_epidemia_riassunto.png",
                 dpi=300,
                 bbox_inches="tight")
     if show:
@@ -102,9 +168,9 @@ def plot_rapporto_tassi(show=False):
     fig, ax = plt.subplots(figsize=(6, 5))
 
     (df_tassi.iloc[:, 0]/df_tassi.iloc[:, 1]).plot(label="Nuovi casi")
-    (df_tassi.iloc[:, 2]/df_tassi.iloc[:, 3]).plot(label="Ospedalizzazione")
-    (df_tassi.iloc[:, 4]/df_tassi.iloc[:, 5]).plot(label="Ricovero in TI")
-    (df_tassi.iloc[:, 6]/df_tassi.iloc[:, 7]).plot(label="Decesso")
+    (df_tassi.iloc[:, 3]/df_tassi.iloc[:, 4]).plot(label="Ospedalizzazione")
+    (df_tassi.iloc[:, 6]/df_tassi.iloc[:, 7]).plot(label="Ricovero in TI")
+    (df_tassi.iloc[:, 9]/df_tassi.iloc[:, 10]).plot(label="Decesso")
 
     ax.xaxis.reset_ticks()
     ax.set_xticks(x_ticks)
@@ -119,47 +185,9 @@ def plot_rapporto_tassi(show=False):
 
     # Add watermarks
     add_watermark(fig)
-
     add_last_updated(fig, ax)
 
     fig.savefig("../risultati/rapporto_tra_tassi.png",
-                dpi=300,
-                bbox_inches="tight")
-    if show:
-        plt.show()
-
-
-@mpl.rc_context({"legend.handlelength": 1.0, "axes.prop_cycle": mpl.cycler(color=palette[4:6])})
-def plot_num_assoluti(show=False):
-    """ Andamento dei numeri assoluti """
-
-    fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(8.5, 8.5))
-
-    # Unpack all the axes subplots
-    axes = ax.ravel()
-
-    df_assoluti.iloc[:, [4, 6]].plot(ax=axes[0])
-    axes[0].set_title("Nuovi casi giornalieri \n(media 30 gg)")
-    which_axe(axes[0])
-
-    df_assoluti.iloc[:, [8, 10]].plot(ax=axes[1])
-    axes[1].set_title("Nuovi ospedalizzati giornalieri \n(media 30 gg)")
-    which_axe(axes[1])
-
-    df_assoluti.iloc[:, [12, 14]].plot(ax=axes[2])
-    axes[2].set_title("Nuovi ricoverati in TI giornalieri \n(media 30 gg)")
-    which_axe(axes[2])
-
-    df_assoluti.iloc[:, [16, 18]].plot(ax=axes[3])
-    axes[3].set_title("Decessi giornalieri \n(media 30 gg)")
-    which_axe(axes[3])
-
-    # Add watermarks
-    add_watermark(fig)
-    add_last_updated(fig, axes[-1])
-
-    fig.tight_layout()
-    fig.savefig("../risultati/andamento_epidemia_num_assoluti.png",
                 dpi=300,
                 bbox_inches="tight")
     if show:
@@ -184,3 +212,4 @@ if __name__ == "__main__":
     plot_incidenza()
     plot_rapporto_tassi()
     plot_num_assoluti()
+    plot_riassuto()

@@ -40,9 +40,9 @@ def load_data():
 def compute_efficacia():
     """ Calcola efficacia vaccini """
     eff_contagio = (1 - df_tassi.iloc[:, 1]/df_tassi.iloc[:, 0])*100
-    eff_osp = (1 - df_tassi.iloc[:, 3]/df_tassi.iloc[:, 2])*100
-    eff_terint = (1 - df_tassi.iloc[:, 5]/df_tassi.iloc[:, 4])*100
-    eff_decessi = (1 - df_tassi.iloc[:, 7]/df_tassi.iloc[:, 6])*100
+    eff_osp = (1 - df_tassi.iloc[:, 4]/df_tassi.iloc[:, 3])*100
+    eff_terint = (1 - df_tassi.iloc[:, 7]/df_tassi.iloc[:, 6])*100
+    eff_decessi = (1 - df_tassi.iloc[:, 10]/df_tassi.iloc[:, 9])*100
     return eff_contagio, eff_osp, eff_terint, eff_decessi
 
 
@@ -101,15 +101,15 @@ def plot_tassi(show=False):
     axes[0].set_title("Incidenza mensile dei nuovi casi")
     which_axe(axes[0])
 
-    df_tassi.iloc[:, [2, 3]].plot(ax=axes[1], kind="bar")
+    df_tassi.iloc[:, [3, 4]].plot(ax=axes[1], kind="bar")
     axes[1].set_title("Incidenza mensile degli ospedalizzati")
     which_axe(axes[1])
 
-    df_tassi.iloc[:, [4, 5]].plot(ax=axes[2], kind="bar")
+    df_tassi.iloc[:, [6, 7]].plot(ax=axes[2], kind="bar")
     axes[2].set_title("Incidenza mensile dei ricoveri in TI")
     which_axe(axes[2])
 
-    df_tassi.iloc[:, [6, 7]].plot(ax=axes[3], kind="bar")
+    df_tassi.iloc[:, [9, 10]].plot(ax=axes[3], kind="bar")
     axes[3].set_title("Incidenza mensile dei deceduti")
     which_axe(axes[3])
 
@@ -165,21 +165,14 @@ def plot_riassunto(show=False):
     # Unpack all the axes subplots
     axes = ax.ravel()
 
-    df_tassi.iloc[:, [0, 1]].plot(ax=axes[0], kind="bar")
-    axes[0].set_title("Incidenza mensile dei nuovi casi")
-    which_axe(axes[0])
+    eventi = [[0, 1], [3, 4], [6, 7], [9, 10]]
+    titoli = ["dei nuovi casi", "degli ospedalizzati",
+              "dei ricoveri in TI", "dei deceduti"]
 
-    df_tassi.iloc[:, [2, 3]].plot(ax=axes[1], kind="bar")
-    axes[1].set_title("Incidenza mensile degli ospedalizzati")
-    which_axe(axes[1])
-
-    df_tassi.iloc[:, [4, 5]].plot(ax=axes[2], kind="bar")
-    axes[2].set_title("Incidenza mensile dei ricoveri in TI")
-    which_axe(axes[2])
-
-    df_tassi.iloc[:, [6, 7]].plot(ax=axes[3], kind="bar")
-    axes[3].set_title("Incidenza mensile dei deceduti")
-    which_axe(axes[3])
+    for i, evento in enumerate(eventi):
+        df_tassi.iloc[:, evento].plot(ax=axes[i], kind="bar")
+        axes[i].set_title("Incidenza mensile " + titoli[i])
+        which_axe(axes[i])
 
     eff_contagio.plot(kind="bar", ax=axes[4], color=palette[1])
     axes[4].set_title("Efficacia contro il contagio")
