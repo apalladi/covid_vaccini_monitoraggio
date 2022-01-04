@@ -20,8 +20,8 @@ def which_axe(axis):
     axis.xaxis.reset_ticks()
     axis.set_xticks(x_ticks)
     axis.set_xticklabels(x_labels)
-    axis.legend(["Non vaccinati", "Vaccinati con 2 dosi", "Vaccinati con terza dose"],
-                loc="upper left")
+    axis.legend(["Non vaccinati", "Vaccinati con 2 o più dosi",
+                 "Vaccinati con terza dose"], loc="upper left")
     axis.grid()
 
 

@@ -49,7 +49,7 @@ def add_to_plot(ax):
     ax.set_yticks(np.arange(50, 101, 10), ["50%", "60%", "70%", "80%", "90%", "100%"])
     ax.set_ylim(60, 102)
     ax.grid()
-    ax.legend(classi_età, loc=4)
+    ax.legend(classi_età, loc="upper left")
 
 
 def add_to_plot_abs(ax, title):
