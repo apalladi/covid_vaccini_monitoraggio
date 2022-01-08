@@ -64,27 +64,25 @@ def which_axe(axis):
     axis.set_xlabel("Fascia d'età")
     axis.legend(["Non vaccinati", "Vaccinati"])
     axis.grid()
-    for tick in axis.get_xticklabels():
-        tick.set_rotation(0)
+    axis.xaxis.set_tick_params(rotation=0)
 
 
 def which_axe_bar(axis):
     """ Imposta proprietà grafici """
     axis.set_xlabel("Fascia d'età")
-    axis.set_yticks(np.arange(50, 101, 10))
-    axis.set_yticklabels(["50%", "60%", "70%", "80%", "90%", "100%"])
-    axis.set_ylim(50, 100)
+    axis.set_yticks(bar_yticks)
+    axis.set_yticklabels(bar_ylabels)
+    axis.set_ylim(bar_ymin, 100)
     axis.grid()
-    for tick in axis.get_xticklabels():
-        tick.set_rotation(0)
+    axis.xaxis.set_tick_params(rotation=0)
 
 
 def add_to_plot(ax):
     """ Imposta proprietà grafici """
     ax.set_xlabel("Fascia d'età")
-    ax.set_yticks(np.arange(50, 101, 10),
-                  ["50%", "60%", "70%", "80%", "90%", "100%"])
-    ax.set_ylim(50, 100)
+    ax.set_yticks(bar_yticks)
+    ax.set_yticklabels(bar_ylabels)
+    ax.set_ylim(bar_ymin, 100)
     ax.grid()
 
 
@@ -283,6 +281,12 @@ if __name__ == "__main__":
 
     # Ricava efficacia
     eff_contagio, eff_osp, eff_terint, eff_decessi = compute_efficacia()
+
+    # Ricava labels y in base al valore minimo
+    # dell'efficacia verso il contagio
+    bar_ymin = round(eff_contagio.min()-5, -1)
+    bar_yticks = np.arange(bar_ymin, 101, 10)
+    bar_ylabels = [f"{tick:.0f}%" for tick in bar_yticks]
 
     plot_tassi()
     plot_efficacia()
