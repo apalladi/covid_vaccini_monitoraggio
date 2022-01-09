@@ -185,7 +185,7 @@ def plot_rapporto_tassi(show=False):
 
     # Add watermarks
     add_watermark(fig)
-    add_last_updated(fig, ax)
+    add_last_updated(fig, ax, y=-0.030)
 
     fig.savefig("../risultati/rapporto_tra_tassi.png",
                 dpi=300,
