@@ -40,9 +40,9 @@ def load_data():
 def compute_efficacia():
     """ Calcola efficacia vaccini """
     eff_contagio = (1 - df_tassi.iloc[:, 1]/df_tassi.iloc[:, 0])*100
-    eff_osp = (1 - df_tassi.iloc[:, 3]/df_tassi.iloc[:, 2])*100
-    eff_terint = (1 - df_tassi.iloc[:, 5]/df_tassi.iloc[:, 4])*100
-    eff_decessi = (1 - df_tassi.iloc[:, 7]/df_tassi.iloc[:, 6])*100
+    eff_osp = (1 - df_tassi.iloc[:, 4]/df_tassi.iloc[:, 3])*100
+    eff_terint = (1 - df_tassi.iloc[:, 7]/df_tassi.iloc[:, 6])*100
+    eff_decessi = (1 - df_tassi.iloc[:, 10]/df_tassi.iloc[:, 9])*100
     return eff_contagio, eff_osp, eff_terint, eff_decessi
 
 
@@ -64,27 +64,25 @@ def which_axe(axis):
     axis.set_xlabel("Fascia d'età")
     axis.legend(["Non vaccinati", "Vaccinati"])
     axis.grid()
-    for tick in axis.get_xticklabels():
-        tick.set_rotation(0)
+    axis.xaxis.set_tick_params(rotation=0)
 
 
 def which_axe_bar(axis):
     """ Imposta proprietà grafici """
     axis.set_xlabel("Fascia d'età")
-    axis.set_yticks(np.arange(50, 101, 10))
-    axis.set_yticklabels(["50%", "60%", "70%", "80%", "90%", "100%"])
-    axis.set_ylim(50, 100)
+    axis.set_yticks(bar_yticks)
+    axis.set_yticklabels(bar_ylabels)
+    axis.set_ylim(bar_ymin, 100)
     axis.grid()
-    for tick in axis.get_xticklabels():
-        tick.set_rotation(0)
+    axis.xaxis.set_tick_params(rotation=0)
 
 
 def add_to_plot(ax):
     """ Imposta proprietà grafici """
     ax.set_xlabel("Fascia d'età")
-    ax.set_yticks(np.arange(50, 101, 10),
-                  ["50%", "60%", "70%", "80%", "90%", "100%"])
-    ax.set_ylim(50, 100)
+    ax.set_yticks(bar_yticks)
+    ax.set_yticklabels(bar_ylabels)
+    ax.set_ylim(bar_ymin, 100)
     ax.grid()
 
 
@@ -101,15 +99,15 @@ def plot_tassi(show=False):
     axes[0].set_title("Incidenza mensile dei nuovi casi")
     which_axe(axes[0])
 
-    df_tassi.iloc[:, [2, 3]].plot(ax=axes[1], kind="bar")
+    df_tassi.iloc[:, [3, 4]].plot(ax=axes[1], kind="bar")
     axes[1].set_title("Incidenza mensile degli ospedalizzati")
     which_axe(axes[1])
 
-    df_tassi.iloc[:, [4, 5]].plot(ax=axes[2], kind="bar")
+    df_tassi.iloc[:, [6, 7]].plot(ax=axes[2], kind="bar")
     axes[2].set_title("Incidenza mensile dei ricoveri in TI")
     which_axe(axes[2])
 
-    df_tassi.iloc[:, [6, 7]].plot(ax=axes[3], kind="bar")
+    df_tassi.iloc[:, [9, 10]].plot(ax=axes[3], kind="bar")
     axes[3].set_title("Incidenza mensile dei deceduti")
     which_axe(axes[3])
 
@@ -165,21 +163,14 @@ def plot_riassunto(show=False):
     # Unpack all the axes subplots
     axes = ax.ravel()
 
-    df_tassi.iloc[:, [0, 1]].plot(ax=axes[0], kind="bar")
-    axes[0].set_title("Incidenza mensile dei nuovi casi")
-    which_axe(axes[0])
+    eventi = [[0, 1], [3, 4], [6, 7], [9, 10]]
+    titoli = ["dei nuovi casi", "degli ospedalizzati",
+              "dei ricoveri in TI", "dei deceduti"]
 
-    df_tassi.iloc[:, [2, 3]].plot(ax=axes[1], kind="bar")
-    axes[1].set_title("Incidenza mensile degli ospedalizzati")
-    which_axe(axes[1])
-
-    df_tassi.iloc[:, [4, 5]].plot(ax=axes[2], kind="bar")
-    axes[2].set_title("Incidenza mensile dei ricoveri in TI")
-    which_axe(axes[2])
-
-    df_tassi.iloc[:, [6, 7]].plot(ax=axes[3], kind="bar")
-    axes[3].set_title("Incidenza mensile dei deceduti")
-    which_axe(axes[3])
+    for i, evento in enumerate(eventi):
+        df_tassi.iloc[:, evento].plot(ax=axes[i], kind="bar")
+        axes[i].set_title("Incidenza mensile " + titoli[i])
+        which_axe(axes[i])
 
     eff_contagio.plot(kind="bar", ax=axes[4], color=palette[1])
     axes[4].set_title("Efficacia contro il contagio")
@@ -290,6 +281,12 @@ if __name__ == "__main__":
 
     # Ricava efficacia
     eff_contagio, eff_osp, eff_terint, eff_decessi = compute_efficacia()
+
+    # Ricava labels y in base al valore minimo
+    # dell'efficacia verso il contagio
+    bar_ymin = round(eff_contagio.min()-5, -1)
+    bar_yticks = np.arange(bar_ymin, 101, 10)
+    bar_ylabels = [f"{tick:.0f}%" for tick in bar_yticks]
 
     plot_tassi()
     plot_efficacia()

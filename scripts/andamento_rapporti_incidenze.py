@@ -28,11 +28,12 @@ def compute_incidence_ratio(category):
 
     for f_name in files:
         df_età = pd.read_csv(f_name, sep=";")
-        df_tassi = compute_incidence(df_età)
+        is_old = date_from_csv_path(f_name) < pd.to_datetime("2021-11-10")
+        df_tassi = compute_incidence(df_età, is_old=is_old)
         r_casi = df_tassi.iloc[:, 0]/(df_tassi.iloc[:, 0] + df_tassi.iloc[:, 1])*100
-        r_osp = df_tassi.iloc[:, 2]/(df_tassi.iloc[:, 2] + df_tassi.iloc[:, 3])*100
-        r_ti = df_tassi.iloc[:, 4]/(df_tassi.iloc[:, 4] + df_tassi.iloc[:, 5])*100
-        r_dec = df_tassi.iloc[:, 6]/(df_tassi.iloc[:, 6] + df_tassi.iloc[:, 7])*100
+        r_osp = df_tassi.iloc[:, 3]/(df_tassi.iloc[:, 3] + df_tassi.iloc[:, 4])*100
+        r_ti = df_tassi.iloc[:, 6]/(df_tassi.iloc[:, 6] + df_tassi.iloc[:, 7])*100
+        r_dec = df_tassi.iloc[:, 9]/(df_tassi.iloc[:, 9] + df_tassi.iloc[:, 10])*100
         rapporto_fra_tassi = pd.DataFrame(np.transpose([r_casi, r_osp, r_ti, r_dec]))
         rapporto_fra_tassi.columns = ["Casi", "Ospedalizzati", "TI", "Deceduti"]
         rapporto_fra_tassi.index = df_tassi.index
@@ -48,7 +49,7 @@ def add_to_plot(ax):
     ax.set_yticks(np.arange(50, 101, 10), ["50%", "60%", "70%", "80%", "90%", "100%"])
     ax.set_ylim(60, 102)
     ax.grid()
-    ax.legend(classi_età, loc=4)
+    ax.legend(classi_età, loc="upper left")
 
 
 def add_to_plot_abs(ax, title):

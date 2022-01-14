@@ -10,16 +10,13 @@ from custom.plots import apply_plot_treatment
 from custom.preprocessing_dataframe import compute_incidence, date_parser
 from custom.watermarks import add_last_updated, add_watermark
 
-x_label1 = np.arange(15, 230, 30)
-x_label2 = ["Ago", "Set", "Ott", "Nov", "Dic", "Gen", "Feb", "Mar"]
-
 
 # Importa dati
 def import_data():
     """ Imposta dati ISS e Protezione Civile """
 
     # Dati nazionali sui contagi
-    url = "https://github.com/pcm-dpc/COVID-19/raw/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv"  # noqa: E501
+    url = "https://github.com/pcm-dpc/COVID-19/raw/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv"
     df_IT = pd.read_csv(url,
                         parse_dates=["data"],
                         date_parser=date_parser,
@@ -65,7 +62,8 @@ def get_epidemic_data_2021():
 
 def which_axe(ax, title="Casi"):
     "Imposta proprietà grafici"
-    ax.set_xticks(x_label1, x_label2)
+    ax.set_xticks(x_ticks)
+    ax.set_xticklabels(x_labels)
     ax.set_title(f"{title} mensili (media mobile 30 gg)")
     ax.set_ylabel("Ogni 100.000 persone per ciascun gruppo")
     ax.legend()
@@ -118,6 +116,9 @@ if __name__ == "__main__":
     df_IT, df_assoluti, df_tassi = import_data()
     casi_2020, dec_2020 = get_epidemic_data_2020()
     casi_2021_vacc, casi_2021_novacc, dec_2021_vacc, dec_2021_novacc = get_epidemic_data_2021()
+
+    x_ticks = np.arange(15, 230, 30)
+    x_labels = ["Ago", "Set", "Ott", "Nov", "Dic", "Gen", "Feb", "Mar"]
 
     # Plot data
     plot_confronto_2020_2021()
