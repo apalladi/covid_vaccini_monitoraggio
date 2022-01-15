@@ -58,5 +58,5 @@ def get_yticks_labels(data):
     # della serie di dati considerata
     ymin = round(data.min()-5, -1)
     yticks = np.arange(ymin, 101, 10)
-    bar_ylabels = [f"{tick:.0f}%" for tick in yticks]
-    return ymin, yticks, bar_ylabels
+    ylabels = [f"{tick:.0f}%" for tick in yticks]
+    return ymin, yticks, ylabels

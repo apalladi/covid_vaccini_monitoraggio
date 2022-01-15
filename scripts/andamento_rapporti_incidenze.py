@@ -45,7 +45,8 @@ def compute_incidence_ratio(category):
 
 def add_to_plot(ax):
     """ Imposta proprietà grafico """
-    ax.set_xticks(ratio_x_ticks, ratio_x_labels)
+    ax.set_xticks(ratio_x_ticks)
+    ax.set_xticklabels(ratio_x_labels)
     ax.set_ylabel("Contributo dei non vaccinati alle incidenze")
     ax.set_yticks(rapp_yticks)
     ax.set_yticklabels(rapp_ylabels)
@@ -209,7 +210,6 @@ if __name__ == "__main__":
     ratio_x_ticks, ratio_x_labels = get_xticks_labels(full=True)
 
     incidenza_casi = compute_incidence_ratio("Casi")
-
     rapp_ymin, rapp_yticks, rapp_ylabels = get_yticks_labels(incidenza_casi)
 
     plot_rapporti_incidenze()
