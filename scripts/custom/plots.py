@@ -51,3 +51,12 @@ def get_xticks_labels(reports_dates=None, full=False):
         labels[0] = ""
     labels = list(map(str.title, labels))
     return ticks, labels
+
+
+def get_yticks_labels(data):
+    # Ricava labels y in base al valore minimo
+    # della serie di dati considerata
+    ymin = round(data.min()-5, -1)
+    yticks = np.arange(ymin, 101, 10)
+    bar_ylabels = [f"{tick:.0f}%" for tick in yticks]
+    return ymin, yticks, bar_ylabels

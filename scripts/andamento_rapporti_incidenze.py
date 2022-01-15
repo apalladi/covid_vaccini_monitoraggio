@@ -8,7 +8,8 @@ import numpy as np
 import pandas as pd
 
 from custom.plots import (apply_plot_treatment, date_from_csv_path,
-                          get_xticks_labels, list_età_csv, palette)
+                          get_xticks_labels, get_yticks_labels, list_età_csv,
+                          palette)
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
 
@@ -46,10 +47,11 @@ def add_to_plot(ax):
     """ Imposta proprietà grafico """
     ax.set_xticks(ratio_x_ticks, ratio_x_labels)
     ax.set_ylabel("Contributo dei non vaccinati alle incidenze")
-    ax.set_yticks(np.arange(50, 101, 10), ["50%", "60%", "70%", "80%", "90%", "100%"])
-    ax.set_ylim(60, 102)
+    ax.set_yticks(rapp_yticks)
+    ax.set_yticklabels(rapp_ylabels)
+    ax.set_ylim(rapp_ymin, 102)
+    ax.legend(classi_età)
     ax.grid()
-    ax.legend(classi_età, loc="upper left")
 
 
 def add_to_plot_abs(ax, title):
@@ -73,7 +75,7 @@ def plot_rapporti_incidenze(show=False):
     # unpack axes
     axes = ax.ravel()
 
-    axes[0].plot(compute_incidence_ratio("Casi"))
+    axes[0].plot(incidenza_casi)
     axes[0].set_title("Casi")
     add_to_plot(axes[0])
 
@@ -205,6 +207,10 @@ if __name__ == "__main__":
     files = list_età_csv()
 
     ratio_x_ticks, ratio_x_labels = get_xticks_labels(full=True)
+
+    incidenza_casi = compute_incidence_ratio("Casi")
+
+    rapp_ymin, rapp_yticks, rapp_ylabels = get_yticks_labels(incidenza_casi)
 
     plot_rapporti_incidenze()
 

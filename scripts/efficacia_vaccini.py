@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 from custom.plots import (apply_plot_treatment, date_from_csv_path,
-                          list_età_csv, palette)
+                          get_yticks_labels, list_età_csv, palette)
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
 
@@ -284,9 +284,7 @@ if __name__ == "__main__":
 
     # Ricava labels y in base al valore minimo
     # dell'efficacia verso il contagio
-    bar_ymin = round(eff_contagio.min()-5, -1)
-    bar_yticks = np.arange(bar_ymin, 101, 10)
-    bar_ylabels = [f"{tick:.0f}%" for tick in bar_yticks]
+    bar_ymin, bar_yticks, bar_ylabels = get_yticks_labels(eff_contagio)
 
     plot_tassi()
     plot_efficacia()
