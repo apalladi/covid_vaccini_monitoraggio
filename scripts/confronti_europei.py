@@ -322,7 +322,11 @@ def plot_correlazione_vaccini_decessi(tw=30, show=False):
     ax_bar.set_facecolor((0, 0, 0, 0))
     ax_bar.bar(df_grouped.index, df_grouped, width=1,
                edgecolor="black", color=palette[1], alpha=0.30)
-    ax_bar.bar_label(ax_bar.containers[0], fmt="%.f", padding=1, fontweight="bold")
+    labels_pad = 50 if df_grouped.max() > 1000 else 10
+    for index, data in enumerate(df_grouped):
+        ax_bar.text(x=index, y=data+labels_pad,
+                    ha="center", s=round(data),
+                    fontdict=dict(fontweight="bold"))
 
     ax_bar.xaxis.set_tick_params(rotation=0)
     ax_bar.set_title("Decessi medi per milione", pad=15)
