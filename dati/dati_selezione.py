@@ -48,12 +48,18 @@ def get_surveillance_reports():
             and date_from_url(link["href"], is_raw=False) >= cut_date]
 
 
-def page_from_url(sel_url):
+def page_from_url(sel_url, rep_date, is_pop=False):
     """page_from_url(sel_url) -> int
 
     sel_url: url of the report
     return: number of the page containing the table"""
-    query = "TABELLA [0-9] – POPOLAZIONE ITALIANA"
+
+    if is_pop:
+        query = "TABELLA A[0-9] - POPOLAZIONE DI RIFERIMENTO"
+    else:
+        query = "TABELLA [0-9] – NUMERO DI CASI DI COVID-19"
+        if rep_date < pd.to_datetime("2022/01/12"):
+            query = "TABELLA [0-9] – POPOLAZIONE ITALIANA"
 
     with request.urlopen(sel_url) as response:
         content = response.read()
@@ -89,6 +95,69 @@ def check_df(sel_df):
         # Table is incomplete, bye bye
         print(error_msg)
         exit()
+
+
+def get_raw_table(sel_url, table):
+    """get_raw_table(sel_url) -> dataframe
+
+    sel_url: url of the report
+    table: the page number of the table
+    return: raw dataframe"""
+
+    # Read the found page using camelot
+    tables = camelot.read_pdf(sel_url,
+                              pages=f"{table}",
+                              flavor="stream")
+    df_raw = tables[0].df
+
+    # Check if there are enough columns
+    if len(df_raw.columns) < 5:
+        if len(tables) >= 1:
+            df_raw = tables[1].df
+        check_df(df_raw)
+    return df_raw
+
+
+def clean_raw_table(sel_df, rep_date):
+    """clean_raw_table(sel_df, rep_date) -> dataframe
+
+    sel_df: raw dataframe
+    rep_date: report's date
+    return: processed dataframe"""
+
+    # We are interested in the last 5 columns
+    columns_to_keep = sel_df.columns[-5:]
+    df_raw = sel_df[columns_to_keep]
+
+    if rep_date >= pd.to_datetime("2021-12-01"):
+        # select rows containing numbers
+        selection = r"[0-9]"
+        df_raw = df_raw[df_raw[df_raw.columns[0]].str.match(selection)]
+    else:
+        # Get rows containing "%)" at the end
+        df_raw = df_raw[df_raw[df_raw.columns[0]].str.endswith("%)")]
+
+    # Remove dots and parentheses
+    to_exclude = r"\((.*)|[^0-9]"
+    df_final = df_raw.replace(to_exclude, "", regex=True).apply(np.int64)
+
+    df_final.columns = ["non vaccinati",
+                        "vaccinati 1 dose",
+                        "vaccinati completo < x mesi",
+                        "vaccinati completo > x mesi",
+                        "vaccinati booster"]
+
+    # Merge immunized columns ("vaccinati completo < x mesi",
+    # "vaccinati completo > x mesi", "vaccinati booster") into one
+    idx = df_final.columns.tolist().index("vaccinati 1 dose")
+    vaccinati_completo = df_final.iloc[:, 2:].sum(axis=1)
+    df_final.insert(idx+1, "vaccinati completo", vaccinati_completo)
+
+    # Drop these columns
+    df_final.drop(["vaccinati completo < x mesi",
+                   "vaccinati completo > x mesi"], axis=1, inplace=True)
+    df_final.reset_index(inplace=True, drop=True)
+    return df_final
 
 
 def get_data_from_report(auto=True, force=False):
@@ -133,62 +202,39 @@ def get_data_from_report(auto=True, force=False):
         print("\nCSV are already up-to-date!")
         exit()
 
-    # Get table page number
-    table_page = page_from_url(rep_url)
+    # Get the main table page number
+    main_table_pg = page_from_url(rep_url, rep_date)
 
     # Can't really find the page, stop
-    if table_page is None:
+    if main_table_pg is None:
         print("Table not found!")
         exit()
 
-    print("\nFound page is:", table_page)
+    print("\nFound page is:", main_table_pg)
 
-    # Read the found page using camelot
-    tables = camelot.read_pdf(rep_url,
-                              pages=f"{table_page}",
-                              flavor="stream")
-    df_raw = tables[0].df
+    # get and clean the raw df
+    df_raw = get_raw_table(rep_url, main_table_pg)
+    df_final = clean_raw_table(df_raw, rep_date)
 
-    # Check if there are enough columns
-    if len(df_raw.columns) < 5:
-        if len(tables) >= 1:
-            df_raw = tables[1].df
-        check_df(df_raw)
+    # retrieve population data for newer reports ("2022/01/12")
+    # (ISS enjoys seeing us suffer, I'd bet on it)
+    if rep_date >= pd.to_datetime("2022/01/12"):
 
-    # We are interested in the last 5 columns
-    columns_to_keep = df_raw.columns[-5:]
-    df_raw = df_raw[columns_to_keep]
+        pop_table_pg = page_from_url(rep_url, rep_date, is_pop=True)
 
-    if rep_date >= pd.to_datetime("2021-12-01"):
-        # select rows containing numbers
-        selection = r"[0-9]"
-        df_raw = df_raw[df_raw[df_raw.columns[0]].str.match(selection)]
-    else:
-        # Get rows containing "%)" at the end
-        df_raw = df_raw[df_raw[df_raw.columns[0]].str.endswith("%)")]
+        # Can't really find the page, stop
+        if pop_table_pg is None:
+            print("Table not found!")
+            exit()
 
-    # Remove dots and parentheses
-    to_exclude = r"\((.*)|[^0-9]"
-    df_final = df_raw.replace(to_exclude, "", regex=True).apply(np.int64)
+        print("\nFound page is:", pop_table_pg)
 
-    df_final.columns = ["non vaccinati",
-                        "vaccinati 1 dose",
-                        "vaccinati completo < x mesi",
-                        "vaccinati completo > x mesi",
-                        "vaccinati booster"]
+        # get and clean the raw df
+        df_raw_ = get_raw_table(rep_url, pop_table_pg)
+        df_ = clean_raw_table(df_raw_, rep_date)
+        df_final = pd.concat([df_.iloc[0:5], df_final]).reset_index(drop=True)
 
-    # Merge immunized columns ("vaccinati completo < x mesi",
-    # "vaccinati completo > x mesi", "vaccinati booster") into one
-    idx = df_final.columns.tolist().index("vaccinati 1 dose")
-    vaccinati_completo = df_final.iloc[:, 2:].sum(axis=1)
-    df_final.insert(idx+1, "vaccinati completo", vaccinati_completo)
-
-    # Drop these columns
-    df_final.drop(["vaccinati completo < x mesi",
-                   "vaccinati completo > x mesi"], axis=1, inplace=True)
-    df_final.reset_index(inplace=True, drop=True)
-
-    # Get data
+    # Finally, get the data
 
     # Keep totals only
     rows_tot = [4, 9, 14, 19, 24]
