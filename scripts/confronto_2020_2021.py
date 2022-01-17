@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 from custom.plots import apply_plot_treatment
-from custom.preprocessing_dataframe import compute_incidence, date_parser
+from custom.preprocessing_dataframe import compute_incidence_main, date_parser
 from custom.watermarks import add_last_updated, add_watermark
 
 
@@ -26,7 +26,7 @@ def import_data():
     df_assoluti = pd.read_csv("../dati/dati_ISS_complessivi.csv", sep=";")
 
     # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
-    df_tassi = compute_incidence(df_assoluti)
+    df_tassi = compute_incidence_main(df_assoluti)
 
     df_tassi.index = pd.to_datetime(df_assoluti["data"], format="%Y/%m/%d")
     df_tassi = df_tassi.iloc[::-1]
@@ -53,10 +53,10 @@ def get_epidemic_data_2020():
 def get_epidemic_data_2021():
     """ Importa dati epidemiologici 2021 """
 
-    casi_2021_vacc = np.array(df_tassi["Casi, vaccinati"])
-    casi_2021_novacc = np.array(df_tassi["Casi, non vaccinati"])
-    dec_2021_vacc = np.array(df_tassi["Deceduti, vaccinati"])
-    dec_2021_novacc = np.array(df_tassi["Deceduti, non vaccinati"])
+    casi_2021_vacc = df_tassi["Casi, vaccinati"]
+    casi_2021_novacc = df_tassi["Casi, non vaccinati"]
+    dec_2021_vacc = df_tassi["Deceduti, vaccinati"]
+    dec_2021_novacc = df_tassi["Deceduti, non vaccinati"]
     return casi_2021_vacc, casi_2021_novacc, dec_2021_vacc, dec_2021_novacc
 
 

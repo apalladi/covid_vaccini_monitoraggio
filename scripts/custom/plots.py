@@ -21,10 +21,10 @@ def apply_plot_treatment():
     mpl.rcParams["axes.prop_cycle"] = mpl.cycler(color=palette)
 
 
-def list_età_csv(is_most_recent=False):
+def list_csv(what="../dati/data_iss_età_*.csv"):
     # lista i csv
-    files = np.sort(glob("../dati/data_iss_età_*.csv"))
-    return files[-1] if is_most_recent else files
+    files = np.sort(glob(what))
+    return files
 
 
 def date_from_csv_path(csv_path):
@@ -51,3 +51,12 @@ def get_xticks_labels(reports_dates=None, full=False):
         labels[0] = ""
     labels = list(map(str.title, labels))
     return ticks, labels
+
+
+def get_yticks_labels(data):
+    # Ricava labels y in base al valore minimo
+    # della serie di dati considerata
+    ymin = round(data.min()-5, -1)
+    yticks = np.arange(ymin, 101, 10)
+    ylabels = [f"{tick:.0f}%" for tick in yticks]
+    return ymin, yticks, ylabels

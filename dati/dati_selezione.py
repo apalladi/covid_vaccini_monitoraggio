@@ -40,25 +40,29 @@ def get_surveillance_reports():
         # Find all hyperlinks present on webpage
         links = soup.find_all("a")
         # The table is available since 14/07/2021
-        # The script has been updated to 2021-11-10 report
-        # for older reports use "dati_selezione_old.py"
-        cut_date = pd.to_datetime("2021-11-10")
+        # The script has been updated to 2022-01-12 report
+        # for older reports than 2022-01-12 use "dati_selezione_old1.py" and "dati_ISS_complessivi_old1.csv"
+        # for older reports than 2021-11-10 use "dati_selezione_old.py and "dati_ISS_complessivi_old.csv"
+        cut_date = pd.to_datetime("2022-01-12")
     return [urljoin(epicentro_url, link["href"]) for link in links
             if "Bollettino-sorveglianza-integrata-COVID-19" in link["href"]
             and date_from_url(link["href"], is_raw=False) >= cut_date]
 
 
-def page_from_url(sel_url):
-    """page_from_url(sel_url) -> int
+def page_from_url(sel_url, is_pop=False):
+    """page_from_url(sel_url, is_pop) -> int
 
     sel_url: url of the report
+    is_pop: choose between populations and general data
     return: number of the page containing the table"""
-    query = "TABELLA [0-9] – POPOLAZIONE ITALIANA"
+
+    query = "TABELLA A[0-9] - POPOLAZIONE DI RIFERIMENTO" if is_pop else \
+        "TABELLA [0-9] – NUMERO DI CASI DI COVID-19"
 
     with request.urlopen(sel_url) as response:
         content = response.read()
         with fitz.open(stream=content, filetype="pdf") as pdf:
-            print("\nSearching for the table...")
+            print("\nSearching for the selected table...")
             # Query for string
             for page in pdf:
                 text = page.get_text()
@@ -89,6 +93,93 @@ def check_df(sel_df):
         # Table is incomplete, bye bye
         print(error_msg)
         exit()
+
+
+def get_raw_table(sel_url, table):
+    """get_raw_table(sel_url) -> dataframe
+
+    sel_url: url of the report
+    table: the page number of the table
+    return: raw dataframe"""
+
+    # Read the found page using camelot
+    tables = camelot.read_pdf(sel_url,
+                              pages=f"{table}",
+                              flavor="stream")
+    df_raw = tables[0].df
+
+    # Check if there are enough columns
+    if len(df_raw.columns) < 5:
+        if len(tables) >= 1:
+            df_raw = tables[1].df
+        check_df(df_raw)
+    return df_raw
+
+
+def clean_raw_table(sel_df):
+    """clean_raw_table(sel_df) -> dataframe
+
+    sel_df: raw dataframe
+    return: processed dataframe"""
+
+    # We are interested in the last 5 columns
+    columns_to_keep = sel_df.columns[-5:]
+    df_raw = sel_df[columns_to_keep]
+
+    # select rows containing numbers
+    selection = r"[0-9]"
+    df_raw = df_raw[df_raw[df_raw.columns[0]].str.match(selection)]
+
+    # Remove dots and parentheses
+    to_exclude = r"\((.*)|[^0-9]"
+    df_final = df_raw.replace(to_exclude, "", regex=True).apply(np.int64)
+
+    df_final.columns = ["non vaccinati",
+                        "vaccinati 1 dose",
+                        "vaccinati completo < x mesi",
+                        "vaccinati completo > x mesi",
+                        "vaccinati booster"]
+
+    # Merge immunized columns ("vaccinati completo < x mesi",
+    # "vaccinati completo > x mesi", "vaccinati booster") into one
+    idx = df_final.columns.tolist().index("vaccinati 1 dose")
+    vaccinati_completo = df_final.iloc[:, 2:].sum(axis=1)
+    df_final.insert(idx+1, "vaccinati completo", vaccinati_completo)
+
+    # Drop these columns
+    df_final.drop(["vaccinati completo < x mesi",
+                   "vaccinati completo > x mesi"], axis=1, inplace=True)
+    df_final.reset_index(inplace=True, drop=True)
+    return df_final
+
+
+def extract_data_from_raw(sel_df, df_tg, sel_rows, rep_date, force):
+
+    results = sel_df.iloc[sel_rows, :].stack().values
+
+    if (df_tg.iloc[0].values == results).all() and not force:
+        print("Data already on the file!")
+        exit()
+
+    # Add the new row at the top of the df
+    df_tg.loc[rep_date] = results
+    df_tg.sort_index(ascending=False, inplace=True)
+
+    # Save to a csv
+    df_tg = df_tg.apply(np.int64)
+
+    # Get data by age
+    ages = ["12-39", "40-59", "60-79", "80+"]
+    rows_to_keep = np.arange(0, len(sel_df), 5)
+    results_ = {age: sel_df.iloc[rows_to_keep+i, :].stack().values
+                for i, age in enumerate(ages)}
+
+    # Load dict as df
+    df_ = pd.DataFrame(results_).T
+    df_.columns = df_tg.columns
+    df_.index.rename("età", inplace=True)
+
+    return df_tg, df_
 
 
 def get_data_from_report(auto=True, force=False):
@@ -133,92 +224,55 @@ def get_data_from_report(auto=True, force=False):
         print("\nCSV are already up-to-date!")
         exit()
 
-    # Get table page number
-    table_page = page_from_url(rep_url)
+    # Get the main table page number
+    main_table_pg = page_from_url(rep_url)
 
     # Can't really find the page, stop
-    if table_page is None:
+    if main_table_pg is None:
         print("Table not found!")
         exit()
 
-    print("\nFound page is:", table_page)
+    print("\nFound page is:", main_table_pg)
 
-    # Read the found page using camelot
-    tables = camelot.read_pdf(rep_url,
-                              pages=f"{table_page}",
-                              flavor="stream")
-    df_raw = tables[0].df
+    # get and clean the raw df
+    df_raw = get_raw_table(rep_url, main_table_pg)
+    df_final = clean_raw_table(df_raw)
 
-    # Check if there are enough columns
-    if len(df_raw.columns) < 5:
-        if len(tables) >= 1:
-            df_raw = tables[1].df
-        check_df(df_raw)
-
-    # We are interested in the last 5 columns
-    columns_to_keep = df_raw.columns[-5:]
-    df_raw = df_raw[columns_to_keep]
-
-    if rep_date >= pd.to_datetime("2021-12-01"):
-        # select rows containing numbers
-        selection = r"[0-9]"
-        df_raw = df_raw[df_raw[df_raw.columns[0]].str.match(selection)]
-    else:
-        # Get rows containing "%)" at the end
-        df_raw = df_raw[df_raw[df_raw.columns[0]].str.endswith("%)")]
-
-    # Remove dots and parentheses
-    to_exclude = r"\((.*)|[^0-9]"
-    df_final = df_raw.replace(to_exclude, "", regex=True).apply(np.int64)
-
-    df_final.columns = ["non vaccinati",
-                        "vaccinati 1 dose",
-                        "vaccinati completo < x mesi",
-                        "vaccinati completo > x mesi",
-                        "vaccinati booster"]
-
-    # Merge immunized columns ("vaccinati completo < x mesi",
-    # "vaccinati completo > x mesi", "vaccinati booster") into one
-    idx = df_final.columns.tolist().index("vaccinati 1 dose")
-    vaccinati_completo = df_final.iloc[:, 2:].sum(axis=1)
-    df_final.insert(idx+1, "vaccinati completo", vaccinati_completo)
-
-    # Drop these columns
-    df_final.drop(["vaccinati completo < x mesi",
-                   "vaccinati completo > x mesi"], axis=1, inplace=True)
-    df_final.reset_index(inplace=True, drop=True)
-
-    # Get data
+    # Finally, get the data
 
     # Keep totals only
-    rows_tot = [4, 9, 14, 19, 24]
-    results = df_final.iloc[rows_tot, :].stack().values
-
-    if (df_0.iloc[0].values == results).all() and not force:
-        print("Data already on the file!")
-        exit()
-
-    # Add the new row at the top of the df
-    df_0.loc[rep_date] = results
-    df_0.sort_index(ascending=False, inplace=True)
+    rows_tot = [4, 9, 14, 19]
+    df_0, df_1 = extract_data_from_raw(df_final, df_0, rows_tot, rep_date, force)
 
     # Save to a csv
-    df_0 = df_0.apply(np.int64)
     df_0.to_csv("dati_ISS_complessivi.csv", sep=";")
+    df_1.to_csv(f"data_iss_età_{rep_date.date()}.csv", sep=";")
 
-    # Get data by age
-    ages = ["12-39", "40-59", "60-79", "80+"]
-    rows_to_keep = np.arange(0, len(df_final), 5)
-    results_ = {age: df_final.iloc[rows_to_keep+i, :].stack().values
-                for i, age in enumerate(ages)}
+    # retrieve population data
+    pop_table_pg = page_from_url(rep_url, is_pop=True)
 
-    # Load dict as df
-    df_1 = pd.DataFrame(results_).T
-    df_1.columns = df_0.columns
-    df_1.index.rename("età", inplace=True)
+    # Can't really find the page, stop
+    if pop_table_pg is None:
+        print("Table not found!")
+        exit()
+
+    print("\nFound page is:", pop_table_pg)
+
+    # Read the csv to update from the repo
+    df_pop = pd.read_csv("dati_ISS_popolazioni.csv", sep=";",
+                         parse_dates=["data"],
+                         index_col="data")
+
+    # get and clean the raw df
+    df_raw_ = get_raw_table(rep_url, pop_table_pg)
+    df_raw_ = clean_raw_table(df_raw_)
+
+    rows_tot = [4, 9, 14]
+    df_2, df_3 = extract_data_from_raw(df_raw_, df_pop, rows_tot, rep_date, force)
 
     # Save to csv
-    df_1.to_csv(f"data_iss_età_{rep_date.date()}.csv", sep=";")
+    df_2.to_csv("dati_ISS_popolazioni.csv", sep=";")
+    df_3.to_csv(f"data_iss_popolazioni_età_{rep_date.date()}.csv", sep=";")
 
     print("\nDone!")
 
