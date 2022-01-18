@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from custom.plots import apply_plot_treatment, get_xticks_labels, palette
-from custom.preprocessing_dataframe import compute_incidence_main
+from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
 
 colori_incidenza = [palette[i] for i in [4, 1, 5]]
@@ -38,7 +38,8 @@ def load_data():
     # per vaccinati e non vaccinati
 
     # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
-    df_tassi = compute_incidence_main(df_assoluti)
+    df_pop = pd.read_csv("../dati/dati_ISS_popolazioni.csv", sep=";")
+    df_tassi = compute_incidence(df_assoluti, df_pop)
     df_tassi.index = pd.to_datetime(df_assoluti["data"])
 
     # Calcola i numeri assoluti (medi, giornalieri) dell"epidemia

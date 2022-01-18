@@ -10,7 +10,7 @@ import pandas as pd
 from custom.plots import (apply_plot_treatment, date_from_csv_path,
                           get_xticks_labels, get_yticks_labels, list_csv,
                           palette)
-from custom.preprocessing_dataframe import compute_incidence_età
+from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
 
 classi_età = ["12-39", "40-59", "60-79", "80+"]
@@ -29,13 +29,8 @@ def compute_incidence_ratio(category):
 
     for f in files:
         df_età = pd.read_csv(f, sep=";")
-        data = date_from_csv_path(f)
-        is_old = data < pd.to_datetime("2021-11-10")
-        df_pop = None
-        if data >= pd.to_datetime("2022-01-12"):
-            df_pop = pd.read_csv(files_dict[f], sep=";")
-
-        df_tassi = compute_incidence_età(df_età, is_old=is_old, df_pop=df_pop)
+        df_pop = pd.read_csv(files_dict[f], sep=";")
+        df_tassi = compute_incidence(df_età, df_pop)
 
         r_casi = df_tassi["Casi, non vaccinati"]/(df_tassi["Casi, non vaccinati"] + df_tassi["Casi, vaccinati"])*100
         r_osp = df_tassi["Ospedalizzati, non vaccinati"]/(df_tassi["Ospedalizzati, non vaccinati"] + df_tassi["Ospedalizzati, vaccinati"])*100
@@ -114,13 +109,11 @@ def ricava_andamenti_età(files, età, colonna, incidenza_mensile):
     """Ricava andamento delle varie incindenze nel tempo,
     divise per fascia d"età e categoria"""
 
-    # create dates
-    dates = [date_from_csv_path(f) for f in files]
-
     # loop around the .csv files
     results_date = []
-    for i in range(len(files)):
-        df = pd.read_csv(files[i], sep=";")
+    for f in files:
+        data = date_from_csv_path(f)
+        df = pd.read_csv(f, sep=";")
         df = df[df["età"] == età]
 
         non_vacc_labels = ["casi non vaccinati",
@@ -134,24 +127,19 @@ def ricava_andamenti_età(files, età, colonna, incidenza_mensile):
         if incidenza_mensile is True:
             # calcola incidenza mensile ogni
             # 100.000 abitanti per ciascun gruppo
-
-            if date_from_csv_path(files[i]) >= pd.to_datetime("2022-01-12"):
-                df_pop = pd.read_csv(files_dict[files[i]], sep=";")
-                df_pop = df_pop[df_pop["età"] == età]
-                non_vacc_den_labels = ["casi non vaccinati", "ospedalizzati/ti non vaccinati",
-                                       "ospedalizzati/ti non vaccinati", "decessi non vaccinati"]
-                vacc_den_labels = ["casi vaccinati completo", "ospedalizzati/ti vaccinati",
-                                   "ospedalizzati/ti vaccinati", "decessi vaccinati"]
-                df[non_vacc_labels] = df[non_vacc_labels]/df_pop[non_vacc_den_labels].values[0]*10**5
-                df[vacc_labels] = df[vacc_labels]/df_pop[vacc_den_labels].values[0]*10**5
-            else:
-                df[non_vacc_labels] = df[non_vacc_labels]/df["non vaccinati"].values[0]*10**5
-                df[vacc_labels] = df[vacc_labels]/df["vaccinati completo"].values[0]*10**5
+            df_pop = pd.read_csv(files_dict[f], sep=";")
+            df_pop = df_pop[df_pop["età"] == età]
+            non_vacc_den_labels = ["casi non vaccinati", "ospedalizzati/ti non vaccinati",
+                                   "ospedalizzati/ti non vaccinati", "decessi non vaccinati"]
+            vacc_den_labels = ["casi vaccinati completo", "ospedalizzati/ti vaccinati",
+                               "ospedalizzati/ti vaccinati", "decessi vaccinati"]
+            df[non_vacc_labels] = df[non_vacc_labels]/df_pop[non_vacc_den_labels].values[0]*10**5
+            df[vacc_labels] = df[vacc_labels]/df_pop[vacc_den_labels].values[0]*10**5
         else:
             # converti in numeri giornalieri, media mobile 30 giorni
             df[colonna] = df[colonna]/30
 
-        result_single_date = [dates[i], np.array(df[colonna])[0]]
+        result_single_date = [data, np.array(df[colonna])[0]]
         results_date.append(result_single_date)
 
     df_results = pd.DataFrame(results_date)
@@ -228,7 +216,7 @@ if __name__ == "__main__":
     files_pop = list_csv(what="../dati/data_iss_popolazioni_età_*.csv")
 
     # Dizionario con files e relative popolazioni
-    files_dict = dict(zip(np.flip(files), np.flip(files_pop)))
+    files_dict = dict(zip(files, files_pop))
 
     ratio_x_ticks, ratio_x_labels = get_xticks_labels(full=True)
 
@@ -246,19 +234,19 @@ if __name__ == "__main__":
     nome_file = "../risultati/andamento_fasce_età_%s.png"
 
     # casi
-    plot_assoluti_incidenza_età(categorie=[categorie[4], categorie[6]],
+    plot_assoluti_incidenza_età(categorie=[categorie[1], categorie[3]],
                                 titoli=[titolo_0 % "Casi",
                                         titolo_1 % "dei casi"],
                                 filename=nome_file % "casi")
 
     # ospedalizzazioni
-    plot_assoluti_incidenza_età(categorie=[categorie[7], categorie[9]],
+    plot_assoluti_incidenza_età(categorie=[categorie[5], categorie[7]],
                                 titoli=[titolo_0 % "Ospedalizzati",
                                         titolo_1 % "degli ospedalizzati"],
                                 filename=nome_file % "ospedalizzati")
 
     # in terapia intensiva
-    plot_assoluti_incidenza_età(categorie=[categorie[10], categorie[12]],
+    plot_assoluti_incidenza_età(categorie=[categorie[9], categorie[11]],
                                 titoli=[titolo_0 % "Ricoverati in TI",
                                         titolo_1 % "dei ricoverati in TI"],
                                 filename=nome_file % "ricoveratiTI")

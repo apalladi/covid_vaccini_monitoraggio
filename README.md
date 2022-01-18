@@ -33,7 +33,7 @@ Nell'environment virtuale è possibile installare automaticamente i pacchetti ri
 
 Lo script [**`dati/dati_selezione.py`**](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) estrae i dati per l'analisi a partire dal report selezionato. I dati generali vengono salvati in [dati/dati_ISS_complessivi.csv](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_ISS_complessivi.csv), le relative popolazioni in [dati/dati_ISS_popolazioni.csv](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_ISS_popolazioni.csv). I dati suddivisi per età vengono salvati in [dati/data_iss_età_YY-MM-D.csv](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/data_iss_età_2021-11-10.csv), le relative popolazioni in [dati/data_iss__popolazioni_età_YY-MM-D.csv](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/data_iss_popolazioni_età_2022-01-12.csv).
 
-Lo script è stato aggiornato il [10/11/2021](https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_10-novembre-2021.pdf) per includere i vaccinati con dose aggiuntiva. Per i report precedenti utilizzare le versioni precedenti dello [script](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/bck/).
+Lo script è stato aggiornato il [10/11/2021](https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_10-novembre-2021.pdf) per includere i vaccinati con dose aggiuntiva.
 Sono necessari ghostscript e tkinker per il corretto funzionamento di [camelot](https://camelot-py.readthedocs.io/en/master/user/install-deps.html).
 
 

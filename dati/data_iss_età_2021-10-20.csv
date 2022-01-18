@@ -1,5 +1,5 @@
-età;non vaccinati;vaccinati 1 dose;vaccinati completo;casi non vaccinati;casi vaccinati 1 dose;casi vaccinati;ospedalizzati non vaccinati;ospedalizzati vaccinati 1 dose;ospedalizzati vaccinati;terapia intensiva non vaccinati;terapia intensiva vaccinati 1 dose;terapia intensiva vaccinati;decessi non vaccinati;decessi vaccinati 1 dose;decessi vaccinati
-12-39;4435610;1920254;11079691;18282;2230;7601;694;47;80;39;2;1;7;3;0
-40-59;3686874;923975;13827667;12624;1342;11499;1185;58;218;153;3;15;79;1;8
-60-79;1458643;320253;11793883;4301;444;8636;1071;53;701;200;4;83;270;17;139
-80+;248105;94972;4219974;987;111;3778;446;39;955;22;1;46;280;21;364
+età;casi non vaccinati;casi vaccinati 1 dose;casi vaccinati;casi booster;ospedalizzati non vaccinati;ospedalizzati vaccinati 1 dose;ospedalizzati vaccinati;ospedalizzati booster;terapia intensiva non vaccinati;terapia intensiva vaccinati 1 dose;terapia intensiva vaccinati;terapia intensiva booster;decessi non vaccinati;decessi vaccinati 1 dose;decessi vaccinati;decessi booster
+12-39;18282;2230;7601;0;694;47;80;0;39;2;1;0;7;3;0;0
+40-59;12624;1342;11499;0;1185;58;218;0;153;3;15;0;79;1;8;0
+60-79;4301;444;8636;0;1071;53;701;0;200;4;83;0;270;17;139;0
+80+;987;111;3778;0;446;39;955;0;22;1;46;0;280;21;364;0

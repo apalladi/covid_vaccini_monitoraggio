@@ -10,7 +10,7 @@ import pandas as pd
 
 from custom.plots import (apply_plot_treatment, date_from_csv_path,
                           get_yticks_labels, list_csv, palette)
-from custom.preprocessing_dataframe import compute_incidence_età
+from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
 
 colori_incidenza = [palette[i] for i in [0, 1, 6]]
@@ -184,7 +184,7 @@ def plot_focus_60(show=False):
                                     "decessi vaccinati"]].sum()
     over60_array = np.array(df_over60)
 
-    df_ = df_età_pop.loc[[2, 3], ["ospedalizzati/ti non vaccinati",
+    df_ = df_pop.loc[[2, 3], ["ospedalizzati/ti non vaccinati",
                                   "ospedalizzati/ti vaccinati",
                                   "decessi non vaccinati",
                                   "decessi vaccinati"]].sum()
@@ -272,15 +272,15 @@ if __name__ == "__main__":
 
     # Lista i csv
     # Files età
-    files = np.flip(list_csv())
+    files = list_csv()
     # Files relative popolazioni
-    files_pop = np.flip(list_csv(what="../dati/data_iss_popolazioni_età_*.csv"))
+    files_pop = list_csv(what="../dati/data_iss_popolazioni_età_*.csv")
 
     # Dizionario con files e relative popolazioni
     files_dict = dict(zip(files, files_pop))
 
     # File più recente e data
-    last_file = files[0]
+    last_file = files[-1]
     csv_date = date_from_csv_path(last_file)
     df_età = pd.read_csv(last_file, sep=";")
 
@@ -291,8 +291,8 @@ if __name__ == "__main__":
 
     # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
 
-    df_età_pop = pd.read_csv(files_dict[last_file], sep=";")
-    df_tassi = compute_incidence_età(df_età, df_pop=df_età_pop)
+    df_pop = pd.read_csv(files_dict[last_file], sep=";")
+    df_tassi = compute_incidence(df_età, df_pop)
 
     df_tassi.index = df_età["età"]
 

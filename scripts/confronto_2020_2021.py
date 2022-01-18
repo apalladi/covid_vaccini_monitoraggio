@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 from custom.plots import apply_plot_treatment
-from custom.preprocessing_dataframe import compute_incidence_main, date_parser
+from custom.preprocessing_dataframe import compute_incidence, date_parser
 from custom.watermarks import add_last_updated, add_watermark
 
 
@@ -26,7 +26,8 @@ def import_data():
     df_assoluti = pd.read_csv("../dati/dati_ISS_complessivi.csv", sep=";")
 
     # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
-    df_tassi = compute_incidence_main(df_assoluti)
+    df_pop = pd.read_csv("../dati/dati_ISS_popolazioni.csv", sep=";")
+    df_tassi = compute_incidence(df_assoluti, df_pop)
 
     df_tassi.index = pd.to_datetime(df_assoluti["data"], format="%Y/%m/%d")
     df_tassi = df_tassi.iloc[::-1]
