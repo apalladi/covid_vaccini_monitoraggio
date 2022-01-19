@@ -5,7 +5,7 @@ Extraction of data from ISS weekly covid-19 reports
 https://www.epicentro.iss.it/coronavirus/aggiornamenti
 
 See example pdf:
-https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_10-novembre-2021.pdf
+https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_12-gennaio-2022.pdf
 
 Requirements:
 Python 3.6+, Ghostscript (ghostscript), Tkinter (python3-tk)
@@ -14,7 +14,7 @@ numpy, pandas, camelot, PyMuPDF, Beautiful Soup 4 """
 
 import locale
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from os import chdir, path
 from urllib import request
 from urllib.parse import urljoin
@@ -50,14 +50,14 @@ def get_surveillance_reports():
 
 
 def page_from_url(sel_url, is_pop=False):
-    """page_from_url(sel_url, is_pop) -> int
+    """page_from_url(str, boolean) -> int
 
     sel_url: url of the report
     is_pop: choose between populations and general data
     return: number of the page containing the table"""
 
     query = "TABELLA A[0-9] - POPOLAZIONE DI RIFERIMENTO" if is_pop else \
-        "TABELLA [0-9] – NUMERO DI CASI DI COVID-19"
+            "TABELLA [0-9] – NUMERO DI CASI DI COVID-19"
 
     with request.urlopen(sel_url) as response:
         content = response.read()
@@ -83,10 +83,10 @@ def date_from_url(sel_url, is_raw=True):
 
 
 def check_df(sel_df):
-    """check_df(sel_df) -> None
+    """check_df(df) -> None
 
-    sel_df: dataframe object
-    return: check if the table has 2 columns"""
+    sel_df: dataframe
+    return: check if the table has at least 2 columns"""
 
     error_msg = "Can't extract the table! DIY!"
     if len(sel_df.columns) < 3:
@@ -96,7 +96,7 @@ def check_df(sel_df):
 
 
 def get_raw_table(sel_url, table):
-    """get_raw_table(sel_url) -> dataframe
+    """get_raw_table(str, int) -> df
 
     sel_url: url of the report
     table: the page number of the table
@@ -117,10 +117,10 @@ def get_raw_table(sel_url, table):
 
 
 def clean_raw_table(sel_df):
-    """clean_raw_table(sel_df) -> dataframe
+    """clean_raw_table(df) -> df
 
     sel_df: raw dataframe
-    return: processed dataframe"""
+    return: extract numerical data from the dataframe"""
 
     # We are interested in the last 5 columns
     columns_to_keep = sel_df.columns[-5:]
@@ -153,41 +153,58 @@ def clean_raw_table(sel_df):
     return df_final
 
 
-def extract_data_from_raw(sel_df, df_tg, sel_rows, rep_date, force):
+def extract_data_from_raw(raw_df, to_df, sel_rows=None):
+    """extract_data_from_raw(df, df, list) -> df, df
 
-    results = sel_df.iloc[sel_rows, :].stack().values
+    raw_df: raw dataframe
+    to_df: dataframe to update
+    sel_rows: selected raw df rows
+    return: processed dataframes"""
 
-    if (df_tg.iloc[0].values == results).all() and not force:
-        print("Data already on the file!")
-        exit()
+    if sel_rows is None:
+        f_pop = "data_iss_popolazioni_età_%s.csv"
+        # Align hospitalizations/ti and deaths populations
+        # Get hospitalizations/ti populations from 2nd latest report
+        # Get deaths populations from 3rd latest report
+        date_osp = rep_date - timedelta(days=15)
+        df_hosp = pd.read_csv(f_pop % date_osp.date(), sep=";")
+        date_dec = rep_date - timedelta(days=22)
+        df_deaths = pd.read_csv(f_pop % date_dec.date(), sep=";")
 
-    # Add the new row at the top of the df
-    df_tg.loc[rep_date] = results
-    df_tg.sort_index(ascending=False, inplace=True)
+        # Get general data
+        results = np.concatenate((raw_df.iloc[4, :].values,
+                                  to_df.loc[date_osp].values[0:4],
+                                  to_df.loc[date_dec].values[0:4]))
+        # Build ages dataframe
+        # Merge df together
+        df_ = pd.concat([raw_df.iloc[:4, :5], df_hosp.iloc[:, 1:5], df_deaths.iloc[:, 1:5]], axis=1)
+        df_.columns = df_deaths.columns[1:]
+        df_.set_index(df_deaths["età"], inplace=True)
+    else:
+        # Get general data
+        results = raw_df.iloc[sel_rows, :].stack().values
+        # Get data by age
+        ages = ["12-39", "40-59", "60-79", "80+"]
+        rows_to_keep = np.arange(0, len(raw_df), 5)
+        results_ = {age: raw_df.iloc[rows_to_keep+i, :].stack().values
+                    for i, age in enumerate(ages)}
+        # Build ages dataframe
+        df_ = pd.DataFrame(results_).T
+        df_.columns = to_df.columns
+        df_.index.rename("età", inplace=True)
 
-    # Save to a csv
-    df_tg = df_tg.apply(np.int64)
+    # Add the new row at the top of the general df
+    to_df.loc[rep_date] = results
+    to_df.sort_index(ascending=False, inplace=True)
+    to_df = to_df.apply(np.int64)
 
-    # Get data by age
-    ages = ["12-39", "40-59", "60-79", "80+"]
-    rows_to_keep = np.arange(0, len(sel_df), 5)
-    results_ = {age: sel_df.iloc[rows_to_keep+i, :].stack().values
-                for i, age in enumerate(ages)}
-
-    # Load dict as df
-    df_ = pd.DataFrame(results_).T
-    df_.columns = df_tg.columns
-    df_.index.rename("età", inplace=True)
-
-    return df_tg, df_
+    return to_df, df_
 
 
-def get_data_from_report(auto=True, force=False):
-    """get_data_from_report(boolean)
+def get_report(auto=True):
+    """get_report(boolean)
 
-    The script saves data extracted from report.
-    Use force=True to skip checks and force data extraction
-
+    The script get the selected report.
     Select mode:
     - Automatic (auto=True): table of last available PDF is automatically read
     - Manual (auto=False): Index of the report will be asked as input"""
@@ -212,6 +229,14 @@ def get_data_from_report(auto=True, force=False):
     # Get report date
     rep_date = date_from_url(rep_url, is_raw=False)
     print(f"\nSelected report ({rep_date.date()}) is:\n{rep_url}")
+    return rep_date, rep_url
+
+
+def get_data_from_report(force=False):
+    """get_data_from_report(boolean)
+
+    The script saves data extracted from report.
+    Use force=True to skip checks and force data extraction"""
 
     # Read the csv to update from the repo
     df_0 = pd.read_csv("dati_ISS_complessivi.csv",
@@ -236,13 +261,13 @@ def get_data_from_report(auto=True, force=False):
 
     # get and clean the raw df
     df_raw = get_raw_table(rep_url, main_table_pg)
-    df_final = clean_raw_table(df_raw)
+    df_raw = clean_raw_table(df_raw)
 
     # Finally, get the data
 
     # Keep totals only
     rows_tot = [4, 9, 14, 19]
-    df_0, df_1 = extract_data_from_raw(df_final, df_0, rows_tot, rep_date, force)
+    df_0, df_1 = extract_data_from_raw(df_raw, df_0, sel_rows=rows_tot)
 
     # Save to a csv
     df_0.to_csv("dati_ISS_complessivi.csv", sep=";")
@@ -263,12 +288,11 @@ def get_data_from_report(auto=True, force=False):
                          parse_dates=["data"],
                          index_col="data")
 
-    # get and clean the raw df
+    # Get and clean the raw populations df
     df_raw_ = get_raw_table(rep_url, pop_table_pg)
     df_raw_ = clean_raw_table(df_raw_)
 
-    rows_tot = [4, 9, 14]
-    df_2, df_3 = extract_data_from_raw(df_raw_, df_pop, rows_tot, rep_date, force)
+    df_2, df_3 = extract_data_from_raw(df_raw_, df_pop)
 
     # Save to csv
     df_2.to_csv("dati_ISS_popolazioni.csv", sep=";")
@@ -285,6 +309,10 @@ if __name__ == "__main__":
     # Set locale to "it" to parse the month correctly
     locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
 
+    # Get the report
+    # Use force=False for manual selection
+    rep_date, rep_url = get_report()
+
     # Get data
-    # use force=True to skip the checks/for debug purposes
+    # Use force=True to skip the checks/for debug purposes
     get_data_from_report()
