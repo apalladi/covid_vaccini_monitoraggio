@@ -23,10 +23,10 @@ def import_data():
                         index_col="data")
 
     # Dati ISS
-    df_assoluti = pd.read_csv("../dati/dati_ISS_complessivi.csv", sep=";")
+    df_assoluti = pd.read_excel("../dati/dati_ISS_complessivi.xlsx", sheet_name="dati epidemiologici")
+    df_pop = pd.read_excel("../dati/dati_ISS_complessivi.xlsx", sheet_name="popolazioni")
 
     # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
-    df_pop = pd.read_csv("../dati/dati_ISS_popolazioni.csv", sep=";")
     df_tassi = compute_incidence(df_assoluti, df_pop)
 
     df_tassi.index = pd.to_datetime(df_assoluti["data"], format="%Y/%m/%d")

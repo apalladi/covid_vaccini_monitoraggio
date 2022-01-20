@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from custom.plots import (apply_plot_treatment, date_from_csv_path,
-                          get_xticks_labels, get_yticks_labels, list_csv,
+from custom.plots import (apply_plot_treatment, date_from_xlsx_path,
+                          get_xticks_labels, get_yticks_labels, list_xlsx,
                           palette)
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
@@ -28,8 +28,8 @@ def compute_incidence_ratio(category):
     result_list = []
 
     for f in files:
-        df_età = pd.read_csv(f, sep=";")
-        df_pop = pd.read_csv(files_dict[f], sep=";")
+        df_età = pd.read_excel(f, sheet_name="dati epidemiologici")
+        df_pop = pd.read_excel(f, sheet_name="popolazioni")
         df_tassi = compute_incidence(df_età, df_pop)
 
         r_casi = df_tassi["Casi, non vaccinati"]/(df_tassi["Casi, non vaccinati"] + df_tassi["Casi, vaccinati"])*100
@@ -109,11 +109,11 @@ def ricava_andamenti_età(files, età, colonna, incidenza_mensile):
     """Ricava andamento delle varie incindenze nel tempo,
     divise per fascia d"età e categoria"""
 
-    # loop around the .csv files
+    # loop around the .xlsx files
     results_date = []
     for f in files:
-        data = date_from_csv_path(f)
-        df = pd.read_csv(f, sep=";")
+        data = date_from_xlsx_path(f)
+        df = pd.read_excel(f, sheet_name="dati epidemiologici")
         df = df[df["età"] == età]
 
         non_vacc_labels = ["casi non vaccinati",
@@ -127,7 +127,7 @@ def ricava_andamenti_età(files, età, colonna, incidenza_mensile):
         if incidenza_mensile is True:
             # calcola incidenza mensile ogni
             # 100.000 abitanti per ciascun gruppo
-            df_pop = pd.read_csv(files_dict[f], sep=";")
+            df_pop = pd.read_excel(f, sheet_name="popolazioni")
             df_pop = df_pop[df_pop["età"] == età]
             non_vacc_den_labels = ["casi non vaccinati", "ospedalizzati/ti non vaccinati",
                                    "ospedalizzati/ti non vaccinati", "decessi non vaccinati"]
@@ -209,14 +209,8 @@ if __name__ == "__main__":
     # Imposta stile grafici
     apply_plot_treatment()
 
-    # Lista i csv
-    # Files età
-    files = list_csv()
-    # Files relative popolazioni
-    files_pop = list_csv(what="../dati/data_iss_popolazioni_età_*.csv")
-
-    # Dizionario con files e relative popolazioni
-    files_dict = dict(zip(files, files_pop))
+    # Lista gli xslx
+    files = list_xlsx()
 
     ratio_x_ticks, ratio_x_labels = get_xticks_labels(full=True)
 
@@ -228,7 +222,7 @@ if __name__ == "__main__":
 
     x_ticks, x_labels = get_xticks_labels()
 
-    categorie = pd.read_csv(files[0], sep=";").columns
+    categorie = pd.read_excel(files[0], sheet_name="dati epidemiologici").columns
     titolo_0 = "%s giornalieri (media 30 giorni)"
     titolo_1 = "Incidenza mensile %s per 100.000 abitanti"
     nome_file = "../risultati/andamento_fasce_età_%s.png"

@@ -7,3 +7,5 @@ camelot-py[base]
 PyMuPDF
 scikit-learn
 adjustText
+openpyxl
+xlsxwriter

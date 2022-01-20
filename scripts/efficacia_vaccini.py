@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from custom.plots import (apply_plot_treatment, date_from_csv_path,
-                          get_yticks_labels, list_csv, palette)
+from custom.plots import (apply_plot_treatment, date_from_xlsx_path,
+                          get_yticks_labels, list_xlsx, palette)
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
 
@@ -270,19 +270,14 @@ if __name__ == "__main__":
     # Imposta stile grafici
     apply_plot_treatment()
 
-    # Lista i csv
-    # Files età
-    files = list_csv()
-    # Files relative popolazioni
-    files_pop = list_csv(what="../dati/data_iss_popolazioni_età_*.csv")
-
-    # Dizionario con files e relative popolazioni
-    files_dict = dict(zip(files, files_pop))
+    # Lista gli xlsx
+    files = list_xlsx()
 
     # File più recente e data
     last_file = files[-1]
-    csv_date = date_from_csv_path(last_file)
-    df_età = pd.read_csv(last_file, sep=";")
+    csv_date = date_from_xlsx_path(last_file)
+    df_età = pd.read_excel(last_file, sheet_name="dati epidemiologici")
+    df_pop = pd.read_excel(last_file, sheet_name="popolazioni")
 
     start_date, end_date = get_data_labels()
     print(f"Report del {csv_date}",
@@ -290,10 +285,7 @@ if __name__ == "__main__":
           f"{start_date} - {end_date}")
 
     # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
-
-    df_pop = pd.read_csv(files_dict[last_file], sep=";")
     df_tassi = compute_incidence(df_età, df_pop)
-
     df_tassi.index = df_età["età"]
 
     # Ricava efficacia

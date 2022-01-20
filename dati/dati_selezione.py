@@ -162,14 +162,14 @@ def extract_data_from_raw(raw_df, to_df, sel_rows=None):
     return: processed dataframes"""
 
     if sel_rows is None:
-        f_pop = "data_iss_popolazioni_età_%s.csv"
+        f_pop = "data_iss_età_%s.xlsx"
         # Align hospitalizations/ti and deaths populations
         # Get hospitalizations/ti populations from 2nd latest report
         # Get deaths populations from 3rd latest report
         date_osp = rep_date - timedelta(days=15)
-        df_hosp = pd.read_csv(f_pop % date_osp.date(), sep=";")
+        df_hosp = pd.read_excel(f_pop % date_osp.date(), sheet_name="popolazioni")
         date_dec = rep_date - timedelta(days=22)
-        df_deaths = pd.read_csv(f_pop % date_dec.date(), sep=";")
+        df_deaths = pd.read_excel(f_pop % date_dec.date(), sheet_name="popolazioni")
 
         # Get general data
         results = np.concatenate((raw_df.iloc[4, :].values,
@@ -232,6 +232,19 @@ def get_report(auto=True):
     return rep_date, rep_url
 
 
+def merge_df_into_excel(df_0, df_1, filename="dati_ISS_complessivi.xlsx"):
+    """merge_df_into_excel(df, df, str)
+
+    df_0: epidemiological data dataframe
+    df_1: populations data dataframe
+    filename: name of the output xlsx
+    return: merges two dataframes into an xlsx"""
+
+    with pd.ExcelWriter(filename) as writer:
+        df_0.to_excel(writer, sheet_name="dati epidemiologici")
+        df_1.to_excel(writer, sheet_name="popolazioni")
+
+
 def get_data_from_report(force=False):
     """get_data_from_report(boolean)
 
@@ -239,10 +252,10 @@ def get_data_from_report(force=False):
     Use force=True to skip checks and force data extraction"""
 
     # Read the csv to update from the repo
-    df_0 = pd.read_csv("dati_ISS_complessivi.csv",
-                       sep=";",
-                       parse_dates=["data"],
-                       index_col="data")
+    df_0 = pd.read_excel("dati_ISS_complessivi.xlsx",
+                         sheet_name="dati epidemiologici",
+                         parse_dates=["data"],
+                         index_col="data")
 
     # If table is already up-to-date stop the script
     if rep_date in df_0.index and not force:
@@ -269,10 +282,6 @@ def get_data_from_report(force=False):
     rows_tot = [4, 9, 14, 19]
     df_0, df_1 = extract_data_from_raw(df_raw, df_0, sel_rows=rows_tot)
 
-    # Save to a csv
-    df_0.to_csv("dati_ISS_complessivi.csv", sep=";")
-    df_1.to_csv(f"data_iss_età_{rep_date.date()}.csv", sep=";")
-
     # retrieve population data
     pop_table_pg = page_from_url(rep_url, is_pop=True)
 
@@ -284,9 +293,10 @@ def get_data_from_report(force=False):
     print("\nFound page is:", pop_table_pg)
 
     # Read the csv to update from the repo
-    df_pop = pd.read_csv("dati_ISS_popolazioni.csv", sep=";",
-                         parse_dates=["data"],
-                         index_col="data")
+    df_pop = pd.read_excel("dati_ISS_complessivi.xlsx",
+                           sheet_name="popolazioni",
+                           parse_dates=["data"],
+                           index_col="data")
 
     # Get and clean the raw populations df
     df_raw_ = get_raw_table(rep_url, pop_table_pg)
@@ -294,9 +304,9 @@ def get_data_from_report(force=False):
 
     df_2, df_3 = extract_data_from_raw(df_raw_, df_pop)
 
-    # Save to csv
-    df_2.to_csv("dati_ISS_popolazioni.csv", sep=";")
-    df_3.to_csv(f"data_iss_popolazioni_età_{rep_date.date()}.csv", sep=";")
+    # Save to xlsx
+    merge_df_into_excel(df_0, df_2)
+    merge_df_into_excel(df_1, df_3, filename=f"data_iss_età_{rep_date.date()}.xlsx")
 
     print("\nDone!")
 

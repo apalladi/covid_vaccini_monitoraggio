@@ -5,7 +5,7 @@ from re import findall
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-from pandas import read_csv, to_datetime
+from pandas import read_excel, to_datetime
 
 # see: https://personal.sron.nl/~pault/
 palette = ["#EE7733", "#0077BB", "#33BBEE", "#EE3377", "#CC3311", "#009988", "#BBBBBB"]
@@ -21,20 +21,20 @@ def apply_plot_treatment():
     mpl.rcParams["axes.prop_cycle"] = mpl.cycler(color=palette)
 
 
-def list_csv(what="../dati/data_iss_età_*.csv"):
-    # lista i csv
-    files = np.sort(glob(what))
+def list_xlsx():
+    # lista gli xlsx
+    files = np.sort(glob("../dati/data_iss_età_*.xlsx"))
     return files
 
 
-def date_from_csv_path(csv_path):
-    date_ = findall(r"\d+-\d+-\d+", csv_path)[0]
+def date_from_xlsx_path(xlsx_path):
+    date_ = findall(r"\d+-\d+-\d+", xlsx_path)[0]
     return datetime.strptime(date_, "%Y-%m-%d")
 
 
 def get_xticks_labels(reports_dates=None, full=False):
     if reports_dates is None:
-        df_assoluti = read_csv("../dati/dati_ISS_complessivi.csv", sep=";")
+        df_assoluti = read_excel("../dati/dati_ISS_complessivi.xlsx", sheet_name="dati epidemiologici")
         reports_dates = to_datetime(df_assoluti["data"])
     if full:
         reports_dates.sort_values(inplace=True)
