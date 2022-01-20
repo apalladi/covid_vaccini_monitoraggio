@@ -6,7 +6,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from custom.plots import apply_plot_treatment, get_xticks_labels, palette
+from custom.plots import (apply_plot_treatment, get_df_assoluti,
+                          get_xticks_labels, palette)
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
 
@@ -32,8 +33,7 @@ def load_data():
     epicentro.iss.it/coronavirus/bollettino/
     Bollettino-sorveglianza-integrata-COVID-19_15-settembre-2021.pdf"""
 
-    df_assoluti = pd.read_excel("../dati/dati_ISS_complessivi.xlsx", sheet_name="dati epidemiologici")
-    df_pop = pd.read_excel("../dati/dati_ISS_complessivi.xlsx", sheet_name="popolazioni")
+    df_assoluti, df_pop = get_df_assoluti()
 
     # Calcola tassi di infezione, ospedalizzazione e decessi
     # per vaccinati e non vaccinati
