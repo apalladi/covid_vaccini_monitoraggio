@@ -24,10 +24,10 @@ titoli = ["dei nuovi casi", "degli ospedalizzati", "dei ricoveri in TI", "dei de
 
 def compute_efficacia():
     """ Calcola efficacia vaccini """
-    eff_contagio = (1 - df_tassi.iloc[:, 1]/df_tassi.iloc[:, 0])*100
-    eff_osp = (1 - df_tassi.iloc[:, 4]/df_tassi.iloc[:, 3])*100
-    eff_terint = (1 - df_tassi.iloc[:, 7]/df_tassi.iloc[:, 6])*100
-    eff_decessi = (1 - df_tassi.iloc[:, 10]/df_tassi.iloc[:, 9])*100
+    eff_contagio = (1 - df_tassi["Casi, vaccinati"]/df_tassi["Casi, non vaccinati"])*100
+    eff_osp = (1 - df_tassi["Ospedalizzati, vaccinati"]/df_tassi["Ospedalizzati, non vaccinati"])*100
+    eff_terint = (1 - df_tassi["In terapia intensiva, vaccinati"]/df_tassi["In terapia intensiva, non vaccinati"])*100
+    eff_decessi = (1 - df_tassi["Deceduti, vaccinati"]/df_tassi["Deceduti, non vaccinati"])*100
     return eff_contagio, eff_osp, eff_terint, eff_decessi
 
 
@@ -280,7 +280,7 @@ if __name__ == "__main__":
     df_pop = pd.read_excel(last_file, sheet_name="popolazioni")
 
     start_date, end_date = get_data_labels()
-    print(f"Report del {csv_date}",
+    print(f"Report del {csv_date.date()}",
           "\nI dati si riferiscono ai 30 giorni precedenti.\n"
           f"{start_date} - {end_date}")
 
