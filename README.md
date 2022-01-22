@@ -4,7 +4,7 @@
 
 Questo repository è stato creato allo scopo di monitorare l'andamento dell'epidemia provocata dal virus Sars-Cov-2 in Italia e l'efficacia dei vaccini utilizzando i dati rilasciati nei [**report settimanali**](https://www.epicentro.iss.it/coronavirus/aggiornamenti) dell'Istituto Superiore di Sanità, come ad esempio: 
 <p align="center">
-  <a href="https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_12-gennaio-2022.pdf">Bollettino-sorveglianza-integrata-COVID-19_12-gennaio-2022.pdf</a>
+  <a href="https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_19-gennaio-2022.pdf">Bollettino-sorveglianza-integrata-COVID-19_19-gennaio-2022.pdf</a>
 </p>
 
 Per rimanere aggiornato sui risultati puoi dare una occhiata al nostro [**sito**](https://enricocid.github.io/monitoraggio-vaccini-italia/)!
