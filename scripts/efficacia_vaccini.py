@@ -3,46 +3,31 @@ import locale
 from datetime import timedelta
 from os import chdir, path
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from custom.plots import (apply_plot_treatment, date_from_csv_path,
-                          list_età_csv, palette)
+from custom.plots import (apply_plot_treatment, date_from_xlsx_path,
+                          get_yticks_labels, list_xlsx, palette)
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
 
+colori_incidenza = [palette[i] for i in [0, 1, 6]]
 
-# Recupero dati dai csv estratti dai report
-def load_data():
-    """ Recupera i dati estratti precedentemente """
-
-    # Recupera csv più recente
-    last_file = list_età_csv(True)
-
-    # Data ultimo csv
-    csv_date = date_from_csv_path(last_file)
-
-    csv_date_d = csv_date.strftime("%d")
-    csv_date_m = csv_date.strftime("%B")
-    report_date = f"{csv_date_d}-{csv_date_m}-{csv_date.year}"
-
-    message = f"Report ISS del {csv_date_d} {csv_date_m.capitalize()}: "
-    message += f"https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_{report_date}.pdf"
-    message += " I dati si riferiscono ai 30 giorni precedenti."
-    print(message)
-
-    df_età = pd.read_csv(last_file, sep=";")
-
-    return report_date, df_età, csv_date, csv_date_d
+eventi = [["Casi, non vaccinati", "Casi, vaccinati", "Casi, booster"],
+          ["Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati", "Ospedalizzati, booster"],
+          ["In terapia intensiva, non vaccinati", "In terapia intensiva, vaccinati", "In terapia intensiva, booster"],
+          ["Deceduti, non vaccinati", "Deceduti, vaccinati", "Deceduti, booster"]]
+titoli = ["dei nuovi casi", "degli ospedalizzati", "dei ricoveri in TI", "dei deceduti"]
 
 
 def compute_efficacia():
     """ Calcola efficacia vaccini """
-    eff_contagio = (1 - df_tassi.iloc[:, 1]/df_tassi.iloc[:, 0])*100
-    eff_osp = (1 - df_tassi.iloc[:, 4]/df_tassi.iloc[:, 3])*100
-    eff_terint = (1 - df_tassi.iloc[:, 7]/df_tassi.iloc[:, 6])*100
-    eff_decessi = (1 - df_tassi.iloc[:, 10]/df_tassi.iloc[:, 9])*100
+    eff_contagio = (1 - df_tassi["Casi, vaccinati"]/df_tassi["Casi, non vaccinati"])*100
+    eff_osp = (1 - df_tassi["Ospedalizzati, vaccinati"]/df_tassi["Ospedalizzati, non vaccinati"])*100
+    eff_terint = (1 - df_tassi["In terapia intensiva, vaccinati"]/df_tassi["In terapia intensiva, non vaccinati"])*100
+    eff_decessi = (1 - df_tassi["Deceduti, vaccinati"]/df_tassi["Deceduti, non vaccinati"])*100
     return eff_contagio, eff_osp, eff_terint, eff_decessi
 
 
@@ -54,7 +39,8 @@ def get_data_labels():
     start_day = csv_date_start.strftime("%d")
     start_date = f"{start_day} {start_month}"
     end_month = csv_date.strftime("%b").capitalize()
-    end_date = f"{csv_date_d} {end_month}"
+    csv_date_day = csv_date.strftime("%d")
+    end_date = f"{csv_date_day} {end_month}"
     return start_date, end_date
 
 
@@ -62,7 +48,9 @@ def which_axe(axis):
     """ Imposta proprietà grafici """
     axis.set_ylabel("Ogni 100.000 persone per ciascun gruppo")
     axis.set_xlabel("Fascia d'età")
-    axis.legend(["Non vaccinati", "Vaccinati"])
+    axis.legend(["Non vaccinati",
+                 "Vaccinati 2/3 dosi",
+                 "Vaccinati terza dose"])
     axis.grid()
     axis.xaxis.set_tick_params(rotation=0)
 
@@ -87,6 +75,7 @@ def add_to_plot(ax):
 
 
 # Rappresentazione grafica dei risultati
+@mpl.rc_context({"legend.handlelength": 1.0, "axes.prop_cycle": mpl.cycler(color=colori_incidenza)})
 def plot_tassi(show=False):
     """ Tassi di contagio """
 
@@ -95,21 +84,10 @@ def plot_tassi(show=False):
     # Unpack all the axes subplots
     axes = axes2.ravel()
 
-    df_tassi.iloc[:, [0, 1]].plot(ax=axes[0], kind="bar")
-    axes[0].set_title("Incidenza mensile dei nuovi casi")
-    which_axe(axes[0])
-
-    df_tassi.iloc[:, [3, 4]].plot(ax=axes[1], kind="bar")
-    axes[1].set_title("Incidenza mensile degli ospedalizzati")
-    which_axe(axes[1])
-
-    df_tassi.iloc[:, [6, 7]].plot(ax=axes[2], kind="bar")
-    axes[2].set_title("Incidenza mensile dei ricoveri in TI")
-    which_axe(axes[2])
-
-    df_tassi.iloc[:, [9, 10]].plot(ax=axes[3], kind="bar")
-    axes[3].set_title("Incidenza mensile dei deceduti")
-    which_axe(axes[3])
+    for i, evento in enumerate(eventi):
+        df_tassi[evento].plot(ax=axes[i], kind="bar")
+        axes[i].set_title("Incidenza mensile " + titoli[i])
+        which_axe(axes[i])
 
     # Add watermarks
     add_watermark(fig)
@@ -155,6 +133,7 @@ def plot_efficacia(show=False):
         plt.show()
 
 
+@mpl.rc_context({"legend.handlelength": 1.0, "axes.prop_cycle": mpl.cycler(color=colori_incidenza)})
 def plot_riassunto(show=False):
     """ Grafico riassuntivo """
 
@@ -163,12 +142,8 @@ def plot_riassunto(show=False):
     # Unpack all the axes subplots
     axes = ax.ravel()
 
-    eventi = [[0, 1], [3, 4], [6, 7], [9, 10]]
-    titoli = ["dei nuovi casi", "degli ospedalizzati",
-              "dei ricoveri in TI", "dei deceduti"]
-
     for i, evento in enumerate(eventi):
-        df_tassi.iloc[:, evento].plot(ax=axes[i], kind="bar")
+        df_tassi[evento].plot(ax=axes[i], kind="bar")
         axes[i].set_title("Incidenza mensile " + titoli[i])
         which_axe(axes[i])
 
@@ -203,58 +178,82 @@ def plot_riassunto(show=False):
 def plot_focus_60(show=False):
     """ Focus sugli over 60 """
 
-    df_over60 = df_età.loc[[2, 3],
-                           ["non vaccinati",
-                            "vaccinati completo",
-                            "terapia intensiva non vaccinati",
-                            "terapia intensiva vaccinati",
-                            "decessi non vaccinati",
-                            "decessi vaccinati"]].sum()
+    df_over60 = df_età.loc[[2, 3], ["terapia intensiva non vaccinati",
+                                    "terapia intensiva vaccinati",
+                                    "decessi non vaccinati",
+                                    "decessi vaccinati"]].sum()
     over60_array = np.array(df_over60)
 
-    fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(10, 3.5))
+    df_ = df_pop.loc[[2, 3], ["ospedalizzati/ti non vaccinati",
+                                  "ospedalizzati/ti vaccinati",
+                                  "decessi non vaccinati",
+                                  "decessi vaccinati"]].sum()
+
+    over60_array = np.concatenate((np.array(df_), over60_array))
+
+    fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(7, 7))
     axes = ax.ravel()
+
+    x_ticks = [0, 1]
+    x_labels = ["Non vaccinati", "Vaccinati"]
+    pop_yticks = 10**6*np.arange(0, 17, 2)
+    pop_ylabels = ["0", "2M", "4M", "6M", "8M", "10M", "12M", "14M", "16M"]
+    pop_ytitle = f"Popolazione over 60 \n{start_date} - {end_date}"
 
     axes[0].bar(0, over60_array[0], width=0.5, color=palette[4])
     axes[0].bar(1, over60_array[1], width=0.5, color=palette[5])
-    axes[0].set_xticks([0, 1], ["Non vaccinati", "Vaccinati"])
-    axes[0].set_yticks(10**6*np.arange(0, 17, 2),
-                       ["0", "2M", "4M", "6M", "8M", "10M", "12M", "14M", "16M"])
-    axes[0].set_title(f"Popolazione over 60 \n{start_date} - {end_date}")
+    axes[0].set_xticks(x_ticks)
+    axes[0].set_xticklabels(x_labels)
+    axes[0].set_yticks(pop_yticks)
+    axes[0].set_yticklabels(pop_ylabels)
+    axes[0].set_title(pop_ytitle)
     axes[0].grid()
 
-    axes[1].bar(0, over60_array[2], width=0.5, color=palette[4])
-    axes[1].bar(1, over60_array[3], width=0.5, color=palette[5])
-    axes[1].set_xticks([0, 1], ["Non vaccinati", "Vaccinati"])
+    axes[1].bar(0, over60_array[4], width=0.5, color=palette[4])
+    axes[1].bar(1, over60_array[5], width=0.5, color=palette[5])
+    axes[1].set_xticks(x_ticks)
+    axes[1].set_xticklabels(x_labels)
     axes[1].set_title(f"In terapia intensiva \n{start_date} - {end_date}")
     axes[1].grid()
 
-    axes[2].bar(0, over60_array[4], width=0.5, color=palette[4])
-    axes[2].bar(1, over60_array[5], width=0.5, color=palette[5])
-    axes[2].set_xticks([0, 1], ["Non vaccinati", "Vaccinati"])
-    axes[2].set_title(f"Deceduti \n{start_date} - {end_date}")
+    axes[2].bar(0, over60_array[2], width=0.5, color=palette[4])
+    axes[2].bar(1, over60_array[3], width=0.5, color=palette[5])
+    axes[2].set_xticks(x_ticks)
+    axes[2].set_xticklabels(x_labels)
+    axes[2].set_yticks(pop_yticks)
+    axes[2].set_yticklabels(pop_ylabels)
+    axes[2].set_title(pop_ytitle)
     axes[2].grid()
+
+    axes[3].bar(0, over60_array[6], width=0.5, color=palette[4])
+    axes[3].bar(1, over60_array[7], width=0.5, color=palette[5])
+    axes[3].set_xticks(x_ticks)
+    axes[3].set_xticklabels(x_labels)
+    axes[3].set_title(f"Deceduti \n{start_date} - {end_date}")
+    axes[3].grid()
 
     # Add watermarks
     add_watermark(fig)
-    add_last_updated(fig, axes[-1], y=-0.05)
+    add_last_updated(fig, axes[-1])
 
     fig.tight_layout()
     fig.savefig("../risultati/focus_over60.png", dpi=300, bbox_inches="tight")
 
-    ratio_vacc_novacc = round(over60_array[1]/over60_array[0], 1)
-    ratio_terint = round(over60_array[2]/over60_array[3], 1)
-    ratio_dec = round(over60_array[4]/over60_array[5], 1)
+    ratio_vacc_novacc_ti = round(over60_array[1]/over60_array[0], 1)
+    ratio_vacc_novacc_dec = round(over60_array[3]/over60_array[2], 1)
 
-    print("Rapporto tra vaccinati e non vaccinati", ratio_vacc_novacc)
-    print("Rapporto tra ricoverati in terapia intensiva (novacc/vacc)",
-          ratio_terint)
+    ratio_terint = round(over60_array[4]/over60_array[5], 1)
+    ratio_dec = round(over60_array[6]/over60_array[7], 1)
+
+    print("Rapporto popolazioni vaccinati e non vaccinati (terapia intensiva)", ratio_vacc_novacc_ti)
+    print("Rapporto tra ricoverati in terapia intensiva (novacc/vacc)", ratio_terint)
+    print("Rapporto popolazioni vaccinati e non vaccinati (decessi)", ratio_vacc_novacc_dec)
     print("Rapporto tra deceduti (novacc/vacc)", ratio_dec)
 
     print("Peso sul sistema sanitario di un non vaccinato over 60:",
-          round(ratio_vacc_novacc*ratio_terint, 2))
+          round(ratio_vacc_novacc_ti*ratio_terint, 2))
     print("Peso sulla mortalità di un non vaccinato over 60:      ",
-          round(ratio_vacc_novacc*ratio_dec, 2))
+          round(ratio_vacc_novacc_dec*ratio_dec, 2))
 
     if show:
         plt.show()
@@ -271,12 +270,22 @@ if __name__ == "__main__":
     # Imposta stile grafici
     apply_plot_treatment()
 
-    report_date, df_età, csv_date, csv_date_d = load_data()
+    # Lista gli xlsx
+    files = list_xlsx()
+
+    # File più recente e data
+    last_file = files[-1]
+    csv_date = date_from_xlsx_path(last_file)
+    df_età = pd.read_excel(last_file, sheet_name="dati epidemiologici")
+    df_pop = pd.read_excel(last_file, sheet_name="popolazioni")
 
     start_date, end_date = get_data_labels()
+    print(f"Report del {csv_date.date()}",
+          "\nI dati si riferiscono ai 30 giorni precedenti.\n"
+          f"{start_date} - {end_date}")
 
     # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
-    df_tassi = compute_incidence(df_età)
+    df_tassi = compute_incidence(df_età, df_pop)
     df_tassi.index = df_età["età"]
 
     # Ricava efficacia
@@ -284,9 +293,7 @@ if __name__ == "__main__":
 
     # Ricava labels y in base al valore minimo
     # dell'efficacia verso il contagio
-    bar_ymin = round(eff_contagio.min()-5, -1)
-    bar_yticks = np.arange(bar_ymin, 101, 10)
-    bar_ylabels = [f"{tick:.0f}%" for tick in bar_yticks]
+    bar_ymin, bar_yticks, bar_ylabels = get_yticks_labels(eff_contagio)
 
     plot_tassi()
     plot_efficacia()

@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from custom.plots import apply_plot_treatment
+from custom.plots import apply_plot_treatment, get_df_assoluti
 from custom.preprocessing_dataframe import compute_incidence, date_parser
 from custom.watermarks import add_last_updated, add_watermark
 
@@ -21,12 +21,10 @@ def import_data():
                         parse_dates=["data"],
                         date_parser=date_parser,
                         index_col="data")
-
-    # Dati ISS
-    df_assoluti = pd.read_csv("../dati/dati_ISS_complessivi.csv", sep=";")
+    df_assoluti, df_pop = get_df_assoluti()
 
     # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
-    df_tassi = compute_incidence(df_assoluti)
+    df_tassi = compute_incidence(df_assoluti, df_pop)
 
     df_tassi.index = pd.to_datetime(df_assoluti["data"], format="%Y/%m/%d")
     df_tassi = df_tassi.iloc[::-1]
@@ -39,7 +37,7 @@ def get_epidemic_data_2020():
     # Casi e decessi 2020
     abitanti_over12 = 540*10**5
 
-    df_2020 = df_IT.loc["2020-06-15":"2021-02-28"]
+    df_2020 = df_IT.loc["2020-07-28":"2021-02-28"]
     df_2020 = df_2020[["totale_casi",
                        "deceduti"]].diff().rolling(window=30).mean()
     df_2020 = df_2020*30/(abitanti_over12/(10**5))
@@ -53,10 +51,10 @@ def get_epidemic_data_2020():
 def get_epidemic_data_2021():
     """ Importa dati epidemiologici 2021 """
 
-    casi_2021_vacc = np.array(df_tassi["Casi, vaccinati"])
-    casi_2021_novacc = np.array(df_tassi["Casi, non vaccinati"])
-    dec_2021_vacc = np.array(df_tassi["Deceduti, vaccinati"])
-    dec_2021_novacc = np.array(df_tassi["Deceduti, non vaccinati"])
+    casi_2021_vacc = df_tassi["Casi, vaccinati"]
+    casi_2021_novacc = df_tassi["Casi, non vaccinati"]
+    dec_2021_vacc = df_tassi["Deceduti, vaccinati"]
+    dec_2021_novacc = df_tassi["Deceduti, non vaccinati"]
     return casi_2021_vacc, casi_2021_novacc, dec_2021_vacc, dec_2021_novacc
 
 
@@ -66,7 +64,7 @@ def which_axe(ax, title="Casi"):
     ax.set_xticklabels(x_labels)
     ax.set_title(f"{title} mensili (media mobile 30 gg)")
     ax.set_ylabel("Ogni 100.000 persone per ciascun gruppo")
-    ax.legend()
+    ax.legend(loc="upper left")
     ax.set_xlim(0, )
     ax.grid()
 

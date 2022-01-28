@@ -5,7 +5,7 @@ Extraction of data from ISS weekly covid-19 reports
 https://www.epicentro.iss.it/coronavirus/aggiornamenti
 
 See example pdf:
-https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_19-gennaio-2022.pdf
+https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_12-gennaio-2022.pdf
 
 Requirements:
 Python 3.6+, Ghostscript (ghostscript), Tkinter (python3-tk)
@@ -14,7 +14,7 @@ numpy, pandas, camelot, PyMuPDF, Beautiful Soup 4 """
 
 import locale
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from os import chdir, path
 from urllib import request
 from urllib.parse import urljoin
@@ -40,34 +40,35 @@ def get_surveillance_reports():
         # Find all hyperlinks present on webpage
         links = soup.find_all("a")
         # The table is available since 14/07/2021
-        # The script has been updated to 2022-01-19 report
-        cut_date = pd.to_datetime("2022-01-19")
+        # The script has been updated to 2022-01-12 report
+        # for older reports than 2022-01-12 use "dati_selezione_old1.py" and "dati_ISS_complessivi_old1.csv"
+        # for older reports than 2021-11-10 use "dati_selezione_old.py and "dati_ISS_complessivi_old.csv"
+        cut_date = pd.to_datetime("2022-01-12")
     return [urljoin(epicentro_url, link["href"]) for link in links
             if "Bollettino-sorveglianza-integrata-COVID-19" in link["href"]
             and date_from_url(link["href"], is_raw=False) >= cut_date]
 
 
-def pages_from_url(sel_url):
-    """page_from_url(str) -> list
+def page_from_url(sel_url, is_pop=False):
+    """page_from_url(str, boolean) -> int
 
     sel_url: url of the report
-    return: numbers of the pages containing the tables"""
+    is_pop: choose between populations and general data
+    return: number of the page containing the table"""
 
-    query = "TABELLA 5[A-C] - POPOLAZIONE ITALIANA"
+    query = "TABELLA A[0-9] - POPOLAZIONE DI RIFERIMENTO" if is_pop else \
+            "TABELLA [0-9] – NUMERO DI CASI DI COVID-19"
 
     with request.urlopen(sel_url) as response:
         content = response.read()
         with fitz.open(stream=content, filetype="pdf") as pdf:
             print("\nSearching for the selected table...")
             # Query for string
-            found_pages = []
             for page in pdf:
                 text = page.get_text()
                 if re.search(query, text, re.IGNORECASE):
-                    n = page.number + 1
-                    print(f"Found: {n}")
-                    found_pages.append(n)
-    return found_pages
+                    return page.number + 1
+    return None
 
 
 def date_from_url(sel_url, is_raw=True):
@@ -152,73 +153,52 @@ def clean_raw_table(sel_df):
     return df_final
 
 
-def extract_data_main(clean_tables):
-    totals_epidem = []
-    totals_pop = []
-    for i, table in enumerate(clean_tables):
-        if i == 1:
-            totals_epidem.extend(table.iloc[[9, 14], :].stack().values)
-        else:
-            totals_epidem.extend(table.iloc[9, :].values)
-        totals_pop.extend(table.iloc[4, :].values)
-    return totals_epidem, totals_pop
+def extract_data_from_raw(raw_df, to_df, sel_rows=None):
+    """extract_data_from_raw(df, df, list) -> df, df
 
+    raw_df: raw dataframe
+    to_df: dataframe to update
+    sel_rows: selected raw df rows
+    return: processed dataframes"""
 
-def extract_data_by_age(clean_tables):
-    for i, table in enumerate(clean_tables):
-        # Population data
-        if i == 0:
-            df_pop_eta = table.iloc[:4, :]
-        else:
-            df_pop_eta = pd.concat((df_pop_eta, table.iloc[:4, :]), axis=1)
+    if sel_rows is None:
+        f_pop = "data_iss_età_%s.xlsx"
+        # Align hospitalizations/ti and deaths populations
+        # Get hospitalizations/ti populations from 2nd latest report
+        # Get deaths populations from 3rd latest report
+        date_osp = rep_date - timedelta(days=15)
+        df_hosp = pd.read_excel(f_pop % date_osp.date(), sheet_name="popolazioni")
+        date_dec = rep_date - timedelta(days=22)
+        df_deaths = pd.read_excel(f_pop % date_dec.date(), sheet_name="popolazioni")
 
-        # Epidemiological data
-        if i == 0:
-            df_epid_eta = table.iloc[5:9, :].reset_index(drop=True)
-        elif i == 1:
-            hosp = table.iloc[5:9, :].reset_index(drop=True)
-            ti = table.iloc[10:14, :].reset_index(drop=True)
-            df_epid_eta = pd.concat([df_epid_eta, hosp, ti], axis=1)
-        else:
-            dec = table.iloc[5:9, :].reset_index(drop=True)
-            df_epid_eta = pd.concat((df_epid_eta, dec), axis=1)
-    return df_epid_eta, df_pop_eta
+        # Get general data
+        results = np.concatenate((raw_df.iloc[4, :].values,
+                                  to_df.loc[date_osp].values[0:4],
+                                  to_df.loc[date_dec].values[0:4]))
+        # Build ages dataframe
+        # Merge df together
+        df_ = pd.concat([raw_df.iloc[:4, :5], df_hosp.iloc[:, 1:5], df_deaths.iloc[:, 1:5]], axis=1)
+        df_.columns = df_deaths.columns[1:]
+        df_.set_index(df_deaths["età"], inplace=True)
+    else:
+        # Get general data
+        results = raw_df.iloc[sel_rows, :].stack().values
+        # Get data by age
+        ages = ["12-39", "40-59", "60-79", "80+"]
+        rows_to_keep = np.arange(0, len(raw_df), 5)
+        results_ = {age: raw_df.iloc[rows_to_keep+i, :].stack().values
+                    for i, age in enumerate(ages)}
+        # Build ages dataframe
+        df_ = pd.DataFrame(results_).T
+        df_.columns = to_df.columns
+        df_.index.rename("età", inplace=True)
 
+    # Add the new row at the top of the general df
+    to_df.loc[rep_date] = results
+    to_df.sort_index(ascending=False, inplace=True)
+    to_df = to_df.apply(np.int64)
 
-def add_new_row(sel_df, results):
-    """add_new_row(df, list)
-
-    sel_df: selected dataframe
-    results: list of integers
-    return: add the new row at the top of the selected df"""
-    sel_df.loc[rep_date] = results
-    sel_df.sort_index(ascending=False, inplace=True)
-    return sel_df.apply(np.int64)
-
-
-def add_index_cols(sel_df, columns):
-    """add_index_cols(df, list)
-
-    sel_df: selected dataframe
-    columns: columns list
-    return: dataframe with index and columns"""
-    sel_df.index = ages
-    sel_df.index.rename("età", inplace=True)
-    sel_df.columns = columns
-    return sel_df
-
-
-def merge_df_into_xlsx(df_0, df_1, filename="dati_ISS_complessivi.xlsx"):
-    """merge_df_into_xlsx(df, df, str)
-
-    df_0: epidemiological data dataframe
-    df_1: populations data dataframe
-    filename: name of the output xlsx
-    return: merges two dataframes into an xlsx"""
-
-    with pd.ExcelWriter(filename) as writer:
-        df_0.to_excel(writer, sheet_name="dati epidemiologici")
-        df_1.to_excel(writer, sheet_name="popolazioni")
+    return to_df, df_
 
 
 def get_report(auto=True):
@@ -252,6 +232,19 @@ def get_report(auto=True):
     return rep_date, rep_url
 
 
+def merge_df_into_excel(df_0, df_1, filename="dati_ISS_complessivi.xlsx"):
+    """merge_df_into_excel(df, df, str)
+
+    df_0: epidemiological data dataframe
+    df_1: populations data dataframe
+    filename: name of the output xlsx
+    return: merges two dataframes into an xlsx"""
+
+    with pd.ExcelWriter(filename) as writer:
+        df_0.to_excel(writer, sheet_name="dati epidemiologici")
+        df_1.to_excel(writer, sheet_name="popolazioni")
+
+
 def get_data_from_report(force=False):
     """get_data_from_report(boolean)
 
@@ -263,42 +256,57 @@ def get_data_from_report(force=False):
                          sheet_name="dati epidemiologici",
                          parse_dates=["data"],
                          index_col="data")
-    df_1 = pd.read_excel("dati_ISS_complessivi.xlsx", sheet_name="popolazioni", parse_dates=["data"], index_col="data")
 
     # If table is already up-to-date stop the script
     if rep_date in df_0.index and not force:
         print("\nCSV are already up-to-date!")
         exit()
 
-    # Get tables pages
-    tables_pages = pages_from_url(rep_url)
+    # Get the main table page number
+    main_table_pg = page_from_url(rep_url)
 
-    # Failed to extract the tables
-    if len(tables_pages) < 3:
-        print("An error occurred!")
+    # Can't really find the page, stop
+    if main_table_pg is None:
+        print("Table not found!")
         exit()
 
-    # get and clean the raw tables
-    raw_tables = [get_raw_table(rep_url, n) for n in tables_pages]
-    clean_tables = [clean_raw_table(raw) for raw in raw_tables]
+    print("\nFound page is:", main_table_pg)
+
+    # get and clean the raw df
+    df_raw = get_raw_table(rep_url, main_table_pg)
+    df_raw = clean_raw_table(df_raw)
 
     # Finally, get the data
 
-    # Get general data
-    totals_epidem, totals_pop = extract_data_main(clean_tables)
-    # Update the dataframes
-    add_new_row(df_0, totals_epidem)
-    add_new_row(df_1, totals_pop)
-    # Save to xlsx
-    merge_df_into_xlsx(df_0, df_1)
+    # Keep totals only
+    rows_tot = [4, 9, 14, 19]
+    df_0, df_1 = extract_data_from_raw(df_raw, df_0, sel_rows=rows_tot)
 
-    # Get data by age
-    df_epid_eta, df_pop_eta = extract_data_by_age(clean_tables)
-    # Add index and columns to the dataframes
-    df_epid_eta = add_index_cols(df_epid_eta, df_0.columns)
-    df_pop_eta = add_index_cols(df_pop_eta, df_1.columns)
+    # retrieve population data
+    pop_table_pg = page_from_url(rep_url, is_pop=True)
+
+    # Can't really find the page, stop
+    if pop_table_pg is None:
+        print("Table not found!")
+        exit()
+
+    print("\nFound page is:", pop_table_pg)
+
+    # Read the csv to update from the repo
+    df_pop = pd.read_excel("dati_ISS_complessivi.xlsx",
+                           sheet_name="popolazioni",
+                           parse_dates=["data"],
+                           index_col="data")
+
+    # Get and clean the raw populations df
+    df_raw_ = get_raw_table(rep_url, pop_table_pg)
+    df_raw_ = clean_raw_table(df_raw_)
+
+    df_2, df_3 = extract_data_from_raw(df_raw_, df_pop)
+
     # Save to xlsx
-    merge_df_into_xlsx(df_epid_eta, df_pop_eta, filename=f"data_iss_età_{rep_date.date()}.xlsx")
+    merge_df_into_excel(df_0, df_2)
+    merge_df_into_excel(df_1, df_3, filename=f"data_iss_età_{rep_date.date()}.xlsx")
 
     print("\nDone!")
 
@@ -314,8 +322,6 @@ if __name__ == "__main__":
     # Get the report
     # Use force=False for manual selection
     rep_date, rep_url = get_report()
-
-    ages = ["12-39", "40-59", "60-79", "80+"]
 
     # Get data
     # Use force=True to skip the checks/for debug purposes
