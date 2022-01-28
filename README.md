@@ -31,7 +31,8 @@ Nell'environment virtuale è possibile installare automaticamente i pacchetti ri
 
 ## Utilizzo e spiegazione degli script
 
-Lo script [**`dati/dati_selezione.py`**](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) estrae i dati per l'analisi a partire dal report selezionato. I dati vengono salvati in [dati/dati_ISS_complessivi.xlsx](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_ISS_complessivi.xlsx). I dati suddivisi per età vengono salvati in [dati/data_iss_età_YY-MM-D.xlsx](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/data_iss_età_2021-11-10.xlsx).
+Lo script [**`dati/dati_selezione.py`**](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) estrae i dati per l'analisi a partire dal report selezionato. I dati vengono salvati in [dati/dati_ISS_complessivi.xlsx](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_ISS_complessivi.xlsx). I dati suddivisi per età vengono salvati in [dati/data_iss_età_YY-MM-D.xlsx](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/data_iss_età_2021-11-10.xlsx).<br/>
+Nota sulle popolazioni di riferimento: si considera un ritardo medio stimato di due settimane per ospedalizzazioni e ricoveri in TI e di tre settimane per i decessi.
 
 Lo script è stato aggiornato il [10/11/2021](https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_10-novembre-2021.pdf) per includere i vaccinati con dose aggiuntiva.
 Sono necessari ghostscript e tkinker per il corretto funzionamento di [camelot](https://camelot-py.readthedocs.io/en/master/user/install-deps.html).
