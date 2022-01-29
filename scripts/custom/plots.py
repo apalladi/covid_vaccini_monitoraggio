@@ -50,9 +50,9 @@ def get_xticks_labels(reports_dates=None, full=False):
         reports_dates = pd.to_datetime(df_assoluti["data"])
     if full:
         reports_dates.sort_values(inplace=True)
-        sel_dates = reports_dates[0::2]
+        sel_dates = reports_dates[0::3]
         labels = [t.strftime("%d\n%b") for t in sel_dates]
-        ticks = np.arange(0, len(reports_dates), 2)
+        ticks = np.arange(0, len(reports_dates), 3)
     else:
         ticks = set([x.strftime("%Y-%m-01") for x in reports_dates])
         ticks = sorted(ticks)
