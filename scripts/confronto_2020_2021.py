@@ -51,9 +51,9 @@ def get_epidemic_data_2020():
 def get_epidemic_data_2021():
     """ Importa dati epidemiologici 2021 """
 
-    casi_2021_vacc = df_tassi["Casi, vaccinati"]
+    casi_2021_vacc = df_tassi["Casi, vaccinati completo"]
     casi_2021_novacc = df_tassi["Casi, non vaccinati"]
-    dec_2021_vacc = df_tassi["Deceduti, vaccinati"]
+    dec_2021_vacc = df_tassi["Deceduti, vaccinati completo"]
     dec_2021_novacc = df_tassi["Deceduti, non vaccinati"]
     return casi_2021_vacc, casi_2021_novacc, dec_2021_vacc, dec_2021_novacc
 

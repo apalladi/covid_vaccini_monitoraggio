@@ -133,21 +133,10 @@ def clean_raw_table(sel_df):
     to_exclude = r"\((.*)|[^0-9]"
     df_final = df_raw.replace(to_exclude, "", regex=True).apply(np.int64)
 
-    df_final.columns = ["non vaccinati",
-                        "vaccinati 1 dose",
-                        "vaccinati completo < x mesi",
-                        "vaccinati completo > x mesi",
-                        "vaccinati booster"]
-
-    # Merge immunized columns ("vaccinati completo < x mesi",
-    # "vaccinati completo > x mesi", "vaccinati booster") into one
-    idx = df_final.columns.tolist().index("vaccinati 1 dose")
+    # Merge columns "vaccinati completo > 4-6 mesi", "vaccinati completo < 4-6 mesi",
+    # "vaccinati booster" into "vaccinati completo" (fully immunized + third dose)
     vaccinati_completo = df_final.iloc[:, 2:].sum(axis=1)
-    df_final.insert(idx+1, "vaccinati completo", vaccinati_completo)
-
-    # Drop these columns
-    df_final.drop(["vaccinati completo < x mesi",
-                   "vaccinati completo > x mesi"], axis=1, inplace=True)
+    df_final.insert(len(df_final.columns), "vaccinati completo", vaccinati_completo)
     df_final.reset_index(inplace=True, drop=True)
     return df_final
 
@@ -241,8 +230,6 @@ def get_report(auto=True):
                             for report in reports]))
         # Select report index as input
         rep_idx = input(f"\nChoose report index:\
-                        \nFor oldest reports please use \
-                        the dati_selezione_old.py script!\n\
                         \n\n{reports_dict}\n\n")
         rep_url = reports[int(rep_idx)]
 

@@ -13,21 +13,21 @@ from custom.plots import (apply_plot_treatment, date_from_xlsx_path,
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
 
-colori_incidenza = [palette[i] for i in [0, 1, 6]]
+colori_incidenza = [palette[i] for i in [6, 0, 1, 2, 3]]
 
-eventi = [["Casi, non vaccinati", "Casi, vaccinati", "Casi, booster"],
-          ["Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati", "Ospedalizzati, booster"],
-          ["In terapia intensiva, non vaccinati", "In terapia intensiva, vaccinati", "In terapia intensiva, booster"],
-          ["Deceduti, non vaccinati", "Deceduti, vaccinati", "Deceduti, booster"]]
+eventi = [["Casi, non vaccinati", "Casi, vaccinati > 4-6 mesi", "Casi, vaccinati completo", "Casi, booster", "Casi, vaccinati < 4-6 mesi"],
+          ["Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati > 4-6 mesi", "Ospedalizzati, vaccinati completo", "Ospedalizzati, booster", "Ospedalizzati, vaccinati < 4-6 mesi"],
+          ["In terapia intensiva, non vaccinati", "In terapia intensiva, vaccinati > 4-6 mesi", "In terapia intensiva, vaccinati completo", "In terapia intensiva, booster", "In terapia intensiva, vaccinati < 4-6 mesi"],
+          ["Deceduti, non vaccinati", "Deceduti, vaccinati > 4-6 mesi", "Deceduti, vaccinati completo", "Deceduti, booster", "Deceduti, vaccinati < 4-6 mesi"]]
 titoli = ["dei nuovi casi", "degli ospedalizzati", "dei ricoveri in TI", "dei deceduti"]
 
 
 def compute_efficacia():
     """ Calcola efficacia vaccini """
-    eff_contagio = (1 - df_tassi["Casi, vaccinati"]/df_tassi["Casi, non vaccinati"])*100
-    eff_osp = (1 - df_tassi["Ospedalizzati, vaccinati"]/df_tassi["Ospedalizzati, non vaccinati"])*100
-    eff_terint = (1 - df_tassi["In terapia intensiva, vaccinati"]/df_tassi["In terapia intensiva, non vaccinati"])*100
-    eff_decessi = (1 - df_tassi["Deceduti, vaccinati"]/df_tassi["Deceduti, non vaccinati"])*100
+    eff_contagio = (1 - df_tassi["Casi, vaccinati completo"]/df_tassi["Casi, non vaccinati"])*100
+    eff_osp = (1 - df_tassi["Ospedalizzati, vaccinati completo"]/df_tassi["Ospedalizzati, non vaccinati"])*100
+    eff_terint = (1 - df_tassi["In terapia intensiva, vaccinati completo"]/df_tassi["In terapia intensiva, non vaccinati"])*100
+    eff_decessi = (1 - df_tassi["Deceduti, vaccinati completo"]/df_tassi["Deceduti, non vaccinati"])*100
     return eff_contagio, eff_osp, eff_terint, eff_decessi
 
 
@@ -49,8 +49,10 @@ def which_axe(axis):
     axis.set_ylabel("Ogni 100.000 persone per ciascun gruppo")
     axis.set_xlabel("Fascia d'età")
     axis.legend(["Non vaccinati",
+                 "Vaccinati 2 dosi > 4-6 mesi",
                  "Vaccinati 2/3 dosi",
-                 "Vaccinati terza dose"])
+                 "Vaccinati terza dose",
+                 "Vaccinati 2 dosi < 4-6 mesi"])
     axis.grid()
     axis.xaxis.set_tick_params(rotation=0)
 
@@ -179,15 +181,15 @@ def plot_focus_60(show=False):
     """ Focus sugli over 60 """
 
     df_over60 = df_età.loc[[2, 3], ["terapia intensiva non vaccinati",
-                                    "terapia intensiva vaccinati",
+                                    "terapia intensiva vaccinati completo",
                                     "decessi non vaccinati",
-                                    "decessi vaccinati"]].sum()
+                                    "decessi vaccinati completo"]].sum()
     over60_array = np.array(df_over60)
 
     df_ = df_pop.loc[[2, 3], ["ospedalizzati/ti non vaccinati",
-                                  "ospedalizzati/ti vaccinati",
+                                  "ospedalizzati/ti vaccinati completo",
                                   "decessi non vaccinati",
-                                  "decessi vaccinati"]].sum()
+                                  "decessi vaccinati completo"]].sum()
 
     over60_array = np.concatenate((np.array(df_), over60_array))
 
