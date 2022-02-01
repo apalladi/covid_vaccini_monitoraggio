@@ -6,7 +6,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from custom.plots import (apply_plot_treatment, get_df_assoluti,
+from custom.plots import (apply_plot_treatment, get_df_complessivo,
                           get_xticks_labels, palette)
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
@@ -33,24 +33,24 @@ def load_data():
     epicentro.iss.it/coronavirus/bollettino/
     Bollettino-sorveglianza-integrata-COVID-19_15-settembre-2021.pdf"""
 
-    df_assoluti, df_pop = get_df_assoluti()
+    df_epid, df_pop = get_df_complessivo()
 
     # Calcola tassi di infezione, ospedalizzazione e decessi
     # per vaccinati e non vaccinati
 
     # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
-    df_tassi = compute_incidence(df_assoluti, df_pop)
-    df_tassi.index = pd.to_datetime(df_assoluti["data"])
+    df_tassi = compute_incidence(df_epid, df_pop)
+    df_tassi.index = pd.to_datetime(df_epid["data"])
 
     # Calcola i numeri assoluti (medi, giornalieri) dell"epidemia
-    df_assoluti = df_assoluti.copy(deep=True)
-    df_assoluti["data"] = pd.to_datetime(df_assoluti["data"])
-    df_assoluti.set_index("data", drop=True, inplace=True)
+    df_epid = df_epid.copy(deep=True)
+    df_epid["data"] = pd.to_datetime(df_epid["data"])
+    df_epid.set_index("data", drop=True, inplace=True)
 
     # Trasforma in numeri giornalieri
-    df_assoluti = (1/30)*df_assoluti
+    df_epid = (1/30)*df_epid
 
-    return df_tassi, df_assoluti
+    return df_tassi, df_epid
 
 
 # Rappresentazione grafica dei risultati
@@ -109,7 +109,7 @@ def plot_num_assoluti(show=False):
               ["decessi non vaccinati", "decessi vaccinati completo", "decessi booster"]]
 
     for i, evento in enumerate(eventi):
-        df_assoluti[evento].plot(ax=axes[i])
+        df_epid[evento].plot(ax=axes[i])
         axes[i].set_title(titoli[i] + " (media 30 gg)")
         which_axe(axes[i])
 
@@ -156,7 +156,7 @@ def plot_riassuto(show=False):
               ["decessi non vaccinati", "decessi vaccinati completo", "decessi booster"]]
 
     for i, evento in enumerate(eventi):
-        df_assoluti[evento].plot(ax=axes[i+3])
+        df_epid[evento].plot(ax=axes[i+3])
         axes[i+3].set_title(titoli[i] + " (media 30 gg)")
         which_axe(axes[i+3])
 
@@ -217,9 +217,9 @@ if __name__ == "__main__":
     # Imposta stile grafici
     apply_plot_treatment()
 
-    df_tassi, df_assoluti = load_data()
+    df_tassi, df_epid = load_data()
 
-    x_ticks, x_labels = get_xticks_labels(reports_dates=df_assoluti.index)
+    x_ticks, x_labels = get_xticks_labels(reports_dates=df_epid.index)
 
     plot_incidenza()
     plot_rapporto_tassi()

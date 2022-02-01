@@ -191,9 +191,10 @@ def add_index_cols(sel_df, columns):
     sel_df: selected dataframe
     columns: columns list
     return: dataframe with index and columns"""
-    sel_df.index = ages
-    sel_df.index.rename("età", inplace=True)
     sel_df.columns = columns
+    sel_df.insert(0, "età", ages)
+    sel_df.index = [rep_date]*len(sel_df)
+    sel_df.index.rename("data", inplace=True)
     return sel_df
 
 
@@ -280,12 +281,17 @@ def get_data_from_report(force=False):
     merge_df_into_xlsx(df_0, df_1)
 
     # Get data by age
-    df_epid_eta, df_pop_eta = extract_data_by_age(clean_tables)
+    df_epid_età, df_pop_età = extract_data_by_age(clean_tables)
     # Add index and columns to the dataframes
-    df_epid_eta = add_index_cols(df_epid_eta, df_0.columns)
-    df_pop_eta = add_index_cols(df_pop_eta, df_1.columns)
-    # Save to xlsx
-    merge_df_into_xlsx(df_epid_eta, df_pop_eta, filename=f"data_iss_età_{rep_date.date()}.xlsx")
+    df_epid_età = add_index_cols(df_epid_età, df_0.columns)
+    df_pop_età = add_index_cols(df_pop_età, df_1.columns)
+
+    # Add the two df to dati_ISS_età.xlsx
+    df_età = pd.read_excel("dati_ISS_età.xlsx", sheet_name=["dati epidemiologici", "popolazioni"],
+                           index_col="data", parse_dates=["data"])
+    df_epid_età = pd.concat((df_epid_età, df_età["dati epidemiologici"]))
+    df_pop_età = pd.concat((df_pop_età, df_età["popolazioni"]))
+    merge_df_into_xlsx(df_epid_età, df_pop_età, filename="dati_ISS_età.xlsx")
 
     print("\nDone!")
 

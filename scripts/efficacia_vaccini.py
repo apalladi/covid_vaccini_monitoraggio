@@ -8,8 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from custom.plots import (apply_plot_treatment, date_from_xlsx_path,
-                          get_yticks_labels, list_xlsx, palette)
+from custom.plots import apply_plot_treatment, get_yticks_labels, palette
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
 
@@ -180,16 +179,21 @@ def plot_riassunto(show=False):
 def plot_focus_60(show=False):
     """ Focus sugli over 60 """
 
-    df_over60 = df_età.loc[[2, 3], ["terapia intensiva non vaccinati",
-                                    "terapia intensiva vaccinati completo",
-                                    "decessi non vaccinati",
-                                    "decessi vaccinati completo"]].sum()
+    df_età.set_index("età", inplace=True)
+    df_pop.set_index("età", inplace=True)
+
+    df_over60 = df_età.loc[["60-79", "80+"],
+                           ["terapia intensiva non vaccinati",
+                            "terapia intensiva vaccinati completo",
+                            "decessi non vaccinati",
+                            "decessi vaccinati completo"]].sum()
     over60_array = np.array(df_over60)
 
-    df_ = df_pop.loc[[2, 3], ["ospedalizzati/ti non vaccinati",
-                                  "ospedalizzati/ti vaccinati completo",
-                                  "decessi non vaccinati",
-                                  "decessi vaccinati completo"]].sum()
+    df_ = df_pop.loc[["60-79", "80+"],
+                     ["ospedalizzati/ti non vaccinati",
+                      "ospedalizzati/ti vaccinati completo",
+                      "decessi non vaccinati",
+                      "decessi vaccinati completo"]].sum()
 
     over60_array = np.concatenate((np.array(df_), over60_array))
 
@@ -272,14 +276,18 @@ if __name__ == "__main__":
     # Imposta stile grafici
     apply_plot_treatment()
 
-    # Lista gli xlsx
-    files = list_xlsx()
+    # Recupera dati età
+    df_età = pd.read_excel("../dati/dati_ISS_età.xlsx",
+                           sheet_name=["dati epidemiologici", "popolazioni"],
+                           index_col="data", parse_dates=["data"])
+    df_età_epid = df_età["dati epidemiologici"]
+    df_età_pop = df_età["popolazioni"]
+    date_reports = df_età_epid.index.unique()
 
-    # File più recente e data
-    last_file = files[-1]
-    csv_date = date_from_xlsx_path(last_file)
-    df_età = pd.read_excel(last_file, sheet_name="dati epidemiologici")
-    df_pop = pd.read_excel(last_file, sheet_name="popolazioni")
+    # Data più recente
+    csv_date = date_reports[0]
+    df_età = df_età_epid.loc[csv_date]
+    df_pop = df_età_pop.loc[csv_date]
 
     start_date, end_date = get_data_labels()
     print(f"Report del {csv_date.date()}",

@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from custom.plots import apply_plot_treatment, get_df_assoluti
+from custom.plots import apply_plot_treatment, get_df_complessivo
 from custom.preprocessing_dataframe import compute_incidence, date_parser
 from custom.watermarks import add_last_updated, add_watermark
 
@@ -21,14 +21,14 @@ def import_data():
                         parse_dates=["data"],
                         date_parser=date_parser,
                         index_col="data")
-    df_assoluti, df_pop = get_df_assoluti()
+    df_epid, df_pop = get_df_complessivo()
 
     # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
-    df_tassi = compute_incidence(df_assoluti, df_pop)
+    df_tassi = compute_incidence(df_epid, df_pop)
 
-    df_tassi.index = pd.to_datetime(df_assoluti["data"], format="%Y/%m/%d")
+    df_tassi.index = pd.to_datetime(df_epid["data"], format="%Y/%m/%d")
     df_tassi = df_tassi.iloc[::-1]
-    return df_IT, df_assoluti, df_tassi
+    return df_IT, df_epid, df_tassi
 
 
 def get_epidemic_data_2020():
@@ -111,7 +111,7 @@ if __name__ == "__main__":
     # Imposta stile grafici
     apply_plot_treatment()
 
-    df_IT, df_assoluti, df_tassi = import_data()
+    df_IT, df_epid, df_tassi = import_data()
     casi_2020, dec_2020 = get_epidemic_data_2020()
     casi_2021_vacc, casi_2021_novacc, dec_2021_vacc, dec_2021_novacc = get_epidemic_data_2021()
 

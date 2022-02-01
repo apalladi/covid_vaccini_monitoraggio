@@ -1,7 +1,3 @@
-from datetime import datetime
-from glob import glob
-from re import findall
-
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
@@ -21,26 +17,14 @@ def apply_plot_treatment():
     mpl.rcParams["axes.prop_cycle"] = mpl.cycler(color=palette)
 
 
-def get_df_assoluti():
+def get_df_complessivo():
     # dati ISS
-    df_assoluti = pd.read_excel("../dati/dati_ISS_complessivi.xlsx", sheet_name="dati epidemiologici")
-    df_pop = pd.read_excel("../dati/dati_ISS_complessivi.xlsx", sheet_name="popolazioni")
-    df_assoluti = df_assoluti[df_assoluti["data"] > "2021-07-28"]
+    df_complessivo = pd.read_excel("../dati/dati_ISS_complessivi.xlsx", sheet_name=["dati epidemiologici", "popolazioni"])
+    df_epid = df_complessivo["dati epidemiologici"]
+    df_pop = df_complessivo["popolazioni"]
+    df_epid = df_epid[df_epid["data"] > "2021-07-28"]
     df_pop = df_pop[df_pop["data"] > "2021-07-28"]
-    return df_assoluti, df_pop
-
-
-def list_xlsx():
-    # lista gli xlsx
-    files = np.sort(glob("../dati/data_iss_età_*.xlsx"))
-    cut_date = pd.to_datetime("2021-07-28")
-    filtered = filter(lambda data: date_from_xlsx_path(data) > cut_date, files)
-    return list(filtered)
-
-
-def date_from_xlsx_path(xlsx_path):
-    date_ = findall(r"\d+-\d+-\d+", xlsx_path)[0]
-    return datetime.strptime(date_, "%Y-%m-%d")
+    return df_epid, df_pop
 
 
 def get_xticks_labels(reports_dates=None, full=False):

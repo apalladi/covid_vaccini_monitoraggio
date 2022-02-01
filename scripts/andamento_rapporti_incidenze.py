@@ -7,9 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from custom.plots import (apply_plot_treatment, date_from_xlsx_path,
-                          get_xticks_labels, get_yticks_labels, list_xlsx,
-                          palette)
+from custom.plots import (apply_plot_treatment, get_xticks_labels,
+                          get_yticks_labels, palette)
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
 
@@ -27,9 +26,9 @@ def compute_incidence_ratio(category):
 
     result_list = []
 
-    for f in files:
-        df_epid = pd.read_excel(f, sheet_name="dati epidemiologici")
-        df_pop = pd.read_excel(f, sheet_name="popolazioni")
+    for date in np.flip(date_reports):
+        df_epid = df_età_epid.loc[date]
+        df_pop = df_età_pop.loc[date]
         df_tassi = compute_incidence(df_epid, df_pop)
 
         r_casi = df_tassi["Casi, non vaccinati"]/(df_tassi["Casi, non vaccinati"] + df_tassi["Casi, vaccinati completo"])*100
@@ -105,15 +104,14 @@ def plot_rapporti_incidenze(show=False):
         plt.show()
 
 
-def ricava_andamenti_età(files, età, colonna, incidenza_mensile):
+def ricava_andamenti_età(età, colonna, incidenza_mensile):
     """Ricava andamento delle varie incindenze nel tempo,
     divise per fascia d"età e categoria"""
 
-    # loop around the .xlsx files
+    # loop around the reports
     results_date = []
-    for f in files:
-        data = date_from_xlsx_path(f)
-        df = pd.read_excel(f, sheet_name="dati epidemiologici")
+    for data in date_reports:
+        df = df_età_epid.loc[data]
         df = df[df["età"] == età]
 
         non_vacc_labels = ["casi non vaccinati",
@@ -127,7 +125,7 @@ def ricava_andamenti_età(files, età, colonna, incidenza_mensile):
         if incidenza_mensile is True:
             # calcola incidenza mensile ogni
             # 100.000 abitanti per ciascun gruppo
-            df_pop = pd.read_excel(f, sheet_name="popolazioni")
+            df_pop = df_età_pop.loc[data]
             df_pop = df_pop[df_pop["età"] == età]
             non_vacc_den_labels = ["casi non vaccinati", "ospedalizzati/ti non vaccinati",
                                    "ospedalizzati/ti non vaccinati", "decessi non vaccinati"]
@@ -163,26 +161,22 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     axes = ax.ravel()
 
     for età in classi_età:
-        ricava_andamenti_età(files,
-                             età,
+        ricava_andamenti_età(età,
                              categorie[0],
                              incidenza_mensile=False).plot(ax=axes[0])
     for età in classi_età:
-        ricava_andamenti_età(files,
-                             età,
+        ricava_andamenti_età(età,
                              categorie[1],
                              incidenza_mensile=False).plot(ax=axes[0],
                                                            linestyle="--")
     add_to_plot_abs(axes[0], titoli[0])
 
     for età in classi_età:
-        ricava_andamenti_età(files,
-                             età,
+        ricava_andamenti_età(età,
                              categorie[0],
                              incidenza_mensile=True).plot(ax=axes[1])
     for età in classi_età:
-        ricava_andamenti_età(files,
-                             età,
+        ricava_andamenti_età(età,
                              categorie[1],
                              incidenza_mensile=True).plot(ax=axes[1],
                                                           linestyle="--")
@@ -209,8 +203,13 @@ if __name__ == "__main__":
     # Imposta stile grafici
     apply_plot_treatment()
 
-    # Lista gli xslx
-    files = list_xlsx()
+    # Recupera dati età
+    df_età = pd.read_excel("../dati/dati_ISS_età.xlsx",
+                           sheet_name=["dati epidemiologici", "popolazioni"],
+                           index_col="data", parse_dates=["data"])
+    df_età_epid = df_età["dati epidemiologici"]
+    df_età_pop = df_età["popolazioni"]
+    date_reports = df_età_epid.index.unique()
 
     ratio_x_ticks, ratio_x_labels = get_xticks_labels(full=True)
 
