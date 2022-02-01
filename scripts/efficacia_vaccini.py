@@ -80,7 +80,7 @@ def add_to_plot(ax):
 def plot_tassi(show=False):
     """ Tassi di contagio """
 
-    fig, axes2 = plt.subplots(nrows=2, ncols=2, figsize=(7, 7))
+    fig, axes2 = plt.subplots(nrows=2, ncols=2, figsize=(9, 9))
 
     # Unpack all the axes subplots
     axes = axes2.ravel()
@@ -138,7 +138,7 @@ def plot_efficacia(show=False):
 def plot_riassunto(show=False):
     """ Grafico riassuntivo """
 
-    fig, ax = plt.subplots(nrows=2, ncols=4, figsize=(15, 7.5))
+    fig, ax = plt.subplots(nrows=2, ncols=4, figsize=(18, 9))
 
     # Unpack all the axes subplots
     axes = ax.ravel()
