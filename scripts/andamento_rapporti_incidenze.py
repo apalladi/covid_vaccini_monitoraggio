@@ -209,7 +209,9 @@ if __name__ == "__main__":
                            index_col="data", parse_dates=["data"])
     df_età_epid = df_età["dati epidemiologici"]
     df_età_pop = df_età["popolazioni"]
-    date_reports = df_età_epid.index.unique()
+    df_epid = df_età_epid[df_età_epid.index > "2021-07-28"]
+    df_pop = df_età_pop[df_età_pop.index > "2021-07-28"]
+    date_reports = df_epid.index.unique()
 
     ratio_x_ticks, ratio_x_labels = get_xticks_labels(full=True)
 
