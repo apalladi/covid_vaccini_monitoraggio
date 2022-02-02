@@ -6,7 +6,7 @@ def compute_incidence(df_epid, df_pop):
     # ricava i tassi dividendo per la popolazione vaccinata e non vaccinata
     tassi = [df_epid["casi non vaccinati"]/df_pop["casi non vaccinati"],
              df_epid["casi vaccinati > 4-6 mesi"]/df_pop["casi vaccinati > 4-6 mesi"],
-             df_epid["casi vaccinati > 4-6 mesi"]/df_pop["casi vaccinati < 4-6 mesi"],
+             df_epid["casi vaccinati < 4-6 mesi"]/df_pop["casi vaccinati < 4-6 mesi"],
              df_epid["casi booster"]/df_pop["casi booster"],
              df_epid["casi vaccinati completo"]/df_pop["casi vaccinati completo"],
              df_epid["ospedalizzati non vaccinati"]/df_pop["ospedalizzati/ti non vaccinati"],
