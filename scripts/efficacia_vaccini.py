@@ -277,8 +277,7 @@ if __name__ == "__main__":
     apply_plot_treatment()
 
     # Recupera dati età
-    df_età = pd.read_excel("../dati/dati_ISS_età.xlsx",
-                           sheet_name=["dati epidemiologici", "popolazioni"],
+    df_età = pd.read_excel("../dati/dati_ISS_età.xlsx", sheet_name=None,
                            index_col="data", parse_dates=["data"])
     df_età_epid = df_età["dati epidemiologici"]
     df_età_pop = df_età["popolazioni"]

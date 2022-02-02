@@ -247,11 +247,10 @@ def get_data_from_report(force=False):
     Use force=True to skip checks and force data extraction"""
 
     # Read the csv to update from the repo
-    df_0 = pd.read_excel("dati_ISS_complessivi.xlsx",
-                         sheet_name="dati epidemiologici",
-                         parse_dates=["data"],
-                         index_col="data")
-    df_1 = pd.read_excel("dati_ISS_complessivi.xlsx", sheet_name="popolazioni", parse_dates=["data"], index_col="data")
+    df_complessivo = pd.read_excel("dati_ISS_complessivi.xlsx", sheet_name=None,
+                                   index_col="data", parse_dates=["data"])
+    df_0 = df_complessivo["dati epidemiologici"]
+    df_1 = df_complessivo["popolazioni"]
 
     # If table is already up-to-date stop the script
     if rep_date in df_0.index and not force:
@@ -287,7 +286,7 @@ def get_data_from_report(force=False):
     df_pop_età = add_index_cols(df_pop_età, df_1.columns)
 
     # Add the two df to dati_ISS_età.xlsx
-    df_età = pd.read_excel("dati_ISS_età.xlsx", sheet_name=["dati epidemiologici", "popolazioni"],
+    df_età = pd.read_excel("dati_ISS_età.xlsx", sheet_name=None,
                            index_col="data", parse_dates=["data"])
     df_epid_età = pd.concat((df_epid_età, df_età["dati epidemiologici"]))
     df_pop_età = pd.concat((df_pop_età, df_età["popolazioni"]))
