@@ -15,22 +15,6 @@ from sklearn.metrics import r2_score
 from custom.plots import apply_plot_treatment, get_xticks_labels, palette
 from custom.watermarks import add_last_updated, add_watermark
 
-paesi_abitanti_eu = {"Austria": 8.917, "Belgium": 11.56, "Bulgaria": 6.927,
-                     "Cyprus": 1.207, "Croatia": 4.047, "Denmark": 5.831,
-                     "Estonia": 1.331, "Finland": 5.531, "France": 67.39,
-                     "Germany": 83.24, "Greece": 10.27, "Ireland": 4.995,
-                     "Italy": 59.55, "Latvia": 1.902, "Lithuania": 2.795,
-                     "Luxembourg": 0.632275, "Malta": 0.525285, "Netherlands": 17.44,
-                     "Poland": 37.95, "Portugal": 10.31, "Czechia": 10.7,
-                     "Romania": 19.29, "Slovakia": 5.549, "Slovenia": 2.1,
-                     "Spain": 47.35, "Sweden": 10.35, "Hungary": 9.75}
-
-paesi_eu_ita = ["Austria", "Belgio", "Bulgaria", "Cipro", "Croazia", "Danimarca",
-                "Estonia", "Finlandia", "Francia", "Germania", "Grecia", "Irlanda",
-                "Italia", "Lettonia", "Lituania", "Lussemburgo", "Malta", "Olanda",
-                "Polonia", "Portogallo", "Repubblica Ceca", "Romania", "Slovacchia",
-                "Slovenia", "Spagna", "Svezia", "Ungheria"]
-
 
 # Importa dati vaccini e dati epidemiologici
 def import_vaccines_data():
@@ -363,6 +347,22 @@ if __name__ == "__main__":
 
     # Imposta stile grafici
     apply_plot_treatment()
+
+    paesi_abitanti_eu = {"Austria": 8.917, "Belgium": 11.56, "Bulgaria": 6.927,
+                         "Cyprus": 1.207, "Croatia": 4.047, "Denmark": 5.831,
+                         "Estonia": 1.331, "Finland": 5.531, "France": 67.39,
+                         "Germany": 83.24, "Greece": 10.27, "Ireland": 4.995,
+                         "Italy": 59.55, "Latvia": 1.902, "Lithuania": 2.795,
+                         "Luxembourg": 0.632275, "Malta": 0.525285, "Netherlands": 17.44,
+                         "Poland": 37.95, "Portugal": 10.31, "Czechia": 10.7,
+                         "Romania": 19.29, "Slovakia": 5.549, "Slovenia": 2.1,
+                         "Spain": 47.35, "Sweden": 10.35, "Hungary": 9.75}
+
+    paesi_eu_ita = ["Austria", "Belgio", "Bulgaria", "Cipro", "Croazia", "Danimarca",
+                    "Estonia", "Finlandia", "Francia", "Germania", "Grecia", "Irlanda",
+                    "Italia", "Lettonia", "Lituania", "Lussemburgo", "Malta", "Olanda",
+                    "Polonia", "Portogallo", "Repubblica Ceca", "Romania", "Slovacchia",
+                    "Slovenia", "Spagna", "Svezia", "Ungheria"]
 
     # importa dati
     df_confirmed, df_deaths, df_recovered = import_epidem_data()

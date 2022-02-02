@@ -8,26 +8,25 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from custom.plots import (apply_plot_treatment, date_from_xlsx_path,
-                          get_yticks_labels, list_xlsx, palette)
+from custom.plots import apply_plot_treatment, get_yticks_labels, palette
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
 
-colori_incidenza = [palette[i] for i in [0, 1, 6]]
+colori_incidenza = [palette[i] for i in [6, 0, 1, 2, 3]]
 
-eventi = [["Casi, non vaccinati", "Casi, vaccinati", "Casi, booster"],
-          ["Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati", "Ospedalizzati, booster"],
-          ["In terapia intensiva, non vaccinati", "In terapia intensiva, vaccinati", "In terapia intensiva, booster"],
-          ["Deceduti, non vaccinati", "Deceduti, vaccinati", "Deceduti, booster"]]
+eventi = [["Casi, non vaccinati", "Casi, vaccinati > 4-6 mesi", "Casi, vaccinati completo", "Casi, booster", "Casi, vaccinati < 4-6 mesi"],
+          ["Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati > 4-6 mesi", "Ospedalizzati, vaccinati completo", "Ospedalizzati, booster", "Ospedalizzati, vaccinati < 4-6 mesi"],
+          ["In terapia intensiva, non vaccinati", "In terapia intensiva, vaccinati > 4-6 mesi", "In terapia intensiva, vaccinati completo", "In terapia intensiva, booster", "In terapia intensiva, vaccinati < 4-6 mesi"],
+          ["Deceduti, non vaccinati", "Deceduti, vaccinati > 4-6 mesi", "Deceduti, vaccinati completo", "Deceduti, booster", "Deceduti, vaccinati < 4-6 mesi"]]
 titoli = ["dei nuovi casi", "degli ospedalizzati", "dei ricoveri in TI", "dei deceduti"]
 
 
 def compute_efficacia():
     """ Calcola efficacia vaccini """
-    eff_contagio = (1 - df_tassi["Casi, vaccinati"]/df_tassi["Casi, non vaccinati"])*100
-    eff_osp = (1 - df_tassi["Ospedalizzati, vaccinati"]/df_tassi["Ospedalizzati, non vaccinati"])*100
-    eff_terint = (1 - df_tassi["In terapia intensiva, vaccinati"]/df_tassi["In terapia intensiva, non vaccinati"])*100
-    eff_decessi = (1 - df_tassi["Deceduti, vaccinati"]/df_tassi["Deceduti, non vaccinati"])*100
+    eff_contagio = (1 - df_tassi["Casi, vaccinati completo"]/df_tassi["Casi, non vaccinati"])*100
+    eff_osp = (1 - df_tassi["Ospedalizzati, vaccinati completo"]/df_tassi["Ospedalizzati, non vaccinati"])*100
+    eff_terint = (1 - df_tassi["In terapia intensiva, vaccinati completo"]/df_tassi["In terapia intensiva, non vaccinati"])*100
+    eff_decessi = (1 - df_tassi["Deceduti, vaccinati completo"]/df_tassi["Deceduti, non vaccinati"])*100
     return eff_contagio, eff_osp, eff_terint, eff_decessi
 
 
@@ -49,8 +48,10 @@ def which_axe(axis):
     axis.set_ylabel("Ogni 100.000 persone per ciascun gruppo")
     axis.set_xlabel("Fascia d'età")
     axis.legend(["Non vaccinati",
+                 "Vaccinati 2 dosi > 4-6 mesi",
                  "Vaccinati 2/3 dosi",
-                 "Vaccinati terza dose"])
+                 "Vaccinati terza dose",
+                 "Vaccinati 2 dosi < 4-6 mesi"])
     axis.grid()
     axis.xaxis.set_tick_params(rotation=0)
 
@@ -79,7 +80,7 @@ def add_to_plot(ax):
 def plot_tassi(show=False):
     """ Tassi di contagio """
 
-    fig, axes2 = plt.subplots(nrows=2, ncols=2, figsize=(7, 7))
+    fig, axes2 = plt.subplots(nrows=2, ncols=2, figsize=(9, 9))
 
     # Unpack all the axes subplots
     axes = axes2.ravel()
@@ -137,7 +138,7 @@ def plot_efficacia(show=False):
 def plot_riassunto(show=False):
     """ Grafico riassuntivo """
 
-    fig, ax = plt.subplots(nrows=2, ncols=4, figsize=(15, 7.5))
+    fig, ax = plt.subplots(nrows=2, ncols=4, figsize=(18, 9))
 
     # Unpack all the axes subplots
     axes = ax.ravel()
@@ -178,16 +179,21 @@ def plot_riassunto(show=False):
 def plot_focus_60(show=False):
     """ Focus sugli over 60 """
 
-    df_over60 = df_età.loc[[2, 3], ["terapia intensiva non vaccinati",
-                                    "terapia intensiva vaccinati",
-                                    "decessi non vaccinati",
-                                    "decessi vaccinati"]].sum()
+    df_età.set_index("età", inplace=True)
+    df_pop.set_index("età", inplace=True)
+
+    df_over60 = df_età.loc[["60-79", "80+"],
+                           ["terapia intensiva non vaccinati",
+                            "terapia intensiva vaccinati completo",
+                            "decessi non vaccinati",
+                            "decessi vaccinati completo"]].sum()
     over60_array = np.array(df_over60)
 
-    df_ = df_pop.loc[[2, 3], ["ospedalizzati/ti non vaccinati",
-                                  "ospedalizzati/ti vaccinati",
-                                  "decessi non vaccinati",
-                                  "decessi vaccinati"]].sum()
+    df_ = df_pop.loc[["60-79", "80+"],
+                     ["ospedalizzati/ti non vaccinati",
+                      "ospedalizzati/ti vaccinati completo",
+                      "decessi non vaccinati",
+                      "decessi vaccinati completo"]].sum()
 
     over60_array = np.concatenate((np.array(df_), over60_array))
 
@@ -270,14 +276,17 @@ if __name__ == "__main__":
     # Imposta stile grafici
     apply_plot_treatment()
 
-    # Lista gli xlsx
-    files = list_xlsx()
+    # Recupera dati età
+    df_età = pd.read_excel("../dati/dati_ISS_età.xlsx", sheet_name=None,
+                           index_col="data", parse_dates=["data"])
+    df_età_epid = df_età["dati epidemiologici"]
+    df_età_pop = df_età["popolazioni"]
+    date_reports = df_età_epid.index.unique()
 
-    # File più recente e data
-    last_file = files[-1]
-    csv_date = date_from_xlsx_path(last_file)
-    df_età = pd.read_excel(last_file, sheet_name="dati epidemiologici")
-    df_pop = pd.read_excel(last_file, sheet_name="popolazioni")
+    # Data più recente
+    csv_date = date_reports[0]
+    df_età = df_età_epid.loc[csv_date]
+    df_pop = df_età_pop.loc[csv_date]
 
     start_date, end_date = get_data_labels()
     print(f"Report del {csv_date.date()}",

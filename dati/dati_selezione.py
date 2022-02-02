@@ -133,21 +133,10 @@ def clean_raw_table(sel_df):
     to_exclude = r"\((.*)|[^0-9]"
     df_final = df_raw.replace(to_exclude, "", regex=True).apply(np.int64)
 
-    df_final.columns = ["non vaccinati",
-                        "vaccinati 1 dose",
-                        "vaccinati completo < x mesi",
-                        "vaccinati completo > x mesi",
-                        "vaccinati booster"]
-
-    # Merge immunized columns ("vaccinati completo < x mesi",
-    # "vaccinati completo > x mesi", "vaccinati booster") into one
-    idx = df_final.columns.tolist().index("vaccinati 1 dose")
+    # Merge columns "vaccinati completo > 4-6 mesi", "vaccinati completo < 4-6 mesi",
+    # "vaccinati booster" into "vaccinati completo" (fully immunized + third dose)
     vaccinati_completo = df_final.iloc[:, 2:].sum(axis=1)
-    df_final.insert(idx+1, "vaccinati completo", vaccinati_completo)
-
-    # Drop these columns
-    df_final.drop(["vaccinati completo < x mesi",
-                   "vaccinati completo > x mesi"], axis=1, inplace=True)
+    df_final.insert(len(df_final.columns), "vaccinati completo", vaccinati_completo)
     df_final.reset_index(inplace=True, drop=True)
     return df_final
 
@@ -202,9 +191,10 @@ def add_index_cols(sel_df, columns):
     sel_df: selected dataframe
     columns: columns list
     return: dataframe with index and columns"""
-    sel_df.index = ages
-    sel_df.index.rename("età", inplace=True)
     sel_df.columns = columns
+    sel_df.insert(0, "età", ages)
+    sel_df.index = [rep_date]*len(sel_df)
+    sel_df.index.rename("data", inplace=True)
     return sel_df
 
 
@@ -241,8 +231,6 @@ def get_report(auto=True):
                             for report in reports]))
         # Select report index as input
         rep_idx = input(f"\nChoose report index:\
-                        \nFor oldest reports please use \
-                        the dati_selezione_old.py script!\n\
                         \n\n{reports_dict}\n\n")
         rep_url = reports[int(rep_idx)]
 
@@ -259,11 +247,10 @@ def get_data_from_report(force=False):
     Use force=True to skip checks and force data extraction"""
 
     # Read the csv to update from the repo
-    df_0 = pd.read_excel("dati_ISS_complessivi.xlsx",
-                         sheet_name="dati epidemiologici",
-                         parse_dates=["data"],
-                         index_col="data")
-    df_1 = pd.read_excel("dati_ISS_complessivi.xlsx", sheet_name="popolazioni", parse_dates=["data"], index_col="data")
+    df_complessivo = pd.read_excel("dati_ISS_complessivi.xlsx", sheet_name=None,
+                                   index_col="data", parse_dates=["data"])
+    df_0 = df_complessivo["dati epidemiologici"]
+    df_1 = df_complessivo["popolazioni"]
 
     # If table is already up-to-date stop the script
     if rep_date in df_0.index and not force:
@@ -293,12 +280,17 @@ def get_data_from_report(force=False):
     merge_df_into_xlsx(df_0, df_1)
 
     # Get data by age
-    df_epid_eta, df_pop_eta = extract_data_by_age(clean_tables)
+    df_epid_età, df_pop_età = extract_data_by_age(clean_tables)
     # Add index and columns to the dataframes
-    df_epid_eta = add_index_cols(df_epid_eta, df_0.columns)
-    df_pop_eta = add_index_cols(df_pop_eta, df_1.columns)
-    # Save to xlsx
-    merge_df_into_xlsx(df_epid_eta, df_pop_eta, filename=f"data_iss_età_{rep_date.date()}.xlsx")
+    df_epid_età = add_index_cols(df_epid_età, df_0.columns)
+    df_pop_età = add_index_cols(df_pop_età, df_1.columns)
+
+    # Add the two df to dati_ISS_età.xlsx
+    df_età = pd.read_excel("dati_ISS_età.xlsx", sheet_name=None,
+                           index_col="data", parse_dates=["data"])
+    df_epid_età = pd.concat((df_epid_età, df_età["dati epidemiologici"]))
+    df_pop_età = pd.concat((df_pop_età, df_età["popolazioni"]))
+    merge_df_into_xlsx(df_epid_età, df_pop_età, filename="dati_ISS_età.xlsx")
 
     print("\nDone!")
 

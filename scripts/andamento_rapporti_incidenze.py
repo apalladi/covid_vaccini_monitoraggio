@@ -7,9 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from custom.plots import (apply_plot_treatment, date_from_xlsx_path,
-                          get_xticks_labels, get_yticks_labels, list_xlsx,
-                          palette)
+from custom.plots import (apply_plot_treatment, get_xticks_labels,
+                          get_yticks_labels, palette)
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
 
@@ -27,15 +26,15 @@ def compute_incidence_ratio(category):
 
     result_list = []
 
-    for f in files:
-        df_età = pd.read_excel(f, sheet_name="dati epidemiologici")
-        df_pop = pd.read_excel(f, sheet_name="popolazioni")
-        df_tassi = compute_incidence(df_età, df_pop)
+    for date in np.flip(date_reports):
+        df_epid = df_età_epid.loc[date]
+        df_pop = df_età_pop.loc[date]
+        df_tassi = compute_incidence(df_epid, df_pop)
 
-        r_casi = df_tassi["Casi, non vaccinati"]/(df_tassi["Casi, non vaccinati"] + df_tassi["Casi, vaccinati"])*100
-        r_osp = df_tassi["Ospedalizzati, non vaccinati"]/(df_tassi["Ospedalizzati, non vaccinati"] + df_tassi["Ospedalizzati, vaccinati"])*100
-        r_ti = df_tassi["In terapia intensiva, non vaccinati"]/(df_tassi["In terapia intensiva, non vaccinati"] + df_tassi["In terapia intensiva, vaccinati"])*100
-        r_dec = df_tassi["Deceduti, non vaccinati"]/(df_tassi["Deceduti, non vaccinati"] + df_tassi["Deceduti, vaccinati"])*100
+        r_casi = df_tassi["Casi, non vaccinati"]/(df_tassi["Casi, non vaccinati"] + df_tassi["Casi, vaccinati completo"])*100
+        r_osp = df_tassi["Ospedalizzati, non vaccinati"]/(df_tassi["Ospedalizzati, non vaccinati"] + df_tassi["Ospedalizzati, vaccinati completo"])*100
+        r_ti = df_tassi["In terapia intensiva, non vaccinati"]/(df_tassi["In terapia intensiva, non vaccinati"] + df_tassi["In terapia intensiva, vaccinati completo"])*100
+        r_dec = df_tassi["Deceduti, non vaccinati"]/(df_tassi["Deceduti, non vaccinati"] + df_tassi["Deceduti, vaccinati completo"])*100
         rapporto_fra_tassi = pd.DataFrame(np.transpose([r_casi, r_osp, r_ti, r_dec]))
         rapporto_fra_tassi.columns = ["Casi", "Ospedalizzati", "TI", "Deceduti"]
         rapporto_fra_tassi.index = df_tassi.index
@@ -105,15 +104,14 @@ def plot_rapporti_incidenze(show=False):
         plt.show()
 
 
-def ricava_andamenti_età(files, età, colonna, incidenza_mensile):
+def ricava_andamenti_età(età, colonna, incidenza_mensile):
     """Ricava andamento delle varie incindenze nel tempo,
     divise per fascia d"età e categoria"""
 
-    # loop around the .xlsx files
+    # loop around the reports
     results_date = []
-    for f in files:
-        data = date_from_xlsx_path(f)
-        df = pd.read_excel(f, sheet_name="dati epidemiologici")
+    for data in date_reports:
+        df = df_età_epid.loc[data]
         df = df[df["età"] == età]
 
         non_vacc_labels = ["casi non vaccinati",
@@ -121,18 +119,18 @@ def ricava_andamenti_età(files, età, colonna, incidenza_mensile):
                            "terapia intensiva non vaccinati",
                            "decessi non vaccinati"]
 
-        vacc_labels = ["casi vaccinati", "ospedalizzati vaccinati",
-                       "terapia intensiva vaccinati", "decessi vaccinati"]
+        vacc_labels = ["casi vaccinati completo", "ospedalizzati vaccinati completo",
+                       "terapia intensiva vaccinati completo", "decessi vaccinati completo"]
 
         if incidenza_mensile is True:
             # calcola incidenza mensile ogni
             # 100.000 abitanti per ciascun gruppo
-            df_pop = pd.read_excel(f, sheet_name="popolazioni")
+            df_pop = df_età_pop.loc[data]
             df_pop = df_pop[df_pop["età"] == età]
             non_vacc_den_labels = ["casi non vaccinati", "ospedalizzati/ti non vaccinati",
                                    "ospedalizzati/ti non vaccinati", "decessi non vaccinati"]
-            vacc_den_labels = ["casi vaccinati completo", "ospedalizzati/ti vaccinati",
-                               "ospedalizzati/ti vaccinati", "decessi vaccinati"]
+            vacc_den_labels = ["casi vaccinati completo", "ospedalizzati/ti vaccinati completo",
+                               "ospedalizzati/ti vaccinati completo", "decessi vaccinati completo"]
             df[non_vacc_labels] = df[non_vacc_labels]/df_pop[non_vacc_den_labels].values[0]*10**5
             df[vacc_labels] = df[vacc_labels]/df_pop[vacc_den_labels].values[0]*10**5
         else:
@@ -163,26 +161,22 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     axes = ax.ravel()
 
     for età in classi_età:
-        ricava_andamenti_età(files,
-                             età,
+        ricava_andamenti_età(età,
                              categorie[0],
                              incidenza_mensile=False).plot(ax=axes[0])
     for età in classi_età:
-        ricava_andamenti_età(files,
-                             età,
+        ricava_andamenti_età(età,
                              categorie[1],
                              incidenza_mensile=False).plot(ax=axes[0],
                                                            linestyle="--")
     add_to_plot_abs(axes[0], titoli[0])
 
     for età in classi_età:
-        ricava_andamenti_età(files,
-                             età,
+        ricava_andamenti_età(età,
                              categorie[0],
                              incidenza_mensile=True).plot(ax=axes[1])
     for età in classi_età:
-        ricava_andamenti_età(files,
-                             età,
+        ricava_andamenti_età(età,
                              categorie[1],
                              incidenza_mensile=True).plot(ax=axes[1],
                                                           linestyle="--")
@@ -209,8 +203,14 @@ if __name__ == "__main__":
     # Imposta stile grafici
     apply_plot_treatment()
 
-    # Lista gli xslx
-    files = list_xlsx()
+    # Recupera dati età
+    df_età = pd.read_excel("../dati/dati_ISS_età.xlsx", sheet_name=None,
+                           index_col="data", parse_dates=["data"])
+    df_età_epid = df_età["dati epidemiologici"]
+    df_età_pop = df_età["popolazioni"]
+    df_epid = df_età_epid[df_età_epid.index > "2021-07-28"]
+    df_pop = df_età_pop[df_età_pop.index > "2021-07-28"]
+    date_reports = df_epid.index.unique()
 
     ratio_x_ticks, ratio_x_labels = get_xticks_labels(full=True)
 
@@ -222,31 +222,30 @@ if __name__ == "__main__":
 
     x_ticks, x_labels = get_xticks_labels()
 
-    categorie = pd.read_excel(files[0], sheet_name="dati epidemiologici").columns
     titolo_0 = "%s giornalieri (media 30 giorni)"
     titolo_1 = "Incidenza mensile %s per 100.000 abitanti"
     nome_file = "../risultati/andamento_fasce_età_%s.png"
 
     # casi
-    plot_assoluti_incidenza_età(categorie=[categorie[1], categorie[3]],
+    plot_assoluti_incidenza_età(categorie=["casi non vaccinati", "casi vaccinati completo"],
                                 titoli=[titolo_0 % "Casi",
                                         titolo_1 % "dei casi"],
                                 filename=nome_file % "casi")
 
     # ospedalizzazioni
-    plot_assoluti_incidenza_età(categorie=[categorie[5], categorie[7]],
+    plot_assoluti_incidenza_età(categorie=["ospedalizzati non vaccinati", "ospedalizzati vaccinati completo"],
                                 titoli=[titolo_0 % "Ospedalizzati",
                                         titolo_1 % "degli ospedalizzati"],
                                 filename=nome_file % "ospedalizzati")
 
     # in terapia intensiva
-    plot_assoluti_incidenza_età(categorie=[categorie[9], categorie[11]],
+    plot_assoluti_incidenza_età(categorie=["terapia intensiva non vaccinati", "terapia intensiva vaccinati completo"],
                                 titoli=[titolo_0 % "Ricoverati in TI",
                                         titolo_1 % "dei ricoverati in TI"],
                                 filename=nome_file % "ricoveratiTI")
 
     # decessi
-    plot_assoluti_incidenza_età(categorie=[categorie[13], categorie[15]],
+    plot_assoluti_incidenza_età(categorie=["decessi non vaccinati", "decessi vaccinati completo"],
                                 titoli=[titolo_0 % "Decessi",
                                         titolo_1 % "dei decessi"],
                                 filename=nome_file % "decessi")
