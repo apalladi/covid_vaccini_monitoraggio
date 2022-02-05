@@ -89,6 +89,8 @@ def plot_tassi(show=False):
         df_tassi[evento].plot(ax=axes[i], kind="bar")
         axes[i].set_title("Incidenza mensile " + titoli[i])
         which_axe(axes[i])
+    
+    fig.suptitle(plots_suptitle)
 
     # Add watermarks
     add_watermark(fig)
@@ -121,6 +123,8 @@ def plot_efficacia(show=False):
     axes[3].bar(eff_decessi.index, eff_decessi, color="black", width=0.5)
     axes[3].set_title("Efficacia contro il decesso")
     add_to_plot(axes[3])
+
+    fig.suptitle(plots_suptitle)
 
     # Add watermarks
     add_watermark(fig)
@@ -164,6 +168,8 @@ def plot_riassunto(show=False):
     axes[7].set_title("Efficacia contro il decesso")
     which_axe_bar(axes[7])
 
+    fig.suptitle(plots_suptitle)
+
     # add watermarks
     add_watermark(fig)
     add_last_updated(fig, axes[-1])
@@ -204,7 +210,7 @@ def plot_focus_60(show=False):
     x_labels = ["Non vaccinati", "Vaccinati"]
     pop_yticks = 10**6*np.arange(0, 17, 2)
     pop_ylabels = ["0", "2M", "4M", "6M", "8M", "10M", "12M", "14M", "16M"]
-    pop_ytitle = f"Popolazione over 60 \n{start_date} - {end_date}"
+    pop_ytitle = "Popolazione over 60"
 
     axes[0].bar(0, over60_array[0], width=0.5, color=palette[4])
     axes[0].bar(1, over60_array[1], width=0.5, color=palette[5])
@@ -219,7 +225,7 @@ def plot_focus_60(show=False):
     axes[1].bar(1, over60_array[5], width=0.5, color=palette[5])
     axes[1].set_xticks(x_ticks)
     axes[1].set_xticklabels(x_labels)
-    axes[1].set_title(f"In terapia intensiva \n{start_date} - {end_date}")
+    axes[1].set_title("In terapia intensiva")
     axes[1].grid()
 
     axes[2].bar(0, over60_array[2], width=0.5, color=palette[4])
@@ -235,8 +241,10 @@ def plot_focus_60(show=False):
     axes[3].bar(1, over60_array[7], width=0.5, color=palette[5])
     axes[3].set_xticks(x_ticks)
     axes[3].set_xticklabels(x_labels)
-    axes[3].set_title(f"Deceduti \n{start_date} - {end_date}")
+    axes[3].set_title("Deceduti")
     axes[3].grid()
+
+    fig.suptitle(plots_suptitle)
 
     # Add watermarks
     add_watermark(fig)
@@ -292,6 +300,8 @@ if __name__ == "__main__":
     print(f"Report del {csv_date.date()}",
           "\nI dati si riferiscono ai 30 giorni precedenti.\n"
           f"{start_date} - {end_date}")
+
+    plots_suptitle = f"Report del {csv_date.date()}\n{start_date} - {end_date}"
 
     # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
     df_tassi = compute_incidence(df_età, df_pop)

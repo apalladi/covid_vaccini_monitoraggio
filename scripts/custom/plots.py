@@ -52,7 +52,7 @@ def get_xticks_labels(reports_dates=None, full=False):
 def get_yticks_labels(data):
     # Ricava labels y in base al valore minimo
     # della serie di dati considerata
-    ymin = round(data.min()-5, -1)
+    ymin = round(data.min()-10, -1)
     yticks = np.arange(ymin, 101, 10)
     ylabels = [f"{tick:.0f}%" for tick in yticks]
     return ymin, yticks, ylabels
