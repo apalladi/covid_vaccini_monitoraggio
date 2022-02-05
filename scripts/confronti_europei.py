@@ -20,7 +20,7 @@ from custom.watermarks import add_last_updated, add_watermark
 def import_vaccines_data():
     """ Recupera dati sui vaccini da Our World in Data"""
 
-    url = "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.csv"  
+    url = "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.csv"
     df_vacc = pd.read_csv(url)
     df_vacc = df_vacc.fillna(method="ffill")
     return df_vacc
@@ -257,15 +257,22 @@ def plot_correlazione_vaccini_decessi(tw=30, show=False):
     fig, ax = plt.subplots(figsize=(13, 8))
 
     # scatter plot
-    # genera lista di colori e dimensioni
-    colors = plt.cm.nipy_spectral(np.linspace(0, 1, len(paesi_eu_ita)))
-    volume = 3.5*len(paesi_eu_ita)
+    volume = dec_res.max()*0.050
 
-    ax.scatter(vacc_res, dec_res, c=colors, alpha=0.50,
-               edgecolor="black", linewidth=0.5, s=volume)
+    # genera lista di colori
+    num_colors = len(paesi_abitanti_eu)
+    cm = plt.get_cmap("GnBu_r")
+    ax.set_prop_cycle("color", [cm(i/num_colors) for i in range(num_colors)])
+
+    # ordina valori in un df per far si che seguano la sequenza dei colori
+    df_ = pd.DataFrame({"% vaccini": vacc_res, "decessi": dec_res})
+    df_.sort_values(by="% vaccini", inplace=True)
+    for i in range(num_colors):
+        ax.scatter(df_["% vaccini"].values[i], df_["decessi"].values[i],
+                   alpha=0.50, edgecolor="black", linewidth=0.75, s=volume)
 
     texts = [ax.text(vacc_res[i], dec_res[i], paesi_eu_ita[i])
-             for i in range(len(paesi_eu_ita))]
+             for i in range(num_colors)]
 
     # fix text overlap
     adjust_text(texts,
@@ -273,20 +280,16 @@ def plot_correlazione_vaccini_decessi(tw=30, show=False):
                 arrowprops=dict(arrowstyle="-", linewidth=.75))
 
     # fit plot
-    ax.plot(x_grid, y_grid, linestyle="--", c=palette[1], label=f"Regressione lineare, R$^2$ score={score}")
+    ax.plot(x_grid, y_grid, linestyle="--", c=palette[0], linewidth=1.75,
+            alpha=0.65, label=f"Regressione lineare, R$^2$ score={score}")
 
     ax.set_ylim(-70, )
     ax.set_xlim(0, 100)
 
-    f_name = "vaccini_decessi_EU"
-    title = f"Frazione di vaccinati vs decessi nei 27 Paesi dell'UE negli ultimi {tw} giorni"
-    if tw > 30:
-        date_start = date.today() - timedelta(days=tw)
-        start_day = date_start.strftime("%d-%m-%Y")
-        title = f"Frazione di vaccinati vs decessi nei 27 Paesi dell'UE dal {start_day}"
-        start_day.replace("-", "_")
-        f_name += f"_{start_day}"
+    date_start = date.today() - timedelta(days=tw)
+    start_day = date_start.strftime("%d-%m-%Y")
 
+    title = f"Frazione di vaccinati vs decessi nei 27 Paesi dell'UE dal {start_day}"
     title += f"\nCoefficiente di correlazione = {corr_coeff}"
     ax.set_title(title, fontsize=15)
     ax.set_xlabel("Frazione media di vaccinati con almeno 1 dose", fontsize=15)
@@ -329,7 +332,7 @@ def plot_correlazione_vaccini_decessi(tw=30, show=False):
              rotation="vertical")
     add_last_updated(fig, ax, dati="JHU, Our World in Data", y=-0.05)
 
-    fig.savefig(f"../risultati/{f_name}.png",
+    fig.savefig("../risultati/vaccini_decessi_EU.png",
                 dpi=300,
                 bbox_inches="tight")
 
@@ -370,10 +373,6 @@ if __name__ == "__main__":
 
     # plot dati selezione paesi
     plot_selection()
-
-    # plot correlazione vaccini vs. decessi per paesi eu
-    # negli ultimi 30 giorni
-    plot_correlazione_vaccini_decessi()
 
     # plot correlazione vaccini vs. decessi per paesi eu
     # dal 1° settembre 2021
