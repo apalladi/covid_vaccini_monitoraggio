@@ -89,7 +89,7 @@ def plot_tassi(show=False):
         df_tassi[evento].plot(ax=axes[i], kind="bar")
         axes[i].set_title("Incidenza mensile " + titoli[i])
         which_axe(axes[i])
-    
+
     fig.suptitle(plots_suptitle)
 
     # Add watermarks
@@ -301,7 +301,8 @@ if __name__ == "__main__":
           "\nI dati si riferiscono ai 30 giorni precedenti.\n"
           f"{start_date} - {end_date}")
 
-    plots_suptitle = f"Report del {csv_date.date()}\n{start_date} - {end_date}"
+    report_date = csv_date.strftime("%d/%m/%Y")
+    plots_suptitle = f"Report del {report_date}\n{start_date} - {end_date}"
 
     # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
     df_tassi = compute_incidence(df_età, df_pop)
