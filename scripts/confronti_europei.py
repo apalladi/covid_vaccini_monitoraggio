@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import locale
-from datetime import date, timedelta
+from datetime import date
 from os import chdir, path
 
 import matplotlib as mpl
@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from adjustText import adjust_text
+from matplotlib.ticker import PercentFormatter
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from sklearn.metrics import r2_score
 
@@ -26,7 +27,7 @@ def import_vaccines_data():
     return df_vacc
 
 
-def get_vaccine_data(country, df_vacc):
+def get_vaccine_data(country):
     """ Recupera dati vaccini per paese """
 
     df_vacc_country = df_vacc[df_vacc["location"] == country].iloc[2:, :]
@@ -77,18 +78,12 @@ def get_epidemic_data(country, df_confirmed, df_deaths, df_recovered):
     return df_epidemic
 
 
-def get_vaccine_data_last(country, time_window=30, t0=-1, fully=True, last_day=False):
-    """ Recupera dati sulla frazione di vaccinati
-        medi negli ultimi 30 giorni """
-
-    df_vacc_country = df_vacc[df_vacc["location"] == country].iloc[2:, :]
-    vacc_fully = np.array(df_vacc_country["people_fully_vaccinated_per_hundred"
+def get_frac_vacc(country, days_ago=30, fully=False):
+    """ Recupera dati sulla frazione di vaccinati """
+    frac_vacc = get_vaccine_data(country)["% fully vaccinated"
                                           if fully else
-                                          "people_vaccinated_per_hundred"])
-    vacc_ultimi_Ngiorni = np.mean(vacc_fully[t0-(time_window+1):t0
-                                             if last_day
-                                             else -1])
-    return vacc_ultimi_Ngiorni
+                                          "% vaccinated with 1 dose"]
+    return frac_vacc.iloc[-days_ago]
 
 
 def get_deaths(country, time_window=30, t0=-1):
@@ -98,36 +93,40 @@ def get_deaths(country, time_window=30, t0=-1):
     return decessi_ultimi_Ngiorni
 
 
-def compute_vaccini_decessi_eu(tw, fully=True, last_day=False):
+def compute_vaccini_decessi_eu(time, fully=True):
     """ calcola vaccini e decessi nei 27 Paesi europei """
 
     dec_res_2021 = []
     vacc_res_2021 = []
     t0 = -1
     for p, abitanti in paesi_abitanti_eu.items():
-        vacc_res_2021.append(get_vaccine_data_last(p,
-                                                   time_window=tw,
-                                                   fully=fully,
-                                                   last_day=last_day))
-        dec_res_2021.append(get_deaths(p, time_window=tw, t0=t0)/abitanti)
+        vacc_res_2021.append(get_frac_vacc(p,
+                                           days_ago=time,
+                                           fully=fully))
+        dec_res_2021.append(get_deaths(p, time_window=time, t0=t0)/abitanti)
     dec_res_2021 = np.array(dec_res_2021)
     return vacc_res_2021, dec_res_2021
 
 
-def linear_model(x, coeff_fit):
-    y = coeff_fit[1] + coeff_fit[0]*x
+def stat_model(x, coeff_fit):
+    if len(coeff_fit) == 2:
+        y = coeff_fit[1] + coeff_fit[0]*x
+    elif len(coeff_fit) == 3:
+        y = coeff_fit[2] + coeff_fit[1]*x + coeff_fit[0]*x**2
+    else:
+        raise ValueError("Fit not supported")
     return y
 
 
-def linear_fit(vacc_res_2021, dec_res_2021):
-    """ fit lineare """
+def fit_model(vacc_res_2021, dec_res_2021, degree=1):
+    """ fit """
 
-    coeff_fit = np.polyfit(vacc_res_2021, dec_res_2021, 1)
+    coeff_fit = np.polyfit(vacc_res_2021, dec_res_2021, degree)
     x_grid = np.arange(0, 100, 1)
-    y_grid = [linear_model(v, coeff_fit) for v in x_grid]
+    y_grid = [stat_model(v, coeff_fit) for v in x_grid]
 
     # calcola R2 score
-    y_pred = [linear_model(v, coeff_fit) for v in vacc_res_2021]
+    y_pred = [stat_model(v, coeff_fit) for v in vacc_res_2021]
     y_test = dec_res_2021
 
     score = round(r2_score(y_test, y_pred), 2)
@@ -143,7 +142,7 @@ def corr_window(tw):
     dec_res = []
     vacc_res = []
     for p, abitanti in paesi_abitanti_eu.items():
-        vacc_res.append(get_vaccine_data_last(p, fully=True, last_day=True))
+        vacc_res.append(get_frac_vacc(p, fully=True))
         dec_res.append(get_deaths(p, time_window=tw)/abitanti)
     corr_tw = np.corrcoef(vacc_res, dec_res)[0, 1]
     return corr_tw
@@ -160,8 +159,10 @@ def compute_max_correlation():
 
 
 def map_vaccinated(f_vacc):
-    if f_vacc >= 20 and f_vacc < 40:
-        return "20-40%"
+    if f_vacc >= 0 and f_vacc < 20:
+        return "0%-20%"
+    elif f_vacc >=20 and f_vacc < 40:
+        return "20%-40%"
     elif f_vacc >= 40 and f_vacc < 60:
         return "40-60%"
     elif f_vacc >= 60 and f_vacc < 80:
@@ -205,7 +206,7 @@ def plot_selection(show=False):
         values.plot(ax=axes[0], label=label_nazioni[i])
 
     for i in range(len(nomi_nazioni)):
-        df_country = get_vaccine_data(nomi_nazioni[i], df_vacc)
+        df_country = get_vaccine_data(nomi_nazioni[i])
         mask_ = df_country.index >= "2021-06-01"
         df_country = df_country.loc[mask_, :]
         df_country["% fully vaccinated"].plot(ax=axes[1],
@@ -245,14 +246,8 @@ def plot_selection(show=False):
 
 
 @mpl.rc_context({"lines.marker": None})
-def plot_correlazione_vaccini_decessi(tw=30, show=False):
+def plot_corr_vaccini_decessi(show=False):
     """ scatter plot correlazione vaccini e decessi """
-
-    # recupera dati per la finestra temporale selezionata
-    vacc_res, dec_res = compute_vaccini_decessi_eu(tw, fully=False, last_day=False)
-    x_grid, y_grid, score = linear_fit(vacc_res, dec_res)
-    # calcola coefficiente di correlazione (pearson)
-    corr_coeff = round(np.corrcoef(vacc_res, dec_res)[0, 1], 2)
 
     fig, ax = plt.subplots(figsize=(13, 8))
 
@@ -264,9 +259,6 @@ def plot_correlazione_vaccini_decessi(tw=30, show=False):
     cm = plt.get_cmap("GnBu_r")
     ax.set_prop_cycle("color", [cm(i/num_colors) for i in range(num_colors)])
 
-    # ordina valori in un df per far si che seguano la sequenza dei colori
-    df_ = pd.DataFrame({"% vaccini": vacc_res, "decessi": dec_res})
-    df_.sort_values(by="% vaccini", inplace=True)
     for i in range(num_colors):
         ax.scatter(df_["% vaccini"].values[i], df_["decessi"].values[i],
                    alpha=0.50, edgecolor="black", linewidth=0.75, s=volume)
@@ -279,20 +271,25 @@ def plot_correlazione_vaccini_decessi(tw=30, show=False):
                 expand_text=(1.20, 1.35),
                 arrowprops=dict(arrowstyle="-", linewidth=.75))
 
-    # fit plot
-    ax.plot(x_grid, y_grid, linestyle="--", c=palette[0], linewidth=1.75,
-            alpha=0.65, label=f"Regressione lineare, R$^2$ score={score}")
+    # linear fit
+    x_grid, y_grid, score = fit_model(vacc_res, dec_res)
+    ax.plot(x_grid, y_grid, linestyle="--", c=palette[0],
+            label=f"Fit lineare, R$^2$ score={score}")
+
+    # parabolic fit
+    x_grid_p, y_grid_p, score_p = fit_model(vacc_res, dec_res, degree=2)
+    ax.plot(x_grid_p, y_grid_p, linestyle="--",
+            c=palette[2], label=f"Fit parabolico, R$^2$ score={score_p}")
+
+    corr_coeff = round(np.corrcoef(vacc_res, dec_res)[0, 1], 2)
 
     ax.set_ylim(-70, )
     ax.set_xlim(0, 100)
 
-    date_start = date.today() - timedelta(days=tw)
-    start_day = date_start.strftime("%d-%m-%Y")
-
-    title = f"Frazione di vaccinati vs decessi nei 27 Paesi dell'UE dal {start_day}"
-    title += f"\nCoefficiente di correlazione = {corr_coeff}"
+    title = f"Frazione di vaccinati vs decessi nei 27 Paesi dell'UE dal 22/09/2021\n\
+        Coefficiente di correlazione = {corr_coeff}"
     ax.set_title(title, fontsize=15)
-    ax.set_xlabel("Frazione media di vaccinati con almeno 1 dose", fontsize=15)
+    ax.set_xlabel("Frazione media di vaccinati con almeno 1 dose al 22/09/2021", fontsize=15)
     ax.set_ylabel("Decessi per milione di abitanti", fontsize=15)
     ax.set_xticks(np.arange(0, 101, 20), ["0%", "20%", "40%", "60%", "80%", "100%"])
     ax.grid()
@@ -340,6 +337,57 @@ def plot_correlazione_vaccini_decessi(tw=30, show=False):
         plt.show()
 
 
+def which_axe(axis, step=10):
+    axis.set_yticklabels([])
+    start, end = axis.get_xlim()
+    axis.xaxis.set_ticks(np.arange(start, end, step))
+    x_ticks = axis.xaxis.get_major_ticks()
+    x_ticks[0].label1.set_visible(False)
+    x_ticks[-1].label1.set_visible(False)
+    ymin, ymax = axis.get_ylim()
+    axis.axvline(0.1, ymin=ymin, ymax=ymax, color="black", linewidth=0.5)
+    axis.grid()
+
+
+def plot_corr_vaccini_decessi_div(show=False):
+    """ tornado plot vaccini vs decessi """
+    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 5), sharey=True)
+
+    # Unpack all the axes subplots
+    axes = ax.ravel()
+
+    axes[0].barh(df_.index, df_["% vaccini"], facecolor=palette[5])
+    axes[0].set_xlim(0, 101)
+    axes[0].xaxis.set_major_formatter(PercentFormatter())
+    axes[0].set_title("Frazione di vaccinati", color=palette[5], size=10)
+    axes[0].set_xlabel("Frazione media di vaccinati con almeno 1 dose al 22/09/2021")
+    which_axe(axes[0])
+    axes[0].invert_xaxis()
+
+    for country in df_.index:
+        axes[0].text(x=1.0, y=country, color="white",
+                     va="center", ha="right", s=country,
+                     fontdict=dict(fontweight="bold", size=6))
+
+    axes[1].barh(df_.index, df_["decessi"], facecolor=palette[4])
+    axes[1].set_title("Decessi per milione di abitanti", color=palette[4], size=10)
+    axes[1].set_xlabel("Decessi per milione di abitanti dal 22/09/2021")
+
+    which_axe(axes[1], step=250)
+
+    title = "Frazione di vaccinati vs decessi nei 27 Paesi dell'UE dal 22/09/2021"
+    fig.suptitle(title)
+
+    # Add watermarks
+    add_watermark(fig)
+    add_last_updated(fig, axes[-1], dati="JHU, Our World in Data", y=-0.030)
+
+    fig.subplots_adjust(wspace=0, hspace=0)
+    fig.savefig("../risultati/vaccini_decessi_EU_div.png", dpi=300, bbox_inches="tight")
+    if show:
+        plt.show()
+
+
 if __name__ == "__main__":
     # Set work directory for the script
     scriptpath = path.dirname(path.realpath(__file__))
@@ -375,6 +423,17 @@ if __name__ == "__main__":
     plot_selection()
 
     # plot correlazione vaccini vs. decessi per paesi eu
-    # dal 1° settembre 2021
-    window = abs((date.today() - date(2021, 9, 1)).days)
-    plot_correlazione_vaccini_decessi(tw=window)
+    # da inizio autunno (22 settembre 2021)
+    window = abs((date.today() - date(2021, 9, 22)).days)
+
+    # recupera dati per la finestra temporale selezionata
+    vacc_res, dec_res = compute_vaccini_decessi_eu(window, fully=False)
+
+    # ordina valori in un df per far si che seguano la sequenza dei colori
+    df_ = pd.DataFrame({"% vaccini": vacc_res, "decessi": dec_res})
+    df_.index = paesi_eu_ita
+    df_.sort_values(by="% vaccini", inplace=True)
+
+    # plot correlazione vaccini vs. decessi per paesi eu dal 1° settembre 2021
+    plot_corr_vaccini_decessi()
+    plot_corr_vaccini_decessi_div()
