@@ -135,34 +135,11 @@ def fit_model(vacc_res_2021, dec_res_2021, degree=1):
     return x_grid, y_grid, score
 
 
-def corr_window(tw):
-    """ Recupera dati decessi e vaccini per la finestra
-        temporale e i paesi selezionati """
-
-    dec_res = []
-    vacc_res = []
-    for p, abitanti in paesi_abitanti_eu.items():
-        vacc_res.append(get_frac_vacc(p, fully=True))
-        dec_res.append(get_deaths(p, time_window=tw)/abitanti)
-    corr_tw = np.corrcoef(vacc_res, dec_res)[0, 1]
-    return corr_tw
-
-
-def compute_max_correlation():
-    """ calcola la finestra temporale in cui si ottiene
-        la massima correlazione """
-
-    tw_grid = np.arange(7, 300, 5)
-    corr_grid = [corr_window(tw) for tw in tw_grid]
-    ideal_window = tw_grid[np.argmin(corr_grid)]
-    return ideal_window
-
-
 def map_vaccinated(f_vacc):
     if f_vacc >= 0 and f_vacc < 20:
-        return "0%-20%"
-    elif f_vacc >=20 and f_vacc < 40:
-        return "20%-40%"
+        return "0-20%"
+    elif f_vacc >= 20 and f_vacc < 40:
+        return "20-40%"
     elif f_vacc >= 40 and f_vacc < 60:
         return "40-60%"
     elif f_vacc >= 60 and f_vacc < 80:
