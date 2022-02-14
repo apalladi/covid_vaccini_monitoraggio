@@ -6,9 +6,9 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from custom.plots import (apply_plot_treatment, get_df_complessivo,
-                          get_xticks_labels, palette)
-from custom.preprocessing_dataframe import compute_incidence
+from custom.plots import apply_plot_treatment, get_xticks_labels, palette
+from custom.preprocessing_dataframe import (compute_incidence,
+                                            get_df_complessivo)
 from custom.watermarks import add_last_updated, add_watermark
 
 colori_incidenza = [palette[i] for i in [4, 1, 5]]

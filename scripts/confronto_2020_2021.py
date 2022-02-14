@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import locale
+from calendar import monthrange
+from datetime import timedelta
 from os import chdir, path
 
 import matplotlib as mpl
@@ -6,8 +9,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from custom.plots import apply_plot_treatment, get_df_complessivo
-from custom.preprocessing_dataframe import compute_incidence, date_parser
+from custom.plots import apply_plot_treatment, palette
+from custom.preprocessing_dataframe import (compute_incidence,
+                                            get_df_complessivo)
 from custom.watermarks import add_last_updated, add_watermark
 
 
@@ -19,14 +23,13 @@ def import_data():
     url = "https://github.com/pcm-dpc/COVID-19/raw/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv"
     df_IT = pd.read_csv(url,
                         parse_dates=["data"],
-                        date_parser=date_parser,
                         index_col="data")
     df_epid, df_pop = get_df_complessivo()
 
     # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
     df_tassi = compute_incidence(df_epid, df_pop)
 
-    df_tassi.index = pd.to_datetime(df_epid["data"], format="%Y/%m/%d")
+    df_tassi.index = pd.to_datetime(df_epid["data"])
     df_tassi = df_tassi.iloc[::-1]
     return df_IT, df_epid, df_tassi
 
@@ -37,15 +40,23 @@ def get_epidemic_data_2020():
     # Casi e decessi 2020
     abitanti_over12 = 540*10**5
 
-    df_2020 = df_IT.loc["2020-07-28":"2021-02-28"]
+    df_2020 = df_IT.loc["2020-06-15":end_date]
     df_2020 = df_2020[["totale_casi",
                        "deceduti"]].diff().rolling(window=30).mean()
     df_2020 = df_2020*30/(abitanti_over12/(10**5))
     df_2020.columns = ["casi", "decessi"]
 
+    # Genera ticks e labels prima di plottare
+    to_labels = sorted(set([x.strftime("%Y-%m-01") for x in df_2020[30:].index]))
+    x_labels = [pd.to_datetime(t).strftime("%b")
+                if i != 0 else "" for i, t in enumerate(to_labels)]
+    x_labels = list(map(str.title, x_labels))
+    x_ticks = np.arange(0, len(x_labels)*30, 30)
+
     casi_2020 = np.array(df_2020["casi"])[30:]
     dec_2020 = np.array(df_2020["decessi"])[30:]
-    return casi_2020, dec_2020
+
+    return casi_2020, dec_2020, x_ticks, x_labels
 
 
 def get_epidemic_data_2021():
@@ -65,7 +76,7 @@ def which_axe(ax, title="Casi"):
     ax.set_title(f"{title} mensili (media mobile 30 gg)")
     ax.set_ylabel("Ogni 100.000 persone per ciascun gruppo")
     ax.legend(loc="upper left")
-    ax.set_xlim(0, )
+    ax.margins(x=0)
     ax.grid()
 
 
@@ -81,15 +92,21 @@ def plot_confronto_2020_2021(show=False):
     fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 4))
     axes = ax.ravel()
 
-    axes[0].plot(xgrid_2020, casi_2020, label="2020-21")
+    axes[0].plot(xgrid_2020[:xgrid_2021[-1]], casi_2020[:xgrid_2021[-1]], label="2020-21")
+    axes[0].plot(xgrid_2020[xgrid_2021[-2]:], casi_2020[xgrid_2021[-2]:],
+                 label="2020-21", color=palette[0], alpha=0.25)
     axes[0].plot(xgrid_2021, casi_2021_vacc, label="2021-22 (vaccinati)")
     axes[0].plot(xgrid_2021, casi_2021_novacc, label="2021-22 (non vaccinati)")
     which_axe(axes[0])
 
-    axes[1].plot(xgrid_2020, dec_2020, label="2020-21")
+    axes[1].plot(xgrid_2020[:xgrid_2021[-1]], dec_2020[:xgrid_2021[-1]], label="2020-21")
+    axes[1].plot(xgrid_2020[xgrid_2021[-2]:], dec_2020[xgrid_2021[-2]:],
+                 label="2020-21", color=palette[0], alpha=0.25)
     axes[1].plot(xgrid_2021, dec_2021_vacc, label="2021-22 (vaccinati)")
     axes[1].plot(xgrid_2021, dec_2021_novacc, label="2021-22 (non vaccinati)")
     which_axe(axes[1], title="Decessi")
+
+    fig.suptitle("Confronto 2020-2021 vs stesso periodo 2021-22")
 
     # Add watermarks
     add_watermark(fig)
@@ -99,7 +116,7 @@ def plot_confronto_2020_2021(show=False):
     fig.savefig("../risultati/confrontro_2020_2021.png",
                 dpi=300,
                 bbox_inches="tight")
-    if show is True:
+    if show:
         plt.show()
 
 
@@ -108,15 +125,22 @@ if __name__ == "__main__":
     scriptpath = path.dirname(path.realpath(__file__))
     chdir(scriptpath)
 
+    # Set locale to "it" to parse the month correctly
+    locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
+
     # Imposta stile grafici
     apply_plot_treatment()
 
     df_IT, df_epid, df_tassi = import_data()
-    casi_2020, dec_2020 = get_epidemic_data_2020()
-    casi_2021_vacc, casi_2021_novacc, dec_2021_vacc, dec_2021_novacc = get_epidemic_data_2021()
 
-    x_ticks = np.arange(15, 230, 30)
-    x_labels = ["Ago", "Set", "Ott", "Nov", "Dic", "Gen", "Feb", "Mar"]
+    # Calcola data fine df 2020-21
+    # E' il primo giorno del mese successivo alla data dell'ultimo report
+    end_date = df_tassi.index[-1].date().replace(year=2021)
+    end_date = end_date.replace(day=monthrange(end_date.year, end_date.month)[1])\
+        + timedelta(days=1)
+
+    casi_2020, dec_2020, x_ticks, x_labels = get_epidemic_data_2020()
+    casi_2021_vacc, casi_2021_novacc, dec_2021_vacc, dec_2021_novacc = get_epidemic_data_2021()
 
     # Plot data
     plot_confronto_2020_2021()

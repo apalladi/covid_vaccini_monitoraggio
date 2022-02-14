@@ -17,16 +17,6 @@ def apply_plot_treatment():
     mpl.rcParams["axes.prop_cycle"] = mpl.cycler(color=palette)
 
 
-def get_df_complessivo():
-    # dati ISS
-    df_complessivo = pd.read_excel("../dati/dati_ISS_complessivi.xlsx", sheet_name=None)
-    df_epid = df_complessivo["dati epidemiologici"]
-    df_pop = df_complessivo["popolazioni"]
-    df_epid = df_epid[df_epid["data"] > "2021-07-28"]
-    df_pop = df_pop[df_pop["data"] > "2021-07-28"]
-    return df_epid, df_pop
-
-
 def get_xticks_labels(reports_dates=None, full=False):
     if reports_dates is None:
         df_assoluti = pd.read_excel("../dati/dati_ISS_complessivi.xlsx", sheet_name="dati epidemiologici")

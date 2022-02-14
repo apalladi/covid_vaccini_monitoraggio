@@ -14,12 +14,6 @@ from custom.watermarks import add_last_updated, add_watermark
 
 colori_incidenza = [palette[i] for i in [6, 0, 1, 2, 3]]
 
-eventi = [["Casi, non vaccinati", "Casi, vaccinati > 4-6 mesi", "Casi, vaccinati completo", "Casi, booster", "Casi, vaccinati < 4-6 mesi"],
-          ["Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati > 4-6 mesi", "Ospedalizzati, vaccinati completo", "Ospedalizzati, booster", "Ospedalizzati, vaccinati < 4-6 mesi"],
-          ["In terapia intensiva, non vaccinati", "In terapia intensiva, vaccinati > 4-6 mesi", "In terapia intensiva, vaccinati completo", "In terapia intensiva, booster", "In terapia intensiva, vaccinati < 4-6 mesi"],
-          ["Deceduti, non vaccinati", "Deceduti, vaccinati > 4-6 mesi", "Deceduti, vaccinati completo", "Deceduti, booster", "Deceduti, vaccinati < 4-6 mesi"]]
-titoli = ["dei nuovi casi", "degli ospedalizzati", "dei ricoveri in TI", "dei deceduti"]
-
 
 def compute_efficacia():
     """ Calcola efficacia vaccini """
@@ -283,6 +277,12 @@ if __name__ == "__main__":
 
     # Imposta stile grafici
     apply_plot_treatment()
+
+    eventi = [["Casi, non vaccinati", "Casi, vaccinati > 4-6 mesi", "Casi, vaccinati completo", "Casi, booster", "Casi, vaccinati < 4-6 mesi"],
+              ["Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati > 4-6 mesi", "Ospedalizzati, vaccinati completo", "Ospedalizzati, booster", "Ospedalizzati, vaccinati < 4-6 mesi"],
+              ["In terapia intensiva, non vaccinati", "In terapia intensiva, vaccinati > 4-6 mesi", "In terapia intensiva, vaccinati completo", "In terapia intensiva, booster", "In terapia intensiva, vaccinati < 4-6 mesi"],
+              ["Deceduti, non vaccinati", "Deceduti, vaccinati > 4-6 mesi", "Deceduti, vaccinati completo", "Deceduti, booster", "Deceduti, vaccinati < 4-6 mesi"]]
+    titoli = ["dei nuovi casi", "degli ospedalizzati", "dei ricoveri in TI", "dei deceduti"]
 
     # Recupera dati età
     df_età = pd.read_excel("../dati/dati_ISS_età.xlsx", sheet_name=None,

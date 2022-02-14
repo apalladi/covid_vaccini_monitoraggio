@@ -12,13 +12,6 @@ from custom.plots import (apply_plot_treatment, get_xticks_labels,
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
 
-classi_età = ["12-39", "40-59", "60-79", "80+"]
-
-shared_legend = ["12-39 non vaccinati", "40-59 non vaccinati",
-                 "60-79 non vaccinati", "80+ non vaccinati",
-                 "12-39 vaccinati", "40-59 vaccinati",
-                 "60-79 vaccinati", "80+ vaccinati"]
-
 
 # Funzioni per il plot
 def compute_incidence_ratio(category):
@@ -188,7 +181,7 @@ def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     fig.tight_layout()
     fig.savefig(filename, dpi=300, bbox_inches="tight")
 
-    if show is True:
+    if show:
         plt.show()
 
 
@@ -202,6 +195,13 @@ if __name__ == "__main__":
 
     # Imposta stile grafici
     apply_plot_treatment()
+
+    classi_età = ["12-39", "40-59", "60-79", "80+"]
+
+    shared_legend = ["12-39 non vaccinati", "40-59 non vaccinati",
+                     "60-79 non vaccinati", "80+ non vaccinati",
+                     "12-39 vaccinati", "40-59 vaccinati",
+                     "60-79 vaccinati", "80+ vaccinati"]
 
     # Recupera dati età
     df_età = pd.read_excel("../dati/dati_ISS_età.xlsx", sheet_name=None,

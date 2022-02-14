@@ -2,6 +2,16 @@ import numpy as np
 import pandas as pd
 
 
+def get_df_complessivo():
+    # dati ISS
+    df_complessivo = pd.read_excel("../dati/dati_ISS_complessivi.xlsx", sheet_name=None)
+    df_epid = df_complessivo["dati epidemiologici"]
+    df_pop = df_complessivo["popolazioni"]
+    df_epid = df_epid[df_epid["data"] > "2021-07-28"]
+    df_pop = df_pop[df_pop["data"] > "2021-07-28"]
+    return df_epid, df_pop
+
+
 def compute_incidence(df_epid, df_pop):
     # ricava i tassi dividendo per la popolazione vaccinata e non vaccinata
     tassi = [df_epid["casi non vaccinati"]/df_pop["casi non vaccinati"],
@@ -37,12 +47,3 @@ def compute_incidence(df_epid, df_pop):
                         "Deceduti, vaccinati < 4-6 mesi", "Deceduti, booster",
                         "Deceduti, vaccinati completo"]
     return df_tassi
-
-
-def date_parser(x):
-    """date_parser(object) -> datetime
-
-    x: dataframe object
-    return: converts argument to datetime"""
-
-    return pd.to_datetime(x, format="%Y/%m/%d")

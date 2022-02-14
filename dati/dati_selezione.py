@@ -122,8 +122,7 @@ def clean_raw_table(sel_df):
     return: extract numerical data from the dataframe"""
 
     # We are interested in the last 5 columns
-    columns_to_keep = sel_df.columns[-5:]
-    df_raw = sel_df[columns_to_keep]
+    df_raw = sel_df.iloc[:, -5:]
 
     # select rows containing numbers
     selection = r"[0-9]"
