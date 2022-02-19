@@ -93,15 +93,13 @@ def plot_confronto_2020_2021(show=False):
     axes = ax.ravel()
 
     axes[0].plot(xgrid_2020[:xgrid_2021[-1]], casi_2020[:xgrid_2021[-1]], label="2020-21")
-    axes[0].plot(xgrid_2020[xgrid_2021[-2]:], casi_2020[xgrid_2021[-2]:],
-                 label="2020-21", color=palette[0], alpha=0.25)
+    axes[0].plot(xgrid_2020[xgrid_2021[-2]:], casi_2020[xgrid_2021[-2]:], color=palette[0], alpha=0.25)
     axes[0].plot(xgrid_2021, casi_2021_vacc, label="2021-22 (vaccinati)")
     axes[0].plot(xgrid_2021, casi_2021_novacc, label="2021-22 (non vaccinati)")
     which_axe(axes[0])
 
     axes[1].plot(xgrid_2020[:xgrid_2021[-1]], dec_2020[:xgrid_2021[-1]], label="2020-21")
-    axes[1].plot(xgrid_2020[xgrid_2021[-2]:], dec_2020[xgrid_2021[-2]:],
-                 label="2020-21", color=palette[0], alpha=0.25)
+    axes[1].plot(xgrid_2020[xgrid_2021[-2]:], dec_2020[xgrid_2021[-2]:], color=palette[0], alpha=0.25)
     axes[1].plot(xgrid_2021, dec_2021_vacc, label="2021-22 (vaccinati)")
     axes[1].plot(xgrid_2021, dec_2021_novacc, label="2021-22 (non vaccinati)")
     which_axe(axes[1], title="Decessi")
