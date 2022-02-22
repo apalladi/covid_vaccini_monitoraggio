@@ -31,8 +31,7 @@ Nell'environment virtuale è possibile installare automaticamente i pacchetti ri
 
 ## Utilizzo e spiegazione degli script
 
-Lo script [**`dati/dati_selezione.py`**](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) estrae i dati per l'analisi a partire dal report selezionato. I dati epidemiologici e delle popolazioni di riferimento vengono salvati in [dati/dati_ISS_complessivi.xlsx](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_ISS_complessivi.xlsx) mentre quelli suddivisi per età in [dati/dati_ISS_età.xlsx](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_ISS_età.xlsx).<br/>
-Nota sulle popolazioni di riferimento: si considera un ritardo medio stimato di due settimane per ospedalizzazioni e ricoveri in TI e di tre settimane per i decessi.
+Lo script [**`dati/dati_selezione.py`**](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_selezione.py) estrae i dati per l'analisi a partire dal report selezionato. I dati epidemiologici e delle popolazioni di riferimento vengono salvati in [dati/dati_ISS_complessivi.xlsx](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_ISS_complessivi.xlsx) mentre quelli suddivisi per età in [dati/dati_ISS_età.xlsx](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/dati/dati_ISS_età.xlsx)[^1].
 
 Lo script è stato aggiornato il [10/11/2021](https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_10-novembre-2021.pdf) per includere i vaccinati con dose aggiuntiva.
 Sono necessari ghostscript e tkinker per il corretto funzionamento di [camelot](https://camelot-py.readthedocs.io/en/master/user/install-deps.html).
@@ -41,7 +40,7 @@ Sono necessari ghostscript e tkinker per il corretto funzionamento di [camelot](
 I dati possono essere analizzati mediante i seguenti script:
 
 
-- [**`scripts/andamento_epidemia.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/andamento_epidemia.py) calcola le curve epidemiche relative a nuovi casi, ospedalizzati, ricoverati in terapia intensiva e deceduti, divise per vaccinati e non vaccinati. Le curve epidemiche sono rapportate al numero di vaccinati e non vaccinati, in ogni intervallo temporale. In questo modo è possibile calcolare i tassi grezzi e i tassi standardizzati. Data la sproporzione tra il numero di vaccinati e non vaccinati, i numeri assoluti risultano infatti poco utili per monitare l'andamento dell'epidemia. 
+- [**`scripts/andamento_epidemia.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/andamento_epidemia.py) calcola le curve epidemiche relative a nuovi casi, ospedalizzati, ricoverati in terapia intensiva e deceduti, divise per vaccinati e non vaccinati. Le curve epidemiche sono rapportate al numero di vaccinati e non vaccinati, in ogni intervallo temporale. In questo modo è possibile calcolare i tassi standardizzati (aggiustati per fascia di età[^2]). Data la sproporzione tra il numero di vaccinati e non vaccinati, i numeri assoluti risultano infatti poco utili per monitare l'andamento dell'epidemia. 
 
 
 - [**`scripts/andamento_rapporti_incidenze.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/andamento_rapporti_incidenze.py) calcola il contributo dei non vaccinati rispetto all’incidenza totale nelle varie fasce di età.
@@ -59,3 +58,8 @@ I dati possono essere analizzati mediante i seguenti script:
 Per eseguire un aggiornamento generale, utilizzare il seguente comando dalla directory principale:
 
 `./update_all.sh`
+
+
+[^1]: Nota sulle popolazioni di riferimento: si considera un ritardo medio stimato di due settimane per ospedalizzazioni e ricoveri in TI e di tre settimane per i decessi.
+
+[^2]: Si ottengono moltiplicando ciascun tasso specifico per classe di età - ossia il rapporto tra la numerosità dell’evento considerato e la popolazione di riferimento del report - per la numerosità della popolazione standard della stessa classe di età; sommando questi prodotti e dividendo tutto per il totale delle popolazioni standard (over 12) si ottiene il tasso di incidenza standardizzato.
