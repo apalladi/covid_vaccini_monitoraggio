@@ -10,8 +10,8 @@ import numpy as np
 import pandas as pd
 
 from custom.plots import apply_plot_treatment, palette
-from custom.preprocessing_dataframe import (compute_incidence,
-                                            get_df_complessivo)
+from custom.preprocessing_dataframe import (compute_incidence_std,
+                                            get_df_popolazione)
 from custom.watermarks import add_last_updated, add_watermark
 
 
@@ -24,21 +24,18 @@ def import_data():
     df_IT = pd.read_csv(url,
                         parse_dates=["data"],
                         index_col="data")
-    df_epid, df_pop = get_df_complessivo()
 
-    # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
-    df_tassi = compute_incidence(df_epid, df_pop)
+    # Ricava i tassi standardizzati per fascia di età
+    df_tassi_std = compute_incidence_std().iloc[::-1]
 
-    df_tassi.index = pd.to_datetime(df_epid["data"])
-    df_tassi = df_tassi.iloc[::-1]
-    return df_IT, df_epid, df_tassi
+    return df_IT, df_tassi_std
 
 
 def get_epidemic_data_2020():
     """ Importa dati epidemiologici 2020 """
 
     # Casi e decessi 2020
-    abitanti_over12 = 540*10**5
+    abitanti_over12 = get_df_popolazione().sum()
 
     df_2020 = df_IT.loc["2020-06-15":end_date]
     df_2020 = df_2020[["totale_casi",
@@ -62,10 +59,10 @@ def get_epidemic_data_2020():
 def get_epidemic_data_2021():
     """ Importa dati epidemiologici 2021 """
 
-    casi_2021_vacc = df_tassi["Casi, vaccinati completo"]
-    casi_2021_novacc = df_tassi["Casi, non vaccinati"]
-    dec_2021_vacc = df_tassi["Deceduti, vaccinati completo"]
-    dec_2021_novacc = df_tassi["Deceduti, non vaccinati"]
+    casi_2021_vacc = df_tassi_std["Casi, vaccinati completo"]
+    casi_2021_novacc = df_tassi_std["Casi, non vaccinati"]
+    dec_2021_vacc = df_tassi_std["Deceduti, vaccinati completo"]
+    dec_2021_novacc = df_tassi_std["Deceduti, non vaccinati"]
     return casi_2021_vacc, casi_2021_novacc, dec_2021_vacc, dec_2021_novacc
 
 
@@ -94,14 +91,16 @@ def plot_confronto_2020_2021(show=False):
 
     axes[0].plot(xgrid_2020[:xgrid_2021[-1]], casi_2020[:xgrid_2021[-1]], label="2020-21")
     axes[0].plot(xgrid_2020[xgrid_2021[-2]:], casi_2020[xgrid_2021[-2]:], color=palette[0], alpha=0.25)
-    axes[0].plot(xgrid_2021, casi_2021_vacc, label="2021-22 (vaccinati)")
     axes[0].plot(xgrid_2021, casi_2021_novacc, label="2021-22 (non vaccinati)")
+    axes[0].plot(xgrid_2021, casi_2021_vacc, label="2021-22 (vaccinati)")
+
     which_axe(axes[0])
 
     axes[1].plot(xgrid_2020[:xgrid_2021[-1]], dec_2020[:xgrid_2021[-1]], label="2020-21")
     axes[1].plot(xgrid_2020[xgrid_2021[-2]:], dec_2020[xgrid_2021[-2]:], color=palette[0], alpha=0.25)
-    axes[1].plot(xgrid_2021, dec_2021_vacc, label="2021-22 (vaccinati)")
     axes[1].plot(xgrid_2021, dec_2021_novacc, label="2021-22 (non vaccinati)")
+    axes[1].plot(xgrid_2021, dec_2021_vacc, label="2021-22 (vaccinati)")
+
     which_axe(axes[1], title="Decessi")
 
     fig.suptitle("Confronto 2020-2021 vs stesso periodo 2021-22")
@@ -129,11 +128,11 @@ if __name__ == "__main__":
     # Imposta stile grafici
     apply_plot_treatment()
 
-    df_IT, df_epid, df_tassi = import_data()
+    df_IT, df_tassi_std = import_data()
 
     # Calcola data fine df 2020-21
     # E' il primo giorno del mese successivo alla data dell'ultimo report
-    end_date = df_tassi.index[-1].date().replace(year=2021)
+    end_date = df_tassi_std.index[-1].date().replace(year=2021)
     end_date = end_date.replace(day=monthrange(end_date.year, end_date.month)[1])\
         + timedelta(days=1)
 

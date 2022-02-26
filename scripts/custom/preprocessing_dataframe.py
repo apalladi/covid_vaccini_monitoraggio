@@ -47,3 +47,54 @@ def compute_incidence(df_epid, df_pop):
                         "Deceduti, vaccinati < 4-6 mesi", "Deceduti, booster",
                         "Deceduti, vaccinati completo"]
     return df_tassi
+
+
+def get_df_popolazione():
+    # dati ISS platea vaccinazioni
+    # https://github.com/italia/covid19-opendata-vaccini
+    url = "https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea.csv"
+    df_plat = pd.read_csv(url)
+    df_plat = df_plat.groupby("fascia_anagrafica").sum()
+    df_pop = pd.concat([df_plat["12-19":"30-39"].sum(),
+                        df_plat["40-49":"50-59"].sum(),
+                        df_plat["60-69":"70-79"].sum(),
+                        df_plat["80+":].sum()])
+    df_pop.index = ["12-39", "40-59", "60-79", "80+"]
+    return df_pop
+
+
+def compute_incidence_std():
+    def calc_inc_std(sel_df):
+        df_psi = get_df_popolazione()
+        w_sum = 0
+        for age in df_età_epid.index.unique():
+            w_sum += sel_df.loc[age]*df_psi[age]
+        w_sum /= df_psi.sum()
+        return w_sum
+
+    df_età = pd.read_excel("../dati/dati_ISS_età.xlsx", sheet_name=None, index_col="età")
+    df_età_epid = df_età["dati epidemiologici"]
+    df_età_pop = df_età["popolazioni"]
+    df_età_epid = df_età_epid[df_età_epid["data"] > "2021-07-28"]
+    df_età_pop = df_età_pop[df_età_pop["data"] > "2021-07-28"]
+
+    df_tassi = compute_incidence(df_età_epid, df_età_pop)
+    df_tassi.index = df_età_epid.index
+    df_tassi.reset_index(inplace=True)
+    df_tassi.index = df_età_epid["data"]
+
+    date_reports = df_tassi.index.unique()
+
+    eventi = ["Casi, non vaccinati", "Casi, vaccinati completo", "Casi, booster",
+              "Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati completo",
+              "Ospedalizzati, booster", "In terapia intensiva, non vaccinati",
+              "In terapia intensiva, vaccinati completo", "In terapia intensiva, booster",
+              "Deceduti, non vaccinati", "Deceduti, vaccinati completo", "Deceduti, booster"]
+
+    tassi_std = {}
+    for date in date_reports:
+        df_ = df_tassi.loc[date]
+        df_.set_index("età", inplace=True)
+        std_serie = calc_inc_std(df_[eventi])
+        tassi_std[date] = std_serie
+    return pd.DataFrame(tassi_std).T
