@@ -44,9 +44,11 @@ def get_surveillance_reports():
         # for older reports than 2022-01-12 use "dati_selezione_old1.py" and "dati_ISS_complessivi_old1.csv"
         # for older reports than 2021-11-10 use "dati_selezione_old.py and "dati_ISS_complessivi_old.csv"
         cut_date = pd.to_datetime("2022-01-12")
+        cut_date_end = pd.to_datetime("2022-01-19")
     return [urljoin(epicentro_url, link["href"]) for link in links
             if "Bollettino-sorveglianza-integrata-COVID-19" in link["href"]
-            and date_from_url(link["href"], is_raw=False) >= cut_date]
+            and date_from_url(link["href"], is_raw=False) >= cut_date
+            and (date_from_url(link["href"], is_raw=False) < cut_date_end)]
 
 
 def page_from_url(sel_url, is_pop=False):

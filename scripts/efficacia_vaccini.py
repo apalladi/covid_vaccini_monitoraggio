@@ -42,10 +42,10 @@ def which_axe(axis):
     axis.set_ylabel("Ogni 100.000 persone per ciascun gruppo")
     axis.set_xlabel("Fascia d'età")
     axis.legend(["Non vaccinati",
-                 "Vaccinati 2 dosi > 4-6 mesi",
                  "Vaccinati 2/3 dosi",
-                 "Vaccinati terza dose",
-                 "Vaccinati 2 dosi < 4-6 mesi"])
+                 "Vaccinati 2 dosi < 4-6 mesi",
+                 "Vaccinati 2 dosi > 4-6 mesi",
+                 "Vaccinati terza dose"])
     axis.grid()
     axis.xaxis.set_tick_params(rotation=0)
 
@@ -278,10 +278,10 @@ if __name__ == "__main__":
     # Imposta stile grafici
     apply_plot_treatment()
 
-    eventi = [["Casi, non vaccinati", "Casi, vaccinati > 4-6 mesi", "Casi, vaccinati completo", "Casi, booster", "Casi, vaccinati < 4-6 mesi"],
-              ["Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati > 4-6 mesi", "Ospedalizzati, vaccinati completo", "Ospedalizzati, booster", "Ospedalizzati, vaccinati < 4-6 mesi"],
-              ["In terapia intensiva, non vaccinati", "In terapia intensiva, vaccinati > 4-6 mesi", "In terapia intensiva, vaccinati completo", "In terapia intensiva, booster", "In terapia intensiva, vaccinati < 4-6 mesi"],
-              ["Deceduti, non vaccinati", "Deceduti, vaccinati > 4-6 mesi", "Deceduti, vaccinati completo", "Deceduti, booster", "Deceduti, vaccinati < 4-6 mesi"]]
+    eventi = [["Casi, non vaccinati", "Casi, vaccinati completo", "Casi, vaccinati < 4-6 mesi", "Casi, vaccinati > 4-6 mesi", "Casi, booster"],
+              ["Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati completo", "Ospedalizzati, vaccinati < 4-6 mesi", "Ospedalizzati, vaccinati > 4-6 mesi", "Ospedalizzati, booster"],
+              ["In terapia intensiva, non vaccinati", "In terapia intensiva, vaccinati completo", "In terapia intensiva, vaccinati < 4-6 mesi", "In terapia intensiva, vaccinati > 4-6 mesi", "In terapia intensiva, booster"],
+              ["Deceduti, non vaccinati", "Deceduti, vaccinati completo", "Deceduti, vaccinati < 4-6 mesi", "Deceduti, vaccinati > 4-6 mesi", "Deceduti, booster"]]
     titoli = ["dei nuovi casi", "degli ospedalizzati", "dei ricoveri in TI", "dei deceduti"]
 
     # Recupera dati età

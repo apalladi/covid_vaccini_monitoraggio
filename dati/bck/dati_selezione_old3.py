@@ -40,11 +40,13 @@ def get_surveillance_reports():
         # Find all hyperlinks present on webpage
         links = soup.find_all("a")
         # The table is available since 14/07/2021
-        # The script has been updated to 2022-03-16 report
-        cut_date = pd.to_datetime("2022-03-16")
+        # The script has been updated to 2022-01-19 report
+        cut_date = pd.to_datetime("2022-01-19")
+        cut_date_end = pd.to_datetime("2022-03-16")
     return [urljoin(epicentro_url, link["href"]) for link in links
             if "Bollettino-sorveglianza-integrata-COVID-19" in link["href"]
-            and date_from_url(link["href"], is_raw=False) >= cut_date]
+            and date_from_url(link["href"], is_raw=False) >= cut_date
+            and (date_from_url(link["href"], is_raw=False) < cut_date_end)]
 
 
 def pages_from_url(sel_url):
@@ -145,10 +147,10 @@ def extract_data_main(clean_tables):
     totals_pop = []
     for i, table in enumerate(clean_tables):
         if i == 1:
-            totals_epidem.extend(table.iloc[[11, 17], :].stack().values)
+            totals_epidem.extend(table.iloc[[9, 14], :].stack().values)
         else:
-            totals_epidem.extend(table.iloc[11, :].values)
-        totals_pop.extend(table.iloc[5, :].values)
+            totals_epidem.extend(table.iloc[9, :].values)
+        totals_pop.extend(table.iloc[4, :].values)
     return totals_epidem, totals_pop
 
 
@@ -156,19 +158,19 @@ def extract_data_by_age(clean_tables):
     for i, table in enumerate(clean_tables):
         # Population data
         if i == 0:
-            df_pop_eta = table.iloc[:5, :]
+            df_pop_eta = table.iloc[:4, :]
         else:
-            df_pop_eta = pd.concat((df_pop_eta, table.iloc[:5, :]), axis=1)
+            df_pop_eta = pd.concat((df_pop_eta, table.iloc[:4, :]), axis=1)
 
         # Epidemiological data
         if i == 0:
-            df_epid_eta = table.iloc[6:11, :].reset_index(drop=True)
+            df_epid_eta = table.iloc[5:9, :].reset_index(drop=True)
         elif i == 1:
-            hosp = table.iloc[6:11, :].reset_index(drop=True)
-            ti = table.iloc[12:17, :].reset_index(drop=True)
+            hosp = table.iloc[5:9, :].reset_index(drop=True)
+            ti = table.iloc[10:14, :].reset_index(drop=True)
             df_epid_eta = pd.concat([df_epid_eta, hosp, ti], axis=1)
         else:
-            dec = table.iloc[6:11, :].reset_index(drop=True)
+            dec = table.iloc[5:9, :].reset_index(drop=True)
             df_epid_eta = pd.concat((df_epid_eta, dec), axis=1)
     return df_epid_eta, df_pop_eta
 
@@ -306,7 +308,7 @@ if __name__ == "__main__":
     # Use force=False for manual selection
     rep_date, rep_url = get_report()
 
-    ages = ["5-11", "12-39", "40-59", "60-79", "80+"]
+    ages = ["12-39", "40-59", "60-79", "80+"]
 
     # Get data
     # Use force=True to skip the checks/for debug purposes

@@ -55,19 +55,25 @@ def get_df_popolazione():
     url = "https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea.csv"
     df_plat = pd.read_csv(url)
     df_plat = df_plat.groupby("fascia_anagrafica").sum()
-    df_pop = pd.concat([df_plat["12-19":"30-39"].sum(),
-                        df_plat["40-49":"50-59"].sum(),
-                        df_plat["60-69":"70-79"].sum(),
-                        df_plat["80+":].sum()])
-    df_pop.index = ["12-39", "40-59", "60-79", "80+"]
-    return df_pop
+    map_dict = {
+      "5-11": "05-11",
+      "12-39": ("12-19", "30-39"),
+      "40-59": ("40-49", "50-59"),
+      "60-79": ("60-69", "70-79"),
+      "80+": "80+"
+    }
+    pop_dict = {k: df_plat.loc[v[0]:v[1]].sum()
+                if type(v) is tuple else df_plat.loc[v]
+                for k, v in map_dict.items()}
+    df_pop = pd.DataFrame(pop_dict).T
+    return df_pop.squeeze()
 
 
 def compute_incidence_std():
     def calc_inc_std(sel_df):
         df_psi = get_df_popolazione()
         w_sum = 0
-        for age in df_età_epid.index.unique():
+        for age in df_psi.index.unique()[1:]:
             w_sum += sel_df.loc[age]*df_psi[age]
         w_sum /= df_psi.sum()
         return w_sum
@@ -83,6 +89,7 @@ def compute_incidence_std():
     df_tassi.reset_index(inplace=True)
     df_tassi.index = df_età_epid["data"]
 
+    df_tassi.fillna(0, inplace=True)
     date_reports = df_tassi.index.unique()
 
     eventi = ["Casi, non vaccinati", "Casi, vaccinati completo", "Casi, booster",
