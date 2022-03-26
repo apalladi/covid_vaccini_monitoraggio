@@ -12,6 +12,9 @@ from custom.plots import (apply_plot_treatment, get_xticks_labels,
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
 
+classi_età = ["12-39", "40-59", "60-79", "80+"]
+# classi_età = ["5-11", "12-39", "40-59", "60-79", "80+"]
+
 
 # Funzioni per il plot
 def compute_incidence_ratio(category):
@@ -103,6 +106,15 @@ def ricava_andamenti_età(età, colonna, incidenza_mensile):
 
     # loop around the reports
     results_date = []
+
+    # da usare quando ci saranno abbastanza punti
+    # nella fascia di età 5-11
+    """ dates_iter = date_reports
+    if età == "5-11":
+         dates_iter = date_reports[date_reports >= "2022-03-09"]
+    for data in dates_iter:
+        ..."""
+
     for data in date_reports:
         df = df_età_epid.loc[data]
         df = df[df["età"] == età]
@@ -146,7 +158,7 @@ def ricava_andamenti_età(età, colonna, incidenza_mensile):
     return df_results
 
 
-@mpl.rc_context({"lines.marker": None, "axes.prop_cycle": mpl.cycler(color=palette[:4])})
+@mpl.rc_context({"lines.marker": None, "axes.prop_cycle": mpl.cycler(color=palette[:len(classi_età)])})
 def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     """Plot delle incidenze in funzione del tempo"""
 
@@ -196,7 +208,12 @@ if __name__ == "__main__":
     # Imposta stile grafici
     apply_plot_treatment()
 
-    classi_età = ["12-39", "40-59", "60-79", "80+"]
+    # da usare quando ci saranno abbastanza punti
+    # nella fascia di età 5-11
+    """ shared_legend = ["5-11 non vaccinati", "12-39 non vaccinati", "40-59 non vaccinati",
+                     "60-79 non vaccinati", "80+ non vaccinati",
+                     "5-11 vaccinati", "12-39 vaccinati", "40-59 vaccinati",
+                     "60-79 vaccinati", "80+ vaccinati"] """
 
     shared_legend = ["12-39 non vaccinati", "40-59 non vaccinati",
                      "60-79 non vaccinati", "80+ non vaccinati",

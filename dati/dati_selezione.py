@@ -53,7 +53,7 @@ def pages_from_url(sel_url):
     sel_url: url of the report
     return: numbers of the pages containing the tables"""
 
-    query = "TABELLA [4-5][A-C] - POPOLAZIONE ITALIANA"
+    query = "TABELLA [4-9][A-C] - POPOLAZIONE ITALIANA"
 
     with request.urlopen(sel_url) as response:
         content = response.read()
