@@ -225,6 +225,11 @@ if __name__ == "__main__":
                            index_col="data", parse_dates=["data"])
     df_età_epid = df_età["dati epidemiologici"]
     df_età_pop = df_età["popolazioni"]
+
+    # Rimossa fascia 5-11 per ora
+    df_età_epid = df_età_epid[df_età_epid["età"] != "5-11"]
+    df_età_pop = df_età_pop[df_età_pop["età"] != "5-11"]
+
     df_epid = df_età_epid[df_età_epid.index > "2021-07-28"]
     df_pop = df_età_pop[df_età_pop.index > "2021-07-28"]
     date_reports = df_epid.index.unique()
