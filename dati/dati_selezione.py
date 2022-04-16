@@ -125,12 +125,11 @@ def clean_raw_table(sel_df):
     df_raw = sel_df.iloc[:, -5:]
 
     # select rows containing numbers
-    selection = r"[0-9]"
-    df_raw = df_raw[df_raw[df_raw.columns[0]].str.match(selection)]
+    df_raw = df_raw[df_raw[df_raw.columns[0]].str.match(r"[0-9]")]
 
-    # Remove dots and parentheses
-    to_exclude = r"\((.*)|[^0-9]"
-    df_final = df_raw.replace(to_exclude, "", regex=True).apply(np.int64)
+    # Remove empty cells, dots and parentheses
+    df_raw.replace(r"^\s*$", 0, regex=True, inplace=True)
+    df_final = df_raw.replace(r"\((.*)|[^0-9]", "", regex=True).apply(np.int64)
 
     # Merge columns "vaccinati completo > 4-6 mesi", "vaccinati completo < 4-6 mesi",
     # "vaccinati booster" into "vaccinati completo" (fully immunized + third dose)
