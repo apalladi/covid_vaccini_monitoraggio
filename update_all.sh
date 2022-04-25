@@ -22,5 +22,5 @@ else
   python scripts/confronto_2020_2021.py
   python scripts/confronti_europei.py
 
-  printf "\nDONE!"
+  printf "\nDONE!\n"
 fi
