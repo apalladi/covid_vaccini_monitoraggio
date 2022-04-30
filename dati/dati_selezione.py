@@ -288,6 +288,8 @@ def get_data_from_report(force=False):
                            index_col="data", parse_dates=["data"])
     df_epid_età = pd.concat((df_epid_età, df_età["dati epidemiologici"]))
     df_pop_età = pd.concat((df_pop_età, df_età["popolazioni"]))
+    df_epid_età.drop_duplicates(inplace=True)
+    df_pop_età.drop_duplicates(inplace=True)
     merge_df_into_xlsx(df_epid_età, df_pop_età, filename="dati_ISS_età.xlsx")
 
     print("\nDone!")
