@@ -85,7 +85,7 @@ def check_df(sel_df):
     """check_df(df) -> None
 
     sel_df: dataframe
-    return: check if the table has at least 2 columns"""
+    return: Check if the table has at least 2 columns."""
 
     error_msg = "Can't extract the table! DIY!"
     if len(sel_df.columns) < 3:
@@ -111,6 +111,15 @@ def get_raw_table(sel_url, table):
     if len(df_raw.columns) < 5:
         if len(tables) >= 1:
             df_raw = tables[1].df
+        check_df(df_raw)
+    # Check if there are enough rows
+    elif len(clean_raw_table(df_raw)) < 12:
+        print(f"\nThere was an error with table on page {table}. Improving detected area...")
+        tables = camelot.read_pdf(sel_url,
+                                  pages=f"{table}",
+                                  flavor="stream",
+                                  edge_tol=500)
+        df_raw = tables[0].df
         check_df(df_raw)
     return df_raw
 
