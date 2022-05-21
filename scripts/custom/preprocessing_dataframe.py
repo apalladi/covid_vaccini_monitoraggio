@@ -54,7 +54,7 @@ def get_df_popolazione():
     # https://github.com/italia/covid19-opendata-vaccini
     url = "https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea.csv"
     df_plat = pd.read_csv(url)
-    df_plat = df_plat.groupby("fascia_anagrafica").sum()
+    df_plat = df_plat.groupby("eta").sum()
     map_dict = {
       "5-11": "05-11",
       "12-39": ("12-19", "30-39"),
