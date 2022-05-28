@@ -38,8 +38,7 @@ def get_epidemic_data_2020():
     abitanti_over12 = get_df_popolazione().sum()
 
     df_2020 = df_IT.loc["2020-06-15":end_date]
-    df_2020 = df_2020[["totale_casi",
-                       "deceduti"]].diff().rolling(window=30).mean()
+    df_2020 = df_2020[["totale_casi", "deceduti"]].diff().rolling(window=30).mean()
     df_2020 = df_2020*30/(abitanti_over12/(10**5))
     df_2020.columns = ["casi", "decessi"]
 
@@ -85,7 +84,6 @@ def plot_confronto_2020_2021(show=False):
     xgrid_2020 = np.arange(0, len(casi_2020))
     xgrid_2021 = np.arange(0, 7*len(casi_2021_vacc), 7)
 
-    # Casi e decessi 2021
     fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 4))
     axes = ax.ravel()
 
@@ -93,14 +91,12 @@ def plot_confronto_2020_2021(show=False):
     axes[0].plot(xgrid_2020[xgrid_2021[-2]:], casi_2020[xgrid_2021[-2]:], color=palette[0], alpha=0.25)
     axes[0].plot(xgrid_2021, casi_2021_novacc, label="2021-22 (non vaccinati)")
     axes[0].plot(xgrid_2021, casi_2021_vacc, label="2021-22 (vaccinati)")
-
     which_axe(axes[0])
 
     axes[1].plot(xgrid_2020[:xgrid_2021[-1]], dec_2020[:xgrid_2021[-1]], label="2020-21")
     axes[1].plot(xgrid_2020[xgrid_2021[-2]:], dec_2020[xgrid_2021[-2]:], color=palette[0], alpha=0.25)
     axes[1].plot(xgrid_2021, dec_2021_novacc, label="2021-22 (non vaccinati)")
     axes[1].plot(xgrid_2021, dec_2021_vacc, label="2021-22 (vaccinati)")
-
     which_axe(axes[1], title="Decessi")
 
     fig.suptitle("Confronto 2020-2021 vs stesso periodo 2021-22")

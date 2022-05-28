@@ -108,6 +108,7 @@ def plot_num_assoluti(show=False):
 
     titoli = ["Nuovi casi giornalieri", "Nuovi ospedalizzati giornalieri",
               "Nuovi ricoverati in TI", "Decessi giornalieri"]
+
     eventi = [["casi non vaccinati", "casi vaccinati completo", "casi booster"],
               ["ospedalizzati non vaccinati", "ospedalizzati vaccinati completo", "ospedalizzati booster"],
               ["terapia intensiva non vaccinati", "terapia intensiva vaccinati completo", "terapia intensiva booster"],
@@ -143,6 +144,7 @@ def plot_riassunto(show=False, is_std=False):
     y_label = "Ogni 100.000 persone per ciascun gruppo"
 
     titoli = ["degli ospedalizzati", "dei ricoverati in TI", "dei deceduti"]
+
     eventi = [["Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati completo", "Ospedalizzati, booster"],
               ["In terapia intensiva, non vaccinati", "In terapia intensiva, vaccinati completo", "In terapia intensiva, booster"],
               ["Deceduti, non vaccinati", "Deceduti, vaccinati completo", "Deceduti, booster"]]

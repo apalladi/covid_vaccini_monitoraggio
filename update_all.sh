@@ -21,6 +21,7 @@ else
   python scripts/efficacia_vaccini.py
   python scripts/confronto_2020_2021.py
   python scripts/confronti_europei.py
+  python scripts/confronti_europei_map.py
 
   printf "\nDONE!\n"
 fi

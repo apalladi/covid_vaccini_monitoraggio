@@ -52,10 +52,10 @@ def which_axe(axis):
 
 def which_axe_bar(axis):
     """ Imposta proprietà grafici """
-    axis.set_xlabel("Fascia d'età")
     axis.set_yticks(bar_yticks)
     axis.set_yticklabels(bar_ylabels)
     axis.set_ylim(bar_ymin, 100)
+    axis.set_xlabel("Fascia d'età")
     axis.grid()
     axis.xaxis.set_tick_params(rotation=0)
 
@@ -74,10 +74,10 @@ def add_to_plot(ax):
 def plot_tassi(show=False):
     """ Tassi di contagio """
 
-    fig, axes2 = plt.subplots(nrows=2, ncols=2, figsize=(9, 9))
+    fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(9, 9))
 
     # Unpack all the axes subplots
-    axes = axes2.ravel()
+    axes = ax.ravel()
 
     for i, evento in enumerate(eventi):
         df_tassi[evento].plot(ax=axes[i], kind="bar")
@@ -194,7 +194,6 @@ def plot_focus_60(show=False):
                       "ospedalizzati/ti vaccinati completo",
                       "decessi non vaccinati",
                       "decessi vaccinati completo"]].sum()
-
     over60_array = np.concatenate((np.array(df_), over60_array))
 
     fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(7, 7))

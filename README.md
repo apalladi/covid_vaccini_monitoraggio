@@ -36,6 +36,8 @@ Lo script [**`dati/dati_selezione.py`**](https://github.com/apalladi/covid_vacci
 Lo script è stato aggiornato il [10/11/2021](https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_10-novembre-2021.pdf) per includere i vaccinati con dose aggiuntiva.
 Sono necessari ghostscript e tkinker per il corretto funzionamento di [camelot](https://camelot-py.readthedocs.io/en/master/user/install-deps.html).
 
+Per gli utenti Windows: per la corretta generazione della mappa seguire le [istruzioni](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/README_MAP_WIN.MD)
+
 
 I dati possono essere analizzati mediante i seguenti script:
 
@@ -48,6 +50,7 @@ I dati possono essere analizzati mediante i seguenti script:
 
 - [**`scripts/confronti_europei.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/confronti_europei.py) aggiorna gli andamenti delle curve epidemiologiche e delle vaccinazioni dei paesi dell’Eurozona.
 
+- [**`scripts/confronti_europei_map.py`**:](https://github.com/ivandorte/covid_vaccini_monitoraggio/blob/main/scripts/confronti_europei_map.py) mappa bivariata che mette in relazione la copertura vaccinale al numero dei decessi nell'Eurozona.
 
 - [**`scripts/confronto_2020_2021.py`**:](https://github.com/apalladi/covid_vaccini_monitoraggio/blob/main/scripts/confronto_2020_2021.py) restituisce gli andamenti delle curve epidemiche 2020 e 2021. Per il 2021 vengono mostrate separatamente le curve dei vaccinati e dei non vaccinati. 
 
