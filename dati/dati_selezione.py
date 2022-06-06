@@ -137,8 +137,9 @@ def clean_raw_table(sel_df):
     df_raw = df_raw[df_raw[df_raw.columns[0]].str.match(r"[0-9]")]
 
     # Remove empty cells, dots and parentheses
-    df_raw.replace(r"^\s*$", 0, regex=True, inplace=True)
-    df_final = df_raw.replace(r"\((.*)|[^0-9]", "", regex=True).apply(np.int64)
+    df_final = df_raw.replace(r"\((.*)|[^0-9]", "", regex=True)
+    df_final = df_final.apply(lambda x: x.str.strip())
+    df_final = df_final.replace(r"^\s*$", 0, regex=True).apply(np.int64)
 
     # Merge columns "vaccinati completo > 4-6 mesi", "vaccinati completo < 4-6 mesi",
     # "vaccinati booster" into "vaccinati completo" (fully immunized + third dose)
@@ -280,6 +281,12 @@ def get_data_from_report(force=False):
 
     # Get general data
     totals_epidem, totals_pop = extract_data_main(clean_tables)
+
+    # Data not updated!
+    if totals_epidem in df_0.values.tolist():
+        print("Data not updated! Exiting...")
+        exit()
+
     # Update the dataframes
     add_new_row(df_0, totals_epidem)
     add_new_row(df_1, totals_pop)
@@ -313,7 +320,7 @@ if __name__ == "__main__":
     locale.setlocale(locale.LC_ALL, "it_IT.UTF-8")
 
     # Get the report
-    # Use force=False for manual selection
+    # Use auto=False for manual selection
     rep_date, rep_url = get_report()
 
     ages = ["5-11", "12-39", "40-59", "60-79", "80+"]

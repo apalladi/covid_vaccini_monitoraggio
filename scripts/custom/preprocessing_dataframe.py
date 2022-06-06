@@ -102,6 +102,6 @@ def compute_incidence_std():
     for date in date_reports:
         df_ = df_tassi.loc[date]
         df_.set_index("età", inplace=True)
-        std_serie = calc_inc_std(df_[eventi])
-        tassi_std[date] = std_serie
+        df_std_ = calc_inc_std(df_[eventi])
+        tassi_std[date] = df_std_
     return pd.DataFrame(tassi_std).T

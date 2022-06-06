@@ -104,9 +104,6 @@ def ricava_andamenti_età(età, colonna, incidenza_mensile):
     """Ricava andamento delle varie incindenze nel tempo,
     divise per fascia d"età e categoria"""
 
-    # loop around the reports
-    results_date = []
-
     # da usare quando ci saranno abbastanza punti
     # nella fascia di età 5-11
     """ dates_iter = date_reports
@@ -115,6 +112,8 @@ def ricava_andamenti_età(età, colonna, incidenza_mensile):
     for data in dates_iter:
         ..."""
 
+    # loop around the reports
+    results_date = []
     for data in date_reports:
         df = df_età_epid.loc[data]
         df = df[df["età"] == età]
