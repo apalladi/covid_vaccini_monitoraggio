@@ -42,7 +42,7 @@ def which_axe(axis):
     axis.set_ylabel("Ogni 100.000 persone per ciascun gruppo")
     axis.set_xlabel("Fascia d'età")
     axis.legend(["Non vaccinati",
-                 "Vaccinati 2/3 dosi",
+                 "Vaccinati 2/3/4 dosi",
                  "Vaccinati 2 dosi < 4-6 mesi",
                  "Vaccinati 2 dosi > 4-6 mesi",
                  "Vaccinati terza dose"])

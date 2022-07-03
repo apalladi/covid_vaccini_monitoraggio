@@ -22,7 +22,7 @@ def which_axe(axis):
     axis.xaxis.reset_ticks()
     axis.set_xticks(x_ticks)
     axis.set_xticklabels(x_labels)
-    axis.legend(["Non vaccinati", "Vaccinati 2/3 dosi",
+    axis.legend(["Non vaccinati", "Vaccinati 2/3/4 dosi",
                  "Vaccinati 3 dosi"], loc="upper left")
     axis.grid()
 
@@ -30,9 +30,7 @@ def which_axe(axis):
 # Importa dati
 def load_data():
     """ Importa dati dell'Istituto Superiore di Sanità
-    ricavati dai bollettini settimanali. Vedi ad esempio:
-    epicentro.iss.it/coronavirus/bollettino/
-    Bollettino-sorveglianza-integrata-COVID-19_15-settembre-2021.pdf"""
+    ricavati dai bollettini settimanali."""
 
     df_epid, df_pop = get_df_complessivo()
 

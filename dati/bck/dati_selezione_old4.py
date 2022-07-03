@@ -5,7 +5,7 @@ Extraction of data from ISS weekly covid-19 reports
 https://www.epicentro.iss.it/coronavirus/aggiornamenti
 
 See example pdf:
-https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_28-giugno-2022.pdf
+https://www.epicentro.iss.it/coronavirus/bollettino/Bollettino-sorveglianza-integrata-COVID-19_19-gennaio-2022.pdf
 
 Requirements:
 Python 3.6+, Ghostscript (ghostscript), Tkinter (python3-tk)
@@ -40,11 +40,13 @@ def get_surveillance_reports():
         # Find all hyperlinks present on webpage
         links = soup.find_all("a")
         # The table is available since 14/07/2021
-        # The script has been updated to 2022-06-28 report
-        cut_date = pd.to_datetime("2022-06-28")
+        # The script has been updated to 2022-03-16 report
+        cut_date = pd.to_datetime("2022-03-16")
+        cut_date_end = pd.to_datetime("2022-06-28")
     return [urljoin(epicentro_url, link["href"]) for link in links
             if "Bollettino-sorveglianza-integrata-COVID-19" in link["href"]
-            and date_from_url(link["href"], is_raw=False) >= cut_date]
+            and date_from_url(link["href"], is_raw=False) >= cut_date
+            and (date_from_url(link["href"], is_raw=False) < cut_date_end)]
 
 
 def pages_from_url(sel_url):
@@ -130,8 +132,8 @@ def clean_raw_table(sel_df):
     sel_df: raw dataframe
     return: extract numerical data from the dataframe"""
 
-    # We are interested in the last 6 columns
-    df_raw = sel_df.iloc[:, -6:]
+    # We are interested in the last 5 columns
+    df_raw = sel_df.iloc[:, -5:]
 
     # select rows containing numbers
     df_raw = df_raw[df_raw[df_raw.columns[0]].str.match(r"[0-9]")]
@@ -141,12 +143,9 @@ def clean_raw_table(sel_df):
     df_final = df_final.apply(lambda x: x.str.strip())
     df_final = df_final.replace(r"^\s*$", 0, regex=True).apply(np.int64)
 
-    # Merge columns "Vaccinati con ciclo completo da >120 giorni",
-    # "Vaccinati con ciclo completo da <=120 giorni",
-    # "Vaccinati con ciclo completo + dose aggiuntiva/booster"
-    # "Vaccinati con quarta dose"
-    # into "vaccinati completo" (fully immunized + third dose + fourth dose)
-    vaccinati_completo = df_final.iloc[:, 3:].sum(axis=1)
+    # Merge columns "vaccinati completo > 4-6 mesi", "vaccinati completo < 4-6 mesi",
+    # "vaccinati booster" into "vaccinati completo" (fully immunized + third dose)
+    vaccinati_completo = df_final.iloc[:, 2:].sum(axis=1)
     df_final.insert(len(df_final.columns), "vaccinati completo", vaccinati_completo)
     df_final.reset_index(inplace=True, drop=True)
     return df_final
@@ -203,7 +202,7 @@ def add_index_cols(sel_df, columns):
     columns: columns list
     return: dataframe with index and columns"""
     sel_df.columns = columns
-    sel_df.insert(0, "età", ["5-11", "12-39", "40-59", "60-79", "80+"])
+    sel_df.insert(0, "età", ages)
     sel_df.index = [rep_date]*len(sel_df)
     sel_df.index.rename("data", inplace=True)
     return sel_df
@@ -325,6 +324,8 @@ if __name__ == "__main__":
     # Get the report
     # Use auto=False for manual selection
     rep_date, rep_url = get_report()
+
+    ages = ["5-11", "12-39", "40-59", "60-79", "80+"]
 
     # Get data
     # Use force=True to skip the checks/for debug purposes
