@@ -60,7 +60,7 @@ def load_data():
 def plot_incidenza(show=False, is_std=False):
     """ Tassi di infezione, ricovero, decesso """
 
-    fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(8.5, 8.5))
+    fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(10, 10))
 
     # Unpack all the axes subplots
     axes = ax.ravel()
@@ -99,7 +99,7 @@ def plot_incidenza(show=False, is_std=False):
 def plot_num_assoluti(show=False):
     """ Andamento dei numeri assoluti """
 
-    fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(8.5, 8.5))
+    fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(10, 10))
 
     # Unpack all the axes subplots
     axes = ax.ravel()
@@ -133,7 +133,7 @@ def plot_num_assoluti(show=False):
 def plot_riassunto(show=False, is_std=False):
     """ Plot figura riassuntiva incidenze/numeri assoluti"""
 
-    fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(12, 8))
+    fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(14, 10))
 
     # Unpack all the axes subplots
     axes = ax.ravel()
