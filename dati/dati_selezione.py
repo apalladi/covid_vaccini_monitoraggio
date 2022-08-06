@@ -38,13 +38,15 @@ def get_surveillance_reports():
         # Parse text obtained
         soup = BeautifulSoup(response, "html.parser")
         # Find all hyperlinks present on webpage
-        links = soup.find_all("a")
+        # Search for attribute ending with "COVID-19_[data].pdf"
+        # to better deal with ISS employees typos
+        date_pattern = re.compile(r"COVID-19_\d+[a-z-A-Z]+\d+.pdf")
+        links = soup.find_all('a', attrs={'href': date_pattern})
         # The table is available since 14/07/2021
         # The script has been updated to 2022-06-28 report
         cut_date = pd.to_datetime("2022-06-28")
     return [urljoin(epicentro_url, link["href"]) for link in links
-            if "Bollettino-sorveglianza-integrata-COVID-19" in link["href"]
-            and date_from_url(link["href"], is_raw=False) >= cut_date]
+            if date_from_url(link["href"], is_raw=False) >= cut_date]
 
 
 def pages_from_url(sel_url):
