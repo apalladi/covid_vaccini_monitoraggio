@@ -41,7 +41,7 @@ def get_surveillance_reports():
         # Search for attribute ending with "COVID-19_[data].pdf"
         # to better deal with ISS employees typos
         date_pattern = re.compile(r"COVID-19_\d+[a-z-A-Z]+\d+.pdf")
-        links = soup.find_all('a', attrs={'href': date_pattern})
+        links = soup.find_all("a", attrs={"href": date_pattern})
         # The table is available since 14/07/2021
         # The script has been updated to 2022-06-28 report
         cut_date = pd.to_datetime("2022-06-28")
