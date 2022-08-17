@@ -21,8 +21,8 @@ ENV DEBIAN_FRONTEND="noninteractive" \
 
 # Python package management and basic dependencies
 RUN  apt-get install -y curl python3.7 python3.7-dev \
- python3.7-distutils build-essential locales git \
- ghostscript python3-tk python3-opencv
+     python3.7-distutils build-essential locales git \
+     ghostscript python3-tk python3-opencv
 
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/'        /etc/locale.gen \
  && sed -i -e 's/# it_IT.UTF-8 UTF-8/it_IT.UTF-8 UTF-8/' /etc/locale.gen \
@@ -41,10 +41,10 @@ RUN curl -s https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
 
 # Install packages
 RUN pip install numpy matplotlib pandas beautifulsoup4 \
- camelot-py[base] PyMuPDF scikit-learn \
- adjustText openpyxl xlsxwriter
+    camelot-py[base] PyMuPDF scikit-learn \
+    adjustText openpyxl xlsxwriter
 
 # Install geo-packages
 RUN pip install shapely --upgrade --no-binary shapely
-RUN pip install matplotlib pandas jupyterlab fiona rtree rasterio pyproj geopandas pysal mapclassify
-RUN pip install https://github.com/matplotlib/basemap/archive/refs/tags/v1.2.2rel.zip
+RUN pip install matplotlib pandas jupyterlab fiona rtree rasterio pyproj \
+    geopandas pysal mapclassify basemap basemap-data basemap-data-hires
