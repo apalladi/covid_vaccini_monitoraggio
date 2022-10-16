@@ -69,18 +69,31 @@ def get_df_popolazione():
     pop_dict = {k: df_plat.loc[v[0]:v[1]].sum()
                 if type(v) is tuple else df_plat.loc[v]
                 for k, v in map_dict.items()}
-    df_pop = pd.DataFrame(pop_dict).T
-    return df_pop.squeeze()
+    return pd.DataFrame(pop_dict).T
 
 
 def compute_incidence_std():
-    def calc_inc_std(sel_df):
-        df_psi = get_df_popolazione()
-        w_sum = 0
-        for age in df_psi.index.unique()[1:]:
-            w_sum += sel_df.loc[age]*df_psi[age]
-        w_sum /= df_psi.sum()
-        return w_sum
+    def calc_df_adj(df_tassi):
+        # recupera popolazione (pesi)
+        df_pesi = get_df_popolazione()
+        # filtra classe età 5-11
+        df_pesi = df_pesi[df_pesi.index != "5-11"]
+        # aggiungi colonna pesi a df tassi
+        df_tassi_ = df_tassi.reset_index().merge(df_pesi,
+                                                 how="left",
+                                                 left_on="età",
+                                                 right_on=df_pesi.index,
+                                                 sort=False).set_index("data")
+        weights = df_tassi_["totale_popolazione"].to_numpy()
+        weights_sum = df_pesi["totale_popolazione"].sum()
+        # moltiplica i tassi calcolati per i pesi
+        df_tassi_adj = df_tassi_.iloc[:, 1:-1].mul(weights, axis=0).reset_index()
+        # somma tassi
+        df_tassi_adj = df_tassi_adj.groupby("data").agg(sum)
+        # dividi per somma pesi
+        df_tassi_adj = df_tassi_adj.apply(lambda x: x/weights_sum)
+        df_tassi_adj = df_tassi_adj.replace(0, np.nan)
+        return df_tassi_adj
 
     df_età = pd.read_excel("../dati/dati_ISS_età.xlsx", sheet_name=None, index_col="età")
     df_età_epid = df_età["dati epidemiologici"]
@@ -90,22 +103,7 @@ def compute_incidence_std():
 
     df_tassi = compute_incidence(df_età_epid, df_età_pop)
     df_tassi.index = df_età_epid.index
-    df_tassi.reset_index(inplace=True)
+    df_tassi = df_tassi.reset_index()
     df_tassi.index = df_età_epid["data"]
 
-    df_tassi.fillna(0, inplace=True)
-    date_reports = df_tassi.index.unique()
-
-    eventi = ["Casi, non vaccinati", "Casi, vaccinati completo", "Casi, booster", "Casi, qt dose",
-              "Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati completo",
-              "Ospedalizzati, booster", "Ospedalizzati, qt dose", "In terapia intensiva, non vaccinati",
-              "In terapia intensiva, vaccinati completo", "In terapia intensiva, booster", "In terapia intensiva, qt dose",
-              "Deceduti, non vaccinati", "Deceduti, vaccinati completo", "Deceduti, booster", "Deceduti, qt dose"]
-
-    tassi_std = {}
-    for date in date_reports:
-        df_ = df_tassi.loc[date]
-        df_.set_index("età", inplace=True)
-        df_std_ = calc_inc_std(df_[eventi])
-        tassi_std[date] = df_std_
-    return pd.DataFrame(tassi_std).T
+    return calc_df_adj(df_tassi)

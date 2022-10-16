@@ -306,7 +306,7 @@ if __name__ == "__main__":
     # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
     df_tassi = compute_incidence(df_età, df_pop)
     df_tassi.index = df_età["età"]
-    df_tassi.drop(df_tassi[df_tassi.index == "5-11"].index, inplace=True)
+    df_tassi = df_tassi[df_tassi.index != "5-11"]
 
     # Ricava efficacia
     eff_contagio, eff_osp, eff_terint, eff_decessi = compute_efficacia()

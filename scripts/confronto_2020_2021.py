@@ -26,7 +26,7 @@ def import_data():
                         index_col="data")
 
     # Ricava i tassi standardizzati per fascia di età
-    df_tassi_std = compute_incidence_std().iloc[::-1]
+    df_tassi_std = compute_incidence_std()
 
     return df_IT, df_tassi_std
 
@@ -35,7 +35,9 @@ def get_epidemic_data_2020():
     """ Importa dati epidemiologici 2020 """
 
     # Casi e decessi 2020
-    abitanti_over12 = get_df_popolazione().sum()
+    df_pop = get_df_popolazione()
+    df_pop = df_pop[df_pop.index != "5-11"]
+    abitanti_over12 = df_pop["totale_popolazione"].sum()
 
     df_2020 = df_IT.loc["2020-06-15":end_date]
     df_2020 = df_2020[["totale_casi", "deceduti"]].diff().rolling(window=30).mean()

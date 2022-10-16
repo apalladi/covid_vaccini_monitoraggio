@@ -13,7 +13,6 @@ from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
 
 classi_età = ["12-39", "40-59", "60-79", "80+"]
-# classi_età = ["5-11", "12-39", "40-59", "60-79", "80+"]
 
 
 # Funzioni per il plot
@@ -103,14 +102,6 @@ def plot_rapporti_incidenze(show=False):
 def ricava_andamenti_età(età, colonna, incidenza_mensile):
     """Ricava andamento delle varie incindenze nel tempo,
     divise per fascia d"età e categoria"""
-
-    # da usare quando ci saranno abbastanza punti
-    # nella fascia di età 5-11
-    """ dates_iter = date_reports
-    if età == "5-11":
-         dates_iter = date_reports[date_reports >= "2022-03-09"]
-    for data in dates_iter:
-        ..."""
 
     # loop around the reports
     results_date = []
@@ -225,7 +216,7 @@ if __name__ == "__main__":
     df_età_epid = df_età["dati epidemiologici"]
     df_età_pop = df_età["popolazioni"]
 
-    # Rimossa fascia 5-11 per ora
+    # Filtra fascia 5-11
     df_età_epid = df_età_epid[df_età_epid["età"] != "5-11"]
     df_età_pop = df_età_pop[df_età_pop["età"] != "5-11"]
 
