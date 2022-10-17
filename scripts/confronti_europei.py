@@ -11,7 +11,8 @@ from adjustText import adjust_text
 from matplotlib.ticker import PercentFormatter
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
-from custom.plots import apply_plot_treatment, get_xticks_labels, palette
+from custom.plots import (add_suptitle, add_title, apply_plot_treatment,
+                          get_xticks_labels, palette, set_size)
 from custom.plots_confronti import (compute_vaccini_decessi_eu, fit_model,
                                     get_epidemic_data, get_vaccine_data,
                                     import_epidem_data, import_vaccines_data,
@@ -19,9 +20,21 @@ from custom.plots_confronti import (compute_vaccini_decessi_eu, fit_model,
 from custom.watermarks import add_last_updated, add_watermark
 
 
+def which_axe(axis, step=10):
+    axis.set_yticklabels([])
+    start, end = axis.get_xlim()
+    axis.xaxis.set_ticks(np.arange(start, end, step))
+    x_ticks = axis.xaxis.get_major_ticks()
+    x_ticks[0].label1.set_visible(False)
+    x_ticks[-1].label1.set_visible(False)
+    ymin, ymax = axis.get_ylim()
+    axis.axvline(0.1, ymin=ymin, ymax=ymax, color="black", linewidth=0.5)
+    axis.grid()
+
+
 def map_vaccinated(f_vacc):
     if f_vacc >= 0 and f_vacc < 20:
-        return "0%-20%"
+        return "0-20%"
     elif f_vacc >= 20 and f_vacc < 40:
         return "20-40%"
     elif f_vacc >= 40 and f_vacc < 60:
@@ -51,7 +64,7 @@ def plot_selection(show=False):
     label_nazioni = ["Italia", "Romania", "Portogallo", "Spagna", "Bulgaria"]
     abitanti_nazioni = [59.55, 19.29, 10.31, 47.35, 6.927]
 
-    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 5))
+    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=set_size(subplots=(1, 2)))
 
     # Unpack all the axes subplots
     axes = ax.ravel()
@@ -76,18 +89,18 @@ def plot_selection(show=False):
 
     x_ticks, x_labels = get_xticks_labels(df_country.index)
 
-    axes[0].set_title("Decessi dal 1° Giugno ad oggi")
+    add_title(axes[0], title="Decessi dal 1° Giugno ad oggi")
     axes[0].set_ylabel("Decessi per milione di abitanti")
     axes[0].set_xlabel("")
     axes[0].set_xticks(x_ticks)
-    axes[0].set_xticklabels(x_labels)
+    axes[0].set_xticklabels(x_labels, rotation=90)
     axes[0].legend()
     axes[0].grid()
 
     axes[1].set_ylim(0, 100)
     axes[1].set_yticks(np.arange(0, 101, 20))
     axes[1].set_yticklabels(["0%", "20%", "40%", "60%", "80%", "100%"])
-    axes[1].set_title("Vaccinati con ciclo completo")
+    add_title(axes[1], title="Vaccinati con ciclo completo")
     axes[1].set_xlabel("")
     axes[1].set_xticks(x_ticks)
     axes[1].set_xticklabels(x_labels)
@@ -115,7 +128,7 @@ def plot_corr_vaccini_decessi(show=False):
     # calcola coefficiente di correlazione (pearson)
     corr_coeff = round(np.corrcoef(vacc_res, dec_res)[0, 1], 2)
 
-    fig, ax = plt.subplots(figsize=(13, 8))
+    fig, ax = plt.subplots(figsize=set_size(fraction=1.5))
 
     # scatter plot
     volume = dec_res.max()*0.050
@@ -150,14 +163,14 @@ def plot_corr_vaccini_decessi(show=False):
     ax.set_ylim(-70, )
     ax.set_xlim(0, 100)
 
-    title = f"Frazione di vaccinati vs decessi nei 27 Paesi dell'UE dal 22/09/2021\n\
-        Coefficiente di correlazione = {corr_coeff}"
-    ax.set_title(title, fontsize=15)
+    title = "Frazione di vaccinati vs decessi nei 27 Paesi dell'UE dal 22/09/2021"
+    subtitle = f"Coefficiente di correlazione = {corr_coeff}"
+    add_suptitle(fig, ax, title=title, subtitle=subtitle)
     ax.set_xlabel("Frazione media di vaccinati con almeno 1 dose al 22/09/2021", fontsize=15)
     ax.set_ylabel("Decessi per milione di abitanti", fontsize=15)
     ax.set_xticks(np.arange(0, 101, 20), ["0%", "20%", "40%", "60%", "80%", "100%"])
     ax.grid()
-    ax.legend(fontsize=15)
+    ax.legend()
     fig.tight_layout()
 
     # bar plot
@@ -191,7 +204,7 @@ def plot_corr_vaccini_decessi(show=False):
              color=palette[-1],
              va="center",
              rotation="vertical")
-    add_last_updated(fig, ax, dati="JHU, Our World in Data", y=-0.05)
+    add_last_updated(fig, ax, dati="JHU, Our World in Data")
 
     fig.savefig("../risultati/vaccini_decessi_EU.png",
                 dpi=300,
@@ -200,27 +213,15 @@ def plot_corr_vaccini_decessi(show=False):
         plt.show()
 
 
-def which_axe(axis, step=10):
-    axis.set_yticklabels([])
-    start, end = axis.get_xlim()
-    axis.xaxis.set_ticks(np.arange(start, end, step))
-    x_ticks = axis.xaxis.get_major_ticks()
-    x_ticks[0].label1.set_visible(False)
-    x_ticks[-1].label1.set_visible(False)
-    ymin, ymax = axis.get_ylim()
-    axis.axvline(0.1, ymin=ymin, ymax=ymax, color="black", linewidth=0.5)
-    axis.grid()
-
-
 def plot_corr_vaccini_decessi_div(show=False):
     """ tornado plot vaccini vs decessi """
 
     # ordina valori in un df
     df_ = pd.DataFrame({"% vaccini": vacc_res, "decessi": dec_res})
     df_.index = paesi_eu_ita
-    df_.sort_values(by="% vaccini", inplace=True)
+    df_ = df_.sort_values(by="% vaccini")
 
-    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 5), sharey=True)
+    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=set_size(subplots=(1, 2)), sharey=True)
 
     # Unpack all the axes subplots
     axes = ax.ravel()
@@ -228,7 +229,7 @@ def plot_corr_vaccini_decessi_div(show=False):
     axes[0].barh(df_.index, df_["% vaccini"], facecolor=palette[5])
     axes[0].set_xlim(0, 101)
     axes[0].xaxis.set_major_formatter(PercentFormatter())
-    axes[0].set_title("Frazione di vaccinati", color=palette[5], size=10)
+    add_title(axes[0], title="Frazione di vaccinati")
     axes[0].set_xlabel("Frazione media di vaccinati con almeno 1 dose al 22/09/2021")
     which_axe(axes[0])
     axes[0].invert_xaxis()
@@ -239,16 +240,16 @@ def plot_corr_vaccini_decessi_div(show=False):
                      fontdict=dict(fontweight="bold", size=6))
 
     axes[1].barh(df_.index, df_["decessi"], facecolor=palette[4])
-    axes[1].set_title("Decessi per milione di abitanti", color=palette[4], size=10)
+    add_title(axes[1], title="Decessi per milione di abitanti")
     axes[1].set_xlabel("Decessi per milione di abitanti dal 22/09/2021")
     which_axe(axes[1], step=250)
 
-    title = "Frazione di vaccinati vs decessi nei 27 Paesi dell'UE dal 22/09/2021"
-    fig.suptitle(title)
+    titolo = "Frazione di vaccinati vs decessi nei 27 Paesi dell'UE dal 22/09/2021"
+    add_suptitle(fig, axes[-1], title=titolo)
 
     # Add watermarks
     add_watermark(fig)
-    add_last_updated(fig, axes[-1], dati="JHU, Our World in Data", y=-0.030)
+    add_last_updated(fig, axes[-1], dati="JHU, Our World in Data", y=-0.1)
 
     fig.subplots_adjust(wspace=0, hspace=0)
     fig.savefig("../risultati/vaccini_decessi_EU_div.png", dpi=300, bbox_inches="tight")
@@ -285,7 +286,7 @@ if __name__ == "__main__":
     # ordina valori in un df per far si che seguano la sequenza dei colori
     df_ = pd.DataFrame({"% vaccini": vacc_res, "decessi": dec_res})
     df_.index = paesi_eu_ita
-    df_.sort_values(by="% vaccini", inplace=True)
+    df_ = df_.sort_values(by="% vaccini")
 
     # plot correlazione vaccini vs. decessi per paesi eu dal 1° settembre 2021
     plot_corr_vaccini_decessi()

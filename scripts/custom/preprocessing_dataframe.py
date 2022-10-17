@@ -15,24 +15,28 @@ def get_df_complessivo():
 def compute_incidence(df_epid, df_pop):
     # ricava i tassi dividendo per la popolazione vaccinata e non vaccinata
     tassi = [df_epid["casi non vaccinati"]/df_pop["casi non vaccinati"],
+             df_epid["casi vaccinati 1 dose"]/df_pop["casi vaccinati 1 dose"],
              df_epid["casi vaccinati > 4-6 mesi"]/df_pop["casi vaccinati > 4-6 mesi"],
              df_epid["casi vaccinati < 4-6 mesi"]/df_pop["casi vaccinati < 4-6 mesi"],
              df_epid["casi booster"]/df_pop["casi booster"],
              df_epid["casi qt dose"]/df_pop["casi qt dose"],
              df_epid["casi vaccinati completo"]/df_pop["casi vaccinati completo"],
              df_epid["ospedalizzati non vaccinati"]/df_pop["ospedalizzati/ti non vaccinati"],
+             df_epid["ospedalizzati vaccinati 1 dose"]/df_pop["ospedalizzati/ti vaccinati 1 dose"],
              df_epid["ospedalizzati vaccinati > 4-6 mesi"]/df_pop["ospedalizzati/ti vaccinati > 4-6 mesi"],
              df_epid["ospedalizzati vaccinati < 4-6 mesi"]/df_pop["ospedalizzati/ti vaccinati > 4-6 mesi"],
              df_epid["ospedalizzati booster"]/df_pop["ospedalizzati/ti booster"],
              df_epid["ospedalizzati qt dose"]/df_pop["ospedalizzati/ti qt dose"],
              df_epid["ospedalizzati vaccinati completo"]/df_pop["ospedalizzati/ti vaccinati completo"],
              df_epid["terapia intensiva non vaccinati"]/df_pop["ospedalizzati/ti non vaccinati"],
+             df_epid["terapia intensiva vaccinati 1 dose"]/df_pop["ospedalizzati/ti vaccinati 1 dose"],
              df_epid["terapia intensiva vaccinati > 4-6 mesi"]/df_pop["ospedalizzati/ti vaccinati > 4-6 mesi"],
              df_epid["terapia intensiva vaccinati < 4-6 mesi"]/df_pop["ospedalizzati/ti vaccinati > 4-6 mesi"],
              df_epid["terapia intensiva booster"]/df_pop["ospedalizzati/ti booster"],
              df_epid["terapia intensiva qt dose"]/df_pop["ospedalizzati/ti qt dose"],
              df_epid["terapia intensiva vaccinati completo"]/df_pop["ospedalizzati/ti vaccinati completo"],
              df_epid["decessi non vaccinati"]/df_pop["decessi non vaccinati"],
+             df_epid["decessi vaccinati 1 dose"]/df_pop["decessi vaccinati 1 dose"],
              df_epid["decessi vaccinati > 4-6 mesi"]/df_pop["decessi vaccinati > 4-6 mesi"],
              df_epid["decessi vaccinati < 4-6 mesi"]/df_pop["decessi vaccinati > 4-6 mesi"],
              df_epid["decessi booster"]/df_pop["decessi booster"],
@@ -40,14 +44,15 @@ def compute_incidence(df_epid, df_pop):
              df_epid["decessi vaccinati completo"]/df_pop["decessi vaccinati completo"]]
     tassi = 10**5*np.transpose(tassi)
     df_tassi = pd.DataFrame(tassi)
-    df_tassi.columns = ["Casi, non vaccinati", "Casi, vaccinati > 4-6 mesi",
+    df_tassi.columns = ["Casi, non vaccinati", "Casi, vaccinati 1 dose", "Casi, vaccinati > 4-6 mesi",
                         "Casi, vaccinati < 4-6 mesi", "Casi, booster", "Casi, qt dose", "Casi, vaccinati completo",
-                        "Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati > 4-6 mesi",
+                        "Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati 1 dose", "Ospedalizzati, vaccinati > 4-6 mesi",
                         "Ospedalizzati, vaccinati < 4-6 mesi", "Ospedalizzati, booster", "Ospedalizzati, qt dose",
                         "Ospedalizzati, vaccinati completo", "In terapia intensiva, non vaccinati",
+                        "In terapia intensiva, vaccinati 1 dose",
                         "In terapia intensiva, vaccinati > 4-6 mesi", "In terapia intensiva, vaccinati < 4-6 mesi",
                         "In terapia intensiva, booster", "In terapia intensiva, qt dose", "In terapia intensiva, vaccinati completo",
-                        "Deceduti, non vaccinati", "Deceduti, vaccinati > 4-6 mesi",
+                        "Deceduti, non vaccinati", "Deceduti, vaccinati 1 dose", "Deceduti, vaccinati > 4-6 mesi",
                         "Deceduti, vaccinati < 4-6 mesi", "Deceduti, booster", "Deceduti, qt dose",
                         "Deceduti, vaccinati completo"]
     return df_tassi
@@ -97,7 +102,9 @@ def compute_incidence_std():
 
     df_età = pd.read_excel("../dati/dati_ISS_età.xlsx", sheet_name=None, index_col="età")
     df_età_epid = df_età["dati epidemiologici"]
+    df_età_epid = df_età_epid[df_età_epid.index != "5-11"]
     df_età_pop = df_età["popolazioni"]
+    df_età_pop = df_età_pop[df_età_pop.index != "5-11"]
     df_età_epid = df_età_epid[df_età_epid["data"] > "2021-07-28"]
     df_età_pop = df_età_pop[df_età_pop["data"] > "2021-07-28"]
 

@@ -6,7 +6,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from custom.plots import apply_plot_treatment, get_xticks_labels, palette
+from custom.plots import (add_title, apply_plot_treatment, get_xticks_labels,
+                          palette, set_size)
 from custom.preprocessing_dataframe import (compute_incidence,
                                             compute_incidence_std,
                                             get_df_complessivo)
@@ -21,8 +22,8 @@ def which_axe(axis):
     axis.set_xlabel("")
     axis.xaxis.reset_ticks()
     axis.set_xticks(x_ticks)
-    axis.set_xticklabels(x_labels)
-    axis.legend(["Non vaccinati", "Vaccinati 2/3/4 dosi",
+    axis.set_xticklabels(x_labels, rotation=90)
+    axis.legend(["Non vaccinati", "Vaccinati completo",
                  "Vaccinati 3 dosi"], loc="upper left")
     axis.grid()
 
@@ -47,7 +48,7 @@ def load_data():
     # Calcola i numeri assoluti (medi, giornalieri) dell"epidemia
     df_epid = df_epid.copy(deep=True)
     df_epid["data"] = pd.to_datetime(df_epid["data"])
-    df_epid.set_index("data", drop=True, inplace=True)
+    df_epid = df_epid.set_index("data", drop=True)
 
     # Trasforma in numeri giornalieri
     df_epid = (1/30)*df_epid
@@ -60,15 +61,13 @@ def load_data():
 def plot_incidenza(show=False, is_std=False):
     """ Tassi di infezione, ricovero, decesso """
 
-    fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(10, 10))
+    fig, ax = plt.subplots(nrows=2, ncols=2, figsize=set_size(subplots=(2, 2)))
 
     # Unpack all the axes subplots
     axes = ax.ravel()
 
-    y_label = "Ogni 100.000 persone per ciascun gruppo"
-
-    titoli = ["dei nuovi casi", "degli ospedalizzati",
-              "dei ricoverati in TI", "dei deceduti"]
+    titoli = ["nuovi casi", "ospedalizzazioni", "ingressi in TI", "decessi"]
+    titolo = "Incidenza %s per 100.000"
 
     eventi = [["Casi, non vaccinati", "Casi, vaccinati completo", "Casi, booster"],
               ["Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati completo", "Ospedalizzati, booster"],
@@ -77,8 +76,8 @@ def plot_incidenza(show=False, is_std=False):
 
     for i, evento in enumerate(eventi):
         (df_tassi_std[evento] if is_std else df_tassi[evento]).plot(ax=axes[i])
-        axes[i].set_title("Incidenza mensile " + titoli[i])
-        axes[i].set_ylabel(y_label)
+        add_title(axes[i], title=titolo % titoli[i],
+                  subtitle="Aggiustati per fascia di età" if is_std else None)
         which_axe(axes[i])
 
     # Add watermarks
@@ -99,7 +98,7 @@ def plot_incidenza(show=False, is_std=False):
 def plot_num_assoluti(show=False):
     """ Andamento dei numeri assoluti """
 
-    fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(10, 10))
+    fig, ax = plt.subplots(nrows=2, ncols=2, figsize=set_size(subplots=(2, 2)))
 
     # Unpack all the axes subplots
     axes = ax.ravel()
@@ -114,7 +113,7 @@ def plot_num_assoluti(show=False):
 
     for i, evento in enumerate(eventi):
         df_epid[evento].plot(ax=axes[i])
-        axes[i].set_title(titoli[i] + " (media 30 gg)")
+        add_title(axes[i], title=titoli[i] + " (media 30 gg)")
         which_axe(axes[i])
 
     # Add watermarks
@@ -133,15 +132,15 @@ def plot_num_assoluti(show=False):
 def plot_riassunto(show=False, is_std=False):
     """ Plot figura riassuntiva incidenze/numeri assoluti"""
 
-    fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(14, 10))
+    fig, ax = plt.subplots(nrows=2, ncols=3, figsize=set_size(fraction=1.25,
+                                                              subplots=(2, 3)))
 
     # Unpack all the axes subplots
     axes = ax.ravel()
 
     # plot incidenze
-    y_label = "Ogni 100.000 persone per ciascun gruppo"
-
-    titoli = ["degli ospedalizzati", "dei ricoverati in TI", "dei deceduti"]
+    titoli = ["ospedalizzazioni", "ricoveri TI", "decessi"]
+    titolo = "Incidenza %s per 100.000"
 
     eventi = [["Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati completo", "Ospedalizzati, booster"],
               ["In terapia intensiva, non vaccinati", "In terapia intensiva, vaccinati completo", "In terapia intensiva, booster"],
@@ -149,8 +148,9 @@ def plot_riassunto(show=False, is_std=False):
 
     for i, evento in enumerate(eventi):
         (df_tassi_std[evento] if is_std else df_tassi[evento]).plot(ax=axes[i])
-        axes[i].set_title("Incidenza mensile " + titoli[i])
-        axes[i].set_ylabel(y_label)
+        add_title(axes[i],
+                  title=titolo % titoli[i],
+                  subtitle="Aggiustati per fascia di età" if is_std else None)
         which_axe(axes[i])
 
     # plot numeri assoluti
@@ -160,9 +160,10 @@ def plot_riassunto(show=False, is_std=False):
               ["terapia intensiva non vaccinati", "terapia intensiva vaccinati completo", "terapia intensiva booster"],
               ["decessi non vaccinati", "decessi vaccinati completo", "decessi booster"]]
 
+    titolo_ = "%s (media 30 gg)"
     for i, evento in enumerate(eventi):
         df_epid[evento].plot(ax=axes[i+3])
-        axes[i+3].set_title(titoli[i] + " (media 30 gg)")
+        add_title(axes[i+3], title=titolo_ % titoli[i])
         which_axe(axes[i+3])
 
     fig.tight_layout()
@@ -183,7 +184,7 @@ def plot_riassunto(show=False, is_std=False):
 def plot_rapporto_tassi(show=False, is_std=False):
     """ Rapporto fra tassi """
 
-    fig, ax = plt.subplots(figsize=(6, 5))
+    fig, ax = plt.subplots(figsize=set_size())
 
     tassi = df_tassi_std if is_std else df_tassi
     (tassi["Casi, non vaccinati"]/tassi["Casi, vaccinati completo"]).plot(label="Nuovi casi")
@@ -195,7 +196,8 @@ def plot_rapporto_tassi(show=False, is_std=False):
     ax.set_xticks(x_ticks)
     ax.set_xticklabels(x_labels)
 
-    ax.set_title("Rapporto fra le incidenze")
+    add_title(ax, title="Rapporto fra le incidenze",
+              subtitle="Aggiustati per fascia di età" if is_std else None)
     ax.set_ylabel("Non vaccinati/vaccinati")
     ax.set_xlabel("")
     ax.grid()
@@ -204,7 +206,7 @@ def plot_rapporto_tassi(show=False, is_std=False):
 
     # Add watermarks
     add_watermark(fig)
-    add_last_updated(fig, ax, y=-0.030)
+    add_last_updated(fig, ax)
 
     f_suff = "_std" if is_std else ""
     fig.savefig(f"../risultati/rapporto_tra_tassi{f_suff}.png",

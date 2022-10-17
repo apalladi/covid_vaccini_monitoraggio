@@ -9,7 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from custom.plots import apply_plot_treatment, palette
+from custom.plots import (add_suptitle, add_title, apply_plot_treatment,
+                          palette, set_size)
 from custom.preprocessing_dataframe import (compute_incidence_std,
                                             get_df_popolazione)
 from custom.watermarks import add_last_updated, add_watermark
@@ -71,7 +72,7 @@ def which_axe(ax, title="Casi"):
     "Imposta proprietà grafici"
     ax.set_xticks(x_ticks)
     ax.set_xticklabels(x_labels)
-    ax.set_title(f"{title} mensili (media mobile 30 gg)")
+    add_title(ax, title=f"{title} mensili (media mobile 30 gg)")
     ax.set_ylabel("Ogni 100.000 persone per ciascun gruppo")
     ax.legend(loc="upper left")
     ax.margins(x=0)
@@ -86,7 +87,7 @@ def plot_confronto_2020_2021(show=False):
     xgrid_2020 = np.arange(0, len(casi_2020))
     xgrid_2021 = np.arange(0, 7*len(casi_2021_vacc), 7)
 
-    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 4))
+    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=set_size(subplots=(1, 2)))
     axes = ax.ravel()
 
     axes[0].plot(xgrid_2020[:xgrid_2021[-1]], casi_2020[:xgrid_2021[-1]], label="2020-21")
@@ -101,11 +102,11 @@ def plot_confronto_2020_2021(show=False):
     axes[1].plot(xgrid_2021, dec_2021_vacc, label="2021-22 (vaccinati)")
     which_axe(axes[1], title="Decessi")
 
-    fig.suptitle("Confronto 2020-2021 vs stesso periodo 2021-22")
+    add_suptitle(fig, axes[-1], title="Confronto 2020-2021 vs stesso periodo 2021-22")
 
     # Add watermarks
     add_watermark(fig)
-    add_last_updated(fig, axes[-1], dati="ISS, Protezione Civile", y=-0.05)
+    add_last_updated(fig, axes[-1], dati="ISS, Protezione Civile", y=-0.075)
 
     fig.tight_layout()
     fig.savefig("../risultati/confrontro_2020_2021.png",

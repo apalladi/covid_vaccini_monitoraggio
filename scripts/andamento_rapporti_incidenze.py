@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from custom.plots import (apply_plot_treatment, get_xticks_labels,
-                          get_yticks_labels, palette)
+from custom.plots import (add_title, apply_plot_treatment, get_xticks_labels,
+                          palette, set_size)
 from custom.preprocessing_dataframe import compute_incidence
 from custom.watermarks import add_last_updated, add_watermark
 
@@ -41,21 +41,19 @@ def compute_incidence_ratio(category):
 def add_to_plot(ax):
     """ Imposta proprietà grafico """
     ax.set_xticks(ratio_x_ticks)
-    ax.set_xticklabels(ratio_x_labels)
+    ax.set_xticklabels(ratio_x_labels, rotation=90)
     ax.set_ylabel("Contributo dei non vaccinati alle incidenze")
-    ax.set_yticks(rapp_yticks)
-    ax.set_yticklabels(rapp_ylabels)
-    ax.set_ylim(rapp_ymin, 102)
+    ax.set_ylim(None, 105)
     ax.legend(classi_età)
     ax.grid()
 
 
 def add_to_plot_abs(ax, title):
     """ Imposta proprietà grafico """
-    ax.set_title(title)
+    add_title(ax, title=title)
     ax.xaxis.reset_ticks()
     ax.set_xticks(x_ticks)
-    ax.set_xticklabels(x_labels)
+    ax.set_xticklabels(x_labels, rotation=90)
     ax.set_xlabel("")
     ax.legend(shared_legend)
     ax.grid()
@@ -66,25 +64,25 @@ def add_to_plot_abs(ax, title):
 def plot_rapporti_incidenze(show=False):
     """ Rapporto fra incidenze """
 
-    fig, ax = plt.subplots(ncols=2, nrows=2, figsize=(9, 8))
+    fig, ax = plt.subplots(ncols=2, nrows=2, figsize=set_size(subplots=(2, 2)))
 
     # unpack axes
     axes = ax.ravel()
 
     axes[0].plot(incidenza_casi)
-    axes[0].set_title("Casi")
+    add_title(axes[0], title="Casi")
     add_to_plot(axes[0])
 
     axes[1].plot(compute_incidence_ratio("Ospedalizzati"))
-    axes[1].set_title("Ospedalizzati")
+    add_title(axes[1], title="Ospedalizzazioni")
     add_to_plot(axes[1])
 
     axes[2].plot(compute_incidence_ratio("TI"))
-    axes[2].set_title("In terapia intensiva")
+    add_title(axes[2], title="Ingressi in TI")
     add_to_plot(axes[2])
 
     axes[3].plot(compute_incidence_ratio("Deceduti"))
-    axes[3].set_title("Decessi")
+    add_title(axes[3], title="Decessi")
     add_to_plot(axes[3])
 
     # Add watermarks
@@ -143,8 +141,7 @@ def ricava_andamenti_età(età, colonna, incidenza_mensile):
         df_results.columns = ["date", str(colonna)+", "+str(età)]
 
     df_results.index = pd.to_datetime(df_results["date"])
-    df_results.drop("date", axis=1, inplace=True)
-
+    df_results = df_results.drop("date", axis=1)
     return df_results
 
 
@@ -152,7 +149,7 @@ def ricava_andamenti_età(età, colonna, incidenza_mensile):
 def plot_assoluti_incidenza_età(categorie, titoli, filename, show=False):
     """Plot delle incidenze in funzione del tempo"""
 
-    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
+    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=set_size(subplots=(1, 2)))
     axes = ax.ravel()
 
     for età in classi_età:
@@ -198,13 +195,6 @@ if __name__ == "__main__":
     # Imposta stile grafici
     apply_plot_treatment()
 
-    # da usare quando ci saranno abbastanza punti
-    # nella fascia di età 5-11
-    """ shared_legend = ["5-11 non vaccinati", "12-39 non vaccinati", "40-59 non vaccinati",
-                     "60-79 non vaccinati", "80+ non vaccinati",
-                     "5-11 vaccinati", "12-39 vaccinati", "40-59 vaccinati",
-                     "60-79 vaccinati", "80+ vaccinati"] """
-
     shared_legend = ["12-39 non vaccinati", "40-59 non vaccinati",
                      "60-79 non vaccinati", "80+ non vaccinati",
                      "12-39 vaccinati", "40-59 vaccinati",
@@ -228,36 +218,34 @@ if __name__ == "__main__":
 
     incidenza_casi = compute_incidence_ratio("Casi")
 
-    rapp_ymin, rapp_yticks, rapp_ylabels = get_yticks_labels(incidenza_casi)
-
     plot_rapporti_incidenze()
 
     x_ticks, x_labels = get_xticks_labels()
 
     titolo_0 = "%s giornalieri (media 30 giorni)"
-    titolo_1 = "Incidenza mensile %s per 100.000 abitanti"
+    titolo_1 = "Incidenza %s per 100.000"
     nome_file = "../risultati/andamento_fasce_età_%s.png"
 
     # casi
     plot_assoluti_incidenza_età(categorie=["casi non vaccinati", "casi vaccinati completo"],
                                 titoli=[titolo_0 % "Casi",
-                                        titolo_1 % "dei casi"],
+                                        titolo_1 % "nuovi casi"],
                                 filename=nome_file % "casi")
 
     # ospedalizzazioni
     plot_assoluti_incidenza_età(categorie=["ospedalizzati non vaccinati", "ospedalizzati vaccinati completo"],
                                 titoli=[titolo_0 % "Ospedalizzati",
-                                        titolo_1 % "degli ospedalizzati"],
+                                        titolo_1 % "ospedalizzazioni"],
                                 filename=nome_file % "ospedalizzati")
 
     # in terapia intensiva
     plot_assoluti_incidenza_età(categorie=["terapia intensiva non vaccinati", "terapia intensiva vaccinati completo"],
                                 titoli=[titolo_0 % "Ricoverati in TI",
-                                        titolo_1 % "dei ricoverati in TI"],
+                                        titolo_1 % "ingressi in TI"],
                                 filename=nome_file % "ricoveratiTI")
 
     # decessi
     plot_assoluti_incidenza_età(categorie=["decessi non vaccinati", "decessi vaccinati completo"],
                                 titoli=[titolo_0 % "Decessi",
-                                        titolo_1 % "dei decessi"],
+                                        titolo_1 % "decessi"],
                                 filename=nome_file % "decessi")
