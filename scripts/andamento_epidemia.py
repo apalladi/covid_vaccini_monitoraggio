@@ -77,7 +77,7 @@ def plot_incidenza(show=False, is_std=False):
     for i, evento in enumerate(eventi):
         (df_tassi_std[evento] if is_std else df_tassi[evento]).plot(ax=axes[i])
         add_title(axes[i], title=titolo % titoli[i],
-                  subtitle="Aggiustati per fascia di età" if is_std else None)
+                  subtitle="Aggiustata per fascia di età" if is_std else None)
         which_axe(axes[i])
 
     # Add watermarks
@@ -150,7 +150,7 @@ def plot_riassunto(show=False, is_std=False):
         (df_tassi_std[evento] if is_std else df_tassi[evento]).plot(ax=axes[i])
         add_title(axes[i],
                   title=titolo % titoli[i],
-                  subtitle="Aggiustati per fascia di età" if is_std else None)
+                  subtitle="Aggiustata per fascia di età" if is_std else None)
         which_axe(axes[i])
 
     # plot numeri assoluti
@@ -197,7 +197,7 @@ def plot_rapporto_tassi(show=False, is_std=False):
     ax.set_xticklabels(x_labels)
 
     add_title(ax, title="Rapporto fra le incidenze",
-              subtitle="Aggiustati per fascia di età" if is_std else None)
+              subtitle="Aggiustato per fascia di età" if is_std else None)
     ax.set_ylabel("Non vaccinati/vaccinati")
     ax.set_xlabel("")
     ax.grid()
