@@ -24,12 +24,12 @@ def compute_incidence_ratio(category):
     for date in np.flip(date_reports):
         df_epid = df_età_epid.loc[date]
         df_pop = df_età_pop.loc[date]
-        df_tassi = compute_incidence(df_epid, df_pop)
+        df_tassi, _ = compute_incidence(df_epid, df_pop)
 
-        r_casi = df_tassi["Casi, non vaccinati"]/(df_tassi["Casi, non vaccinati"] + df_tassi["Casi, vaccinati completo"])*100
-        r_osp = df_tassi["Ospedalizzati, non vaccinati"]/(df_tassi["Ospedalizzati, non vaccinati"] + df_tassi["Ospedalizzati, vaccinati completo"])*100
-        r_ti = df_tassi["In terapia intensiva, non vaccinati"]/(df_tassi["In terapia intensiva, non vaccinati"] + df_tassi["In terapia intensiva, vaccinati completo"])*100
-        r_dec = df_tassi["Deceduti, non vaccinati"]/(df_tassi["Deceduti, non vaccinati"] + df_tassi["Deceduti, vaccinati completo"])*100
+        r_casi = df_tassi["casi non vaccinati"]/(df_tassi["casi non vaccinati"] + df_tassi["casi vaccinati completo"])*100
+        r_osp = df_tassi["ospedalizzati non vaccinati"]/(df_tassi["ospedalizzati non vaccinati"] + df_tassi["ospedalizzati vaccinati completo"])*100
+        r_ti = df_tassi["terapia intensiva non vaccinati"]/(df_tassi["terapia intensiva non vaccinati"] + df_tassi["terapia intensiva vaccinati completo"])*100
+        r_dec = df_tassi["decessi non vaccinati"]/(df_tassi["decessi non vaccinati"] + df_tassi["decessi vaccinati completo"])*100
         rapporto_fra_tassi = pd.DataFrame(np.transpose([r_casi, r_osp, r_ti, r_dec]))
         rapporto_fra_tassi.columns = ["Casi", "Ospedalizzati", "TI", "Deceduti"]
         rapporto_fra_tassi.index = df_tassi.index

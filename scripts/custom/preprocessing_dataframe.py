@@ -12,50 +12,36 @@ def get_df_complessivo():
     return df_epid, df_pop
 
 
-def compute_incidence(df_epid, df_pop):
+def compose_labels(labels, templates):
+    return [templ % lab for lab in labels for templ in templates]
+
+
+def compute_incidence(df_epid, df_pop, eventi_templ=["%s non vaccinati", "%s vaccinati completo", "%s booster"]):
     # ricava i tassi dividendo per la popolazione vaccinata e non vaccinata
-    tassi = [df_epid["casi non vaccinati"]/df_pop["casi non vaccinati"],
-             df_epid["casi vaccinati 1 dose"]/df_pop["casi vaccinati 1 dose"],
-             df_epid["casi vaccinati > 4-6 mesi"]/df_pop["casi vaccinati > 4-6 mesi"],
-             df_epid["casi vaccinati < 4-6 mesi"]/df_pop["casi vaccinati < 4-6 mesi"],
-             df_epid["casi booster"]/df_pop["casi booster"],
-             df_epid["casi qt dose"]/df_pop["casi qt dose"],
-             df_epid["casi vaccinati completo"]/df_pop["casi vaccinati completo"],
-             df_epid["ospedalizzati non vaccinati"]/df_pop["ospedalizzati/ti non vaccinati"],
-             df_epid["ospedalizzati vaccinati 1 dose"]/df_pop["ospedalizzati/ti vaccinati 1 dose"],
-             df_epid["ospedalizzati vaccinati > 4-6 mesi"]/df_pop["ospedalizzati/ti vaccinati > 4-6 mesi"],
-             df_epid["ospedalizzati vaccinati < 4-6 mesi"]/df_pop["ospedalizzati/ti vaccinati > 4-6 mesi"],
-             df_epid["ospedalizzati booster"]/df_pop["ospedalizzati/ti booster"],
-             df_epid["ospedalizzati qt dose"]/df_pop["ospedalizzati/ti qt dose"],
-             df_epid["ospedalizzati vaccinati completo"]/df_pop["ospedalizzati/ti vaccinati completo"],
-             df_epid["terapia intensiva non vaccinati"]/df_pop["ospedalizzati/ti non vaccinati"],
-             df_epid["terapia intensiva vaccinati 1 dose"]/df_pop["ospedalizzati/ti vaccinati 1 dose"],
-             df_epid["terapia intensiva vaccinati > 4-6 mesi"]/df_pop["ospedalizzati/ti vaccinati > 4-6 mesi"],
-             df_epid["terapia intensiva vaccinati < 4-6 mesi"]/df_pop["ospedalizzati/ti vaccinati > 4-6 mesi"],
-             df_epid["terapia intensiva booster"]/df_pop["ospedalizzati/ti booster"],
-             df_epid["terapia intensiva qt dose"]/df_pop["ospedalizzati/ti qt dose"],
-             df_epid["terapia intensiva vaccinati completo"]/df_pop["ospedalizzati/ti vaccinati completo"],
-             df_epid["decessi non vaccinati"]/df_pop["decessi non vaccinati"],
-             df_epid["decessi vaccinati 1 dose"]/df_pop["decessi vaccinati 1 dose"],
-             df_epid["decessi vaccinati > 4-6 mesi"]/df_pop["decessi vaccinati > 4-6 mesi"],
-             df_epid["decessi vaccinati < 4-6 mesi"]/df_pop["decessi vaccinati > 4-6 mesi"],
-             df_epid["decessi booster"]/df_pop["decessi booster"],
-             df_epid["decessi qt dose"]/df_pop["decessi qt dose"],
-             df_epid["decessi vaccinati completo"]/df_pop["decessi vaccinati completo"]]
+
+    # eventi interessati
+    num_labs = ["casi", "ospedalizzati", "terapia intensiva", "decessi"]
+    den_labs = ["casi", "ospedalizzati/ti", "ospedalizzati/ti", "decessi"]
+
+    # template labels colonne
+    templates = ["%s non vaccinati", "%s vaccinati 1 dose", "%s vaccinati > 4-6 mesi",
+                 "%s vaccinati < 4-6 mesi", "%s booster", "%s qt dose", "%s vaccinati completo"]
+
+    # costruisci i label usati per selezionare le colonne del dataframe
+    num_labs_ = compose_labels(num_labs, templates)
+    den_labs_ = compose_labels(den_labs, templates)
+
+    # calcolo tassi
+    tassi = [df_epid[num_labs_[i]].div(df_pop[den_labs_[i]])
+             for i in range(len(num_labs_))]
     tassi = 10**5*np.transpose(tassi)
     df_tassi = pd.DataFrame(tassi)
-    df_tassi.columns = ["Casi, non vaccinati", "Casi, vaccinati 1 dose", "Casi, vaccinati > 4-6 mesi",
-                        "Casi, vaccinati < 4-6 mesi", "Casi, booster", "Casi, qt dose", "Casi, vaccinati completo",
-                        "Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati 1 dose", "Ospedalizzati, vaccinati > 4-6 mesi",
-                        "Ospedalizzati, vaccinati < 4-6 mesi", "Ospedalizzati, booster", "Ospedalizzati, qt dose",
-                        "Ospedalizzati, vaccinati completo", "In terapia intensiva, non vaccinati",
-                        "In terapia intensiva, vaccinati 1 dose",
-                        "In terapia intensiva, vaccinati > 4-6 mesi", "In terapia intensiva, vaccinati < 4-6 mesi",
-                        "In terapia intensiva, booster", "In terapia intensiva, qt dose", "In terapia intensiva, vaccinati completo",
-                        "Deceduti, non vaccinati", "Deceduti, vaccinati 1 dose", "Deceduti, vaccinati > 4-6 mesi",
-                        "Deceduti, vaccinati < 4-6 mesi", "Deceduti, booster", "Deceduti, qt dose",
-                        "Deceduti, vaccinati completo"]
-    return df_tassi
+    df_tassi.columns = num_labs_
+    df_tassi = df_tassi.replace([np.inf, -np.inf], np.nan)
+
+    selezione = [[sel_templ % lab for sel_templ in eventi_templ]
+                 for lab in num_labs]
+    return df_tassi, selezione
 
 
 def get_df_popolazione():
@@ -108,7 +94,8 @@ def compute_incidence_std():
     df_età_epid = df_età_epid[df_età_epid["data"] > "2021-07-28"]
     df_età_pop = df_età_pop[df_età_pop["data"] > "2021-07-28"]
 
-    df_tassi = compute_incidence(df_età_epid, df_età_pop)
+    df_tassi, _ = compute_incidence(df_età_epid, df_età_pop)
+
     df_tassi.index = df_età_epid.index
     df_tassi = df_tassi.reset_index()
     df_tassi.index = df_età_epid["data"]

@@ -18,10 +18,10 @@ colori_incidenza = [palette[i] for i in [6, 0, 1, 2, 3]]
 
 def compute_efficacia():
     """ Calcola efficacia vaccini """
-    eff_contagio = (1 - df_tassi["Casi, vaccinati completo"]/df_tassi["Casi, non vaccinati"])*100
-    eff_osp = (1 - df_tassi["Ospedalizzati, vaccinati completo"]/df_tassi["Ospedalizzati, non vaccinati"])*100
-    eff_terint = (1 - df_tassi["In terapia intensiva, vaccinati completo"]/df_tassi["In terapia intensiva, non vaccinati"])*100
-    eff_decessi = (1 - df_tassi["Deceduti, vaccinati completo"]/df_tassi["Deceduti, non vaccinati"])*100
+    eff_contagio = (1 - df_tassi["casi vaccinati completo"]/df_tassi["casi non vaccinati"])*100
+    eff_osp = (1 - df_tassi["ospedalizzati vaccinati completo"]/df_tassi["ospedalizzati non vaccinati"])*100
+    eff_terint = (1 - df_tassi["terapia intensiva vaccinati completo"]/df_tassi["terapia intensiva non vaccinati"])*100
+    eff_decessi = (1 - df_tassi["decessi vaccinati completo"]/df_tassi["decessi non vaccinati"])*100
     return eff_contagio, eff_osp, eff_terint, eff_decessi
 
 
@@ -276,10 +276,6 @@ if __name__ == "__main__":
     # Imposta stile grafici
     apply_plot_treatment()
 
-    eventi = [["Casi, non vaccinati", "Casi, vaccinati completo", "Casi, vaccinati < 4-6 mesi", "Casi, vaccinati > 4-6 mesi", "Casi, booster"],
-              ["Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati completo", "Ospedalizzati, vaccinati < 4-6 mesi", "Ospedalizzati, vaccinati > 4-6 mesi", "Ospedalizzati, booster"],
-              ["In terapia intensiva, non vaccinati", "In terapia intensiva, vaccinati completo", "In terapia intensiva, vaccinati < 4-6 mesi", "In terapia intensiva, vaccinati > 4-6 mesi", "In terapia intensiva, booster"],
-              ["Deceduti, non vaccinati", "Deceduti, vaccinati completo", "Deceduti, vaccinati < 4-6 mesi", "Deceduti, vaccinati > 4-6 mesi", "Deceduti, booster"]]
     titoli = ["nuovi casi", "ospedalizzazioni", "ingressi in TI", "decessi"]
 
     # Recupera dati età
@@ -306,7 +302,11 @@ if __name__ == "__main__":
     plots_suptitle = f"Report del {report_date} ({start_date} - {end_date})"
 
     # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
-    df_tassi = compute_incidence(df_età, df_pop)
+    eventi_templ = ["%s non vaccinati", "%s vaccinati completo", "%s vaccinati < 4-6 mesi",
+                    "%s vaccinati > 4-6 mesi", "%s booster"]
+    df_tassi, eventi = compute_incidence(df_età, df_pop,
+                                         eventi_templ=eventi_templ)
+
     df_tassi.index = df_età["età"]
 
     # Ricava efficacia

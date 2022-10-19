@@ -39,7 +39,7 @@ def load_data():
     # per vaccinati e non vaccinati
 
     # Ricava i tassi, dividendo per la popolazione vaccinati e non vaccinata
-    df_tassi = compute_incidence(df_epid, df_pop)
+    df_tassi, eventi = compute_incidence(df_epid, df_pop)
     df_tassi.index = pd.to_datetime(df_epid["data"])
 
     # Ricava i tassi standardizzati per fascia di età
@@ -53,7 +53,7 @@ def load_data():
     # Trasforma in numeri giornalieri
     df_epid = (1/30)*df_epid
 
-    return df_tassi, df_tassi_std, df_epid
+    return df_tassi, df_tassi_std, df_epid, eventi
 
 
 # Rappresentazione grafica dei risultati
@@ -68,11 +68,6 @@ def plot_incidenza(show=False, is_std=False):
 
     titoli = ["nuovi casi", "ospedalizzazioni", "ingressi in TI", "decessi"]
     titolo = "Incidenza %s per 100.000"
-
-    eventi = [["Casi, non vaccinati", "Casi, vaccinati completo", "Casi, booster"],
-              ["Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati completo", "Ospedalizzati, booster"],
-              ["In terapia intensiva, non vaccinati", "In terapia intensiva, vaccinati completo", "In terapia intensiva, booster"],
-              ["Deceduti, non vaccinati", "Deceduti, vaccinati completo", "Deceduti, booster"]]
 
     for i, evento in enumerate(eventi):
         (df_tassi_std[evento] if is_std else df_tassi[evento]).plot(ax=axes[i])
@@ -106,11 +101,6 @@ def plot_num_assoluti(show=False):
     titoli = ["Nuovi casi giornalieri", "Nuovi ospedalizzati giornalieri",
               "Nuovi ricoverati in TI", "Decessi giornalieri"]
 
-    eventi = [["casi non vaccinati", "casi vaccinati completo", "casi booster"],
-              ["ospedalizzati non vaccinati", "ospedalizzati vaccinati completo", "ospedalizzati booster"],
-              ["terapia intensiva non vaccinati", "terapia intensiva vaccinati completo", "terapia intensiva booster"],
-              ["decessi non vaccinati", "decessi vaccinati completo", "decessi booster"]]
-
     for i, evento in enumerate(eventi):
         df_epid[evento].plot(ax=axes[i])
         add_title(axes[i], title=titoli[i] + " (media 30 gg)")
@@ -142,11 +132,7 @@ def plot_riassunto(show=False, is_std=False):
     titoli = ["ospedalizzazioni", "ricoveri TI", "decessi"]
     titolo = "Incidenza %s per 100.000"
 
-    eventi = [["Ospedalizzati, non vaccinati", "Ospedalizzati, vaccinati completo", "Ospedalizzati, booster"],
-              ["In terapia intensiva, non vaccinati", "In terapia intensiva, vaccinati completo", "In terapia intensiva, booster"],
-              ["Deceduti, non vaccinati", "Deceduti, vaccinati completo", "Deceduti, booster"]]
-
-    for i, evento in enumerate(eventi):
+    for i, evento in enumerate(eventi[1:]):
         (df_tassi_std[evento] if is_std else df_tassi[evento]).plot(ax=axes[i])
         add_title(axes[i],
                   title=titolo % titoli[i],
@@ -156,12 +142,9 @@ def plot_riassunto(show=False, is_std=False):
     # plot numeri assoluti
     titoli = ["Nuovi ospedalizzati giornalieri",
               "Nuovi ricoverati in TI", "Decessi giornalieri"]
-    eventi = [["ospedalizzati non vaccinati", "ospedalizzati vaccinati completo", "ospedalizzati booster"],
-              ["terapia intensiva non vaccinati", "terapia intensiva vaccinati completo", "terapia intensiva booster"],
-              ["decessi non vaccinati", "decessi vaccinati completo", "decessi booster"]]
 
     titolo_ = "%s (media 30 gg)"
-    for i, evento in enumerate(eventi):
+    for i, evento in enumerate(eventi[1:]):
         df_epid[evento].plot(ax=axes[i+3])
         add_title(axes[i+3], title=titolo_ % titoli[i])
         which_axe(axes[i+3])
@@ -187,10 +170,10 @@ def plot_rapporto_tassi(show=False, is_std=False):
     fig, ax = plt.subplots(figsize=set_size())
 
     tassi = df_tassi_std if is_std else df_tassi
-    (tassi["Casi, non vaccinati"]/tassi["Casi, vaccinati completo"]).plot(label="Nuovi casi")
-    (tassi["Ospedalizzati, non vaccinati"]/tassi["Ospedalizzati, vaccinati completo"]).plot(label="Ospedalizzazione")
-    (tassi["In terapia intensiva, non vaccinati"]/tassi["In terapia intensiva, vaccinati completo"]).plot(label="Ricovero in TI")
-    (tassi["Deceduti, non vaccinati"]/tassi["Deceduti, vaccinati completo"]).plot(label="Decesso")
+    (tassi["casi non vaccinati"]/tassi["casi vaccinati completo"]).plot(label="Nuovi casi")
+    (tassi["ospedalizzati non vaccinati"]/tassi["ospedalizzati vaccinati completo"]).plot(label="Ospedalizzazione")
+    (tassi["terapia intensiva non vaccinati"]/tassi["terapia intensiva vaccinati completo"]).plot(label="Ricovero in TI")
+    (tassi["decessi non vaccinati"]/tassi["decessi vaccinati completo"]).plot(label="Decesso")
 
     ax.xaxis.reset_ticks()
     ax.set_xticks(x_ticks)
@@ -227,7 +210,7 @@ if __name__ == "__main__":
     # Imposta stile grafici
     apply_plot_treatment()
 
-    df_tassi, df_tassi_std, df_epid = load_data()
+    df_tassi, df_tassi_std, df_epid, eventi = load_data()
 
     x_ticks, x_labels = get_xticks_labels(reports_dates=df_epid.index)
 
