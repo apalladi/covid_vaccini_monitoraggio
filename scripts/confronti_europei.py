@@ -226,7 +226,10 @@ def plot_corr_vaccini_decessi_div(show=False):
     # Unpack all the axes subplots
     axes = ax.ravel()
 
-    axes[0].barh(df_.index, df_["% vaccini"], facecolor=palette[5])
+    mask = df_.index == "Italia"
+    colors = np.where(mask, palette[5], "#44AA99")
+
+    axes[0].barh(df_.index, df_["% vaccini"], color=colors)
     axes[0].set_xlim(0, 101)
     axes[0].xaxis.set_major_formatter(PercentFormatter())
     add_title(axes[0], title="Frazione di vaccinati")
@@ -239,7 +242,8 @@ def plot_corr_vaccini_decessi_div(show=False):
                      va="center", ha="right", s=country,
                      fontdict=dict(fontweight="bold", size=6))
 
-    axes[1].barh(df_.index, df_["decessi"], facecolor=palette[4])
+    colors_ = np.where(mask, palette[4], "#CC6677")
+    axes[1].barh(df_.index, df_["decessi"], color=colors_)
     add_title(axes[1], title="Decessi per milione di abitanti")
     axes[1].set_xlabel("Decessi per milione di abitanti dal 22/09/2021")
     which_axe(axes[1], step=250)
