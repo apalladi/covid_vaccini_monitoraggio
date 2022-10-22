@@ -101,3 +101,8 @@ def compute_incidence_std():
     df_tassi.index = df_età_epid["data"]
 
     return calc_df_adj(df_tassi)
+
+
+def safe_div(df, col1, col2):
+    """ Function to handle ZeroDivisionError """
+    return df.apply(lambda x: x[col2] and x[col1]/x[col2] or 0, axis=1)

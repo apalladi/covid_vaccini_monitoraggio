@@ -10,7 +10,7 @@ import pandas as pd
 
 from custom.plots import (add_suptitle, add_title, apply_plot_treatment,
                           palette, set_size)
-from custom.preprocessing_dataframe import compute_incidence
+from custom.preprocessing_dataframe import compute_incidence, safe_div
 from custom.watermarks import add_last_updated, add_watermark
 
 colori_incidenza = [palette[i] for i in [6, 0, 1, 2, 3]]
@@ -18,10 +18,10 @@ colori_incidenza = [palette[i] for i in [6, 0, 1, 2, 3]]
 
 def compute_efficacia():
     """ Calcola efficacia vaccini """
-    eff_contagio = (1 - df_tassi["casi vaccinati completo"]/df_tassi["casi non vaccinati"])*100
-    eff_osp = (1 - df_tassi["ospedalizzati vaccinati completo"]/df_tassi["ospedalizzati non vaccinati"])*100
-    eff_terint = (1 - df_tassi["terapia intensiva vaccinati completo"]/df_tassi["terapia intensiva non vaccinati"])*100
-    eff_decessi = (1 - df_tassi["decessi vaccinati completo"]/df_tassi["decessi non vaccinati"])*100
+    eff_contagio = (1 - safe_div(df_tassi, "casi vaccinati completo", "casi non vaccinati"))*100
+    eff_osp = (1 - safe_div(df_tassi, "ospedalizzati vaccinati completo", "ospedalizzati non vaccinati"))*100
+    eff_terint = (1 - safe_div(df_tassi, "terapia intensiva vaccinati completo", "terapia intensiva non vaccinati"))*100
+    eff_decessi = (1 - safe_div(df_tassi, "decessi vaccinati completo", "decessi non vaccinati"))*100
     return eff_contagio, eff_osp, eff_terint, eff_decessi
 
 
